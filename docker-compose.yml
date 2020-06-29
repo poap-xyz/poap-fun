@@ -79,6 +79,7 @@ services:
       - pgdata:/var/lib/postgresql/data/
     networks:
       - back-tier
+
   redis:
     restart: always
     image: redis:latest

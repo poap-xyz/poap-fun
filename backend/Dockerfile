@@ -1,4 +1,4 @@
-FROM python:3.7.7-stretch
+FROM python:3.8.3-buster
 RUN apt-get update && apt-get install -y gettext
 RUN pip install --upgrade pip
 

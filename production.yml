@@ -31,7 +31,7 @@ services:
   node:
     restart: always
     build: ./frontend
-    container_name: ctf-node
+    container_name: poap-fun-node
     command: ["npm", "start"]
     environment:
       VIRTUAL_HOST: 'frontend'
@@ -48,8 +48,7 @@ services:
   nginx:
     restart: always
     build: ./nginx
-    container_name: tpl-nginx
-    environment:
+    container_name: poap-fun-nginx
     environment:
       REACT_DEFAULT_HOST: 'poap.fun'
       API_DEFAULT_HOST: 'api.poap.fun'
@@ -90,7 +89,7 @@ services:
   redis:
     restart: always
     image: redis:latest
-    container_name: r-redis
+    container_name: poap-fun-redis
     ports:
       - "6382:6379"
     volumes:
