@@ -1,0 +1,43 @@
+####BACKEND####
+
+# Python cache
+_
+_pycache__/
+*.pyc
+
+# Virtual environment
+env/
+venv/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac desktop service store files
+.DS_Store
+
+# Pycharm
+.idea/
+
+# Env variables
+.env
+
+## Project
+
+# Local Settings
+backend/backend/local_settings.py
+
+# Static
+/static/
+
+# Media files
+backend/media/
+
+####Docker####
+nginx/sites-enabled/nginx.conf

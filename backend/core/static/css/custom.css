@@ -1,0 +1,11 @@
+.error-image-container {
+    text-align: center;
+}
+.error-msg-container {
+    text-align: center;
+}
+.error-text {
+    font-weight: bold;
+    font-size: 40px;
+    color: #fe2d4d;
+}

@@ -1,0 +1,91 @@
+#header {
+    background: #00104c;
+    color: white;
+}
+
+#header .logo {
+    width: 100px;
+    margin: 3px 0px 8px 0px;
+    border-radius: 4px 4px 4px 4px;
+}
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited {
+    color: white;
+    font-weight: bold;
+    font-size: 26px;
+    font-family: Arial, sans-serif;
+}
+
+.login #header {
+    height: auto;
+    padding: 5px 16px 0 !important;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: #00104c;
+}
+
+.selector-chosen h2 {
+    background: #00104c !important;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #00104c;
+}
+
+.button.default, input[type=submit].default, .submit-row input.default {
+    background: #00104c;
+}
+
+.button.default:active, input[type=submit].default:active, .button.default:focus, input[type=submit].default:focus, .button.default:hover, input[type=submit].default:hover {
+    background: #00104c;
+}
+
+.object-tools a:focus, .object-tools a:hover {
+    background: #00104c;
+}
+
+.button:active, input[type=submit]:active, input[type=button]:active, .button:focus, input[type=submit]:focus, input[type=button]:focus, .button:hover, input[type=submit]:hover, input[type=button]:hover {
+    background: #fe2d4d;
+}
+
+div.breadcrumbs {
+    background: #00104c;
+    color: white;
+    padding-left: 20px;
+    margin: 20px 20px 0;
+}
+
+ul.messagelist {
+    margin: 0 20px;
+}
+
+a:link, a:visited {
+    color: #000000;
+}
+
+.inline-group .tabular tr td.original p {
+    display: none;
+}
+
+.inline-group .tabular tr.has_original td {
+    padding-top: 1em !important;
+}
+
+.last-upload, .new-upload {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-size: 18px;
+}
+
+.last-upload a {
+    color: #0D47A1;
+}
+
+.new-upload input[type='file'] {
+    width: 500px;
+    padding: 30px 20px;
+    border: 1px dashed grey;
+    margin-left: 10px;
+
+}

@@ -1,0 +1,5 @@
+[MASTER]
+load-plugins=pylint_django
+ignore=requirements.txt, manage.py, Dockerfile, static, backend, requirements-docker.txt, pylintrc, locale
+[MESSAGES CONTROL]
+disable=missing-docstring,too-many-locals,multiple-statements,invalid-name,no-self-use,unused-wildcard-import,line-too-long,invalid-name,no-member,redefined-builtin,duplicate-code,attribute-defined-outside-init,undefined-all-variable,protected-access,eval-used,arguments-differ,too-many-ancestors,too-few-public-methods,wildcard-import
