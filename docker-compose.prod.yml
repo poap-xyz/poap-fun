@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  web:
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  nginx:
+    environment:
+      REACT_DEFAULT_HOST: 'poap.fun'
+      API_DEFAULT_HOST: 'api.poap.fun'
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  postgres:
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

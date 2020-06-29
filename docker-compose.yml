@@ -1,4 +1,4 @@
-version: "2"
+version: "3.8"
 
 services:
   web:
@@ -49,9 +49,6 @@ services:
     restart: always
     build: ./nginx
     container_name: poap-fun-nginx
-    environment:
-      REACT_DEFAULT_HOST: 'localhost'
-      API_DEFAULT_HOST: 'api.localhost'
     ports:
       - "80:80"
       - "443:443"
@@ -83,7 +80,7 @@ services:
   redis:
     restart: always
     image: redis:latest
-    container_name: r-redis
+    container_name: poap-fun-redis
     ports:
       - "6382:6379"
     volumes:
@@ -130,6 +127,7 @@ services:
     command: celery beat --app=backend -s /tmp/celerybeat-schedule --pid=/tmp/celery.pid --loglevel=DEBUG
     networks:
       - back-tier
+
 volumes:
   pgdata:
   mediadata:
