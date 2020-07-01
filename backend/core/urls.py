@@ -5,8 +5,8 @@ from . import views
 
 
 router = DefaultRouter()
-router.register(r'users', views.UserViewSet, base_name='users'),
-router.register(r'groups', views.GroupViewSet, base_name='groups')
+router.register(r'users', views.UserViewSet, basename='users'),
+router.register(r'groups', views.GroupViewSet, basename='groups')
 
 urlpatterns = [
     url(r'^login/refresh/$', refresh_jwt_token),
