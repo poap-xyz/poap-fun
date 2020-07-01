@@ -39,14 +39,17 @@ class Raffle(TimeStampedModel):
 
     @property
     def active(self):
-        return utc.now < self.raffle_datetime
+        return utc.now < self.draw_datetime
 
     def verify_token(self, raw_token):
-        return check_password(raw_token, self.raffle_token)
+        # leverage django's hashing implementations
+        return check_password(raw_token, self.token)
 
     def save(self, **kwargs):
+        # if the object does not have the id, then we are
+        # creating and not saving, thus we hash the token
         if not self.id:
-            self.raffle_token = make_password(self.raffle_token)
+            self.token = make_password(self.token)
         super().save(**kwargs)
 
 
