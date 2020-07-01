@@ -1,4 +1,4 @@
-version: "3.8"
+version: "2"
 
 services:
   web:
@@ -19,7 +19,6 @@ services:
       - mediadata:/usr/src/app/media
     env_file: .env
     environment:
-      DEBUG: 'true'
       VIRTUAL_HOST: 'backend'
     command: /usr/local/bin/gunicorn backend.wsgi:application -w 4 -b 0.0.0.0:8000 --reload --log-level debug
     stdin_open: true
@@ -93,18 +92,17 @@ services:
     build: ./backend
     image: webworkerimage
     working_dir: /usr/src/app
+    command: celery worker --app=backend --maxtasksperchild 10 -E --loglevel=DEBUG
     container_name: poap-fun-celeryworker
     volumes:
       - mediadata:/usr/src/app/media
       - ./backend:/usr/src/app
     env_file: .env
     environment:
-      DEBUG: 'true'
       C_FORCE_ROOT: 'yes'
     depends_on:
       - postgres
       - redis
-    command: celery worker --app=backend --maxtasksperchild 10 -E --loglevel=DEBUG
     networks:
       - back-tier
 
@@ -115,11 +113,9 @@ services:
     working_dir: /usr/src/app
     container_name: poap-fun-celerybeat
     volumes:
-      - /usr/src/app
       - ./backend:/usr/src/app
     env_file: .env
     environment:
-      DEBUG: 'true'
       C_FORCE_ROOT: 'yes'
     depends_on:
       - postgres
