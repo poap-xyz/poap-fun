@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django_filters',
     'solo',
     'celery',
+    'drf_yasg',
 
 ]
 
@@ -201,3 +202,43 @@ CELERY_ENABLE_UTC = True
 
 from .celery_beat_schedule import beat_schedule
 CELERY_BEAT_SCHEDULE = beat_schedule
+
+# Logging
+from django.utils.log import DEFAULT_LOGGING
+LOGLEVEL = os.getenv('LOGLEVEL', 'info').upper()
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '[%(asctime)s] [%(levelname)s] %(message)s'
+        },
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+        # # Add Handler for Sentry for `warning` and above
+        # 'sentry': {
+        #     'level': 'WARNING',
+        #     'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        # },
+        'django.server': DEFAULT_LOGGING['handlers']['django.server']
+    },
+    'loggers': {
+        # root logger
+        '': {
+            'level': 'WARNING',
+            'handlers': ['console'],
+        },
+        'app': {
+            'level': 'INFO',
+            'handlers': ['console'],
+            # required to avoid double logging with root logger
+            'propagate': False,
+        },
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
+    },
+}

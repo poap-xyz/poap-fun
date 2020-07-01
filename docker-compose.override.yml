@@ -1,0 +1,16 @@
+version: "2"
+
+services:
+  web:
+    environment:
+      DEBUG: 'true'
+  nginx:
+    environment:
+      REACT_DEFAULT_HOST: 'localhost'
+      API_DEFAULT_HOST: 'api.localhost'
+  celeryworker:
+    environment:
+      DEBUG: 'true'
+  celerybeat:
+    environment:
+      DEBUG: 'true'

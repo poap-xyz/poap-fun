@@ -19,7 +19,6 @@ services:
       - mediadata:/usr/src/app/media
     env_file: .env
     environment:
-      DEBUG: 'true'
       VIRTUAL_HOST: 'backend'
     command: /usr/local/bin/gunicorn backend.wsgi:application -w 4 -b 0.0.0.0:8000 --reload --log-level debug
     stdin_open: true
@@ -49,9 +48,6 @@ services:
     restart: always
     build: ./nginx
     container_name: poap-fun-nginx
-    environment:
-      REACT_DEFAULT_HOST: 'localhost'
-      API_DEFAULT_HOST: 'api.localhost'
     ports:
       - "80:80"
       - "443:443"
@@ -79,10 +75,11 @@ services:
       - pgdata:/var/lib/postgresql/data/
     networks:
       - back-tier
+
   redis:
     restart: always
     image: redis:latest
-    container_name: r-redis
+    container_name: poap-fun-redis
     ports:
       - "6382:6379"
     volumes:
@@ -95,18 +92,17 @@ services:
     build: ./backend
     image: webworkerimage
     working_dir: /usr/src/app
+    command: celery worker --app=backend --maxtasksperchild 10 -E --loglevel=DEBUG
     container_name: poap-fun-celeryworker
     volumes:
       - mediadata:/usr/src/app/media
       - ./backend:/usr/src/app
     env_file: .env
     environment:
-      DEBUG: 'true'
       C_FORCE_ROOT: 'yes'
     depends_on:
       - postgres
       - redis
-    command: celery worker --app=backend --maxtasksperchild 10 -E --loglevel=DEBUG
     networks:
       - back-tier
 
@@ -117,11 +113,9 @@ services:
     working_dir: /usr/src/app
     container_name: poap-fun-celerybeat
     volumes:
-      - /usr/src/app
       - ./backend:/usr/src/app
     env_file: .env
     environment:
-      DEBUG: 'true'
       C_FORCE_ROOT: 'yes'
     depends_on:
       - postgres
@@ -129,6 +123,7 @@ services:
     command: celery beat --app=backend -s /tmp/celerybeat-schedule --pid=/tmp/celery.pid --loglevel=DEBUG
     networks:
       - back-tier
+
 volumes:
   pgdata:
   mediadata:

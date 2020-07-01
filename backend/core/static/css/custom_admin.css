@@ -1,5 +1,5 @@
 #header {
-    background: #00104c;
+    background: white;
     color: white;
 }
 
@@ -10,7 +10,7 @@
 }
 
 #branding h1, #branding h1 a:link, #branding h1 a:visited {
-    color: white;
+    color: #6534FF;
     font-weight: bold;
     font-size: 26px;
     font-family: Arial, sans-serif;
@@ -22,27 +22,27 @@
 }
 
 .module h2, .module caption, .inline-group h2 {
-    background: #00104c;
+    background: #6534FF;
 }
 
 .selector-chosen h2 {
-    background: #00104c !important;
+    background: #6534FF !important;
 }
 
 .button, input[type=submit], input[type=button], .submit-row input, a.button {
-    background: #00104c;
+    background: #6534FF;
 }
 
 .button.default, input[type=submit].default, .submit-row input.default {
-    background: #00104c;
+    background: #6534FF;
 }
 
 .button.default:active, input[type=submit].default:active, .button.default:focus, input[type=submit].default:focus, .button.default:hover, input[type=submit].default:hover {
-    background: #00104c;
+    background: #6534FF;
 }
 
 .object-tools a:focus, .object-tools a:hover {
-    background: #00104c;
+    background: #6534FF;
 }
 
 .button:active, input[type=submit]:active, input[type=button]:active, .button:focus, input[type=submit]:focus, input[type=button]:focus, .button:hover, input[type=submit]:hover, input[type=button]:hover {
@@ -50,8 +50,8 @@
 }
 
 div.breadcrumbs {
-    background: #00104c;
-    color: white;
+    background: white;
+    color: #6534FF;
     padding-left: 20px;
     margin: 20px 20px 0;
 }
@@ -79,7 +79,7 @@ a:link, a:visited {
 }
 
 .last-upload a {
-    color: #0D47A1;
+    color: #6534FF;
 }
 
 .new-upload input[type='file'] {
@@ -88,4 +88,16 @@ a:link, a:visited {
     border: 1px dashed grey;
     margin-left: 10px;
 
+}
+
+#user-tools {
+    color: #6534FF;
+}
+
+#header a:link, #hea    der a:visited {
+    color: #6534FF;
+
+}
+#header a:hover {
+    border-bottom-color: #FCCDD3;
 }
