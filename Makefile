@@ -161,4 +161,4 @@ clean-nginx-conf:
 	rm -f nginx/sites-enabled/nginx.conf
 
 deploy:clean-nginx-conf
-	make clean build up set-django FILE=docker-compose.yml
+	make clean build up set-django
