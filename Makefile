@@ -12,14 +12,9 @@ ENV_STAGE = ``
 build:
 	docker-compose -f $(FILE) build
 
-loadinitialdb:
-	docker exec $(WEB) /bin/sh -c "python manage.py loaddata fixtures/initial/*.json"
-
-loadtestdb: loadinitialdb
-	docker exec $(WEB) /bin/sh -c "python manage.py loaddata fixtures/testing/*.json"
 
 up:
-	docker-compose -f $(FILE) up -d web nginx postgres node celeryworker celerybeat redis
+	docker-compose -f $(FILE) up -d
 
 start:
 	docker-compose -f $(FILE) start
