@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django_filters',
     'solo',
     'celery',
+    'drf_yasg',
 
 ]
 

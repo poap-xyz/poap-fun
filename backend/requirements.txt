@@ -29,3 +29,6 @@ pylint==2.5.3
 pylint-django==2.0.4
 Pillow==5.2.0
 factory-boy==2.12
+
+# dev requirements
+drf-yasg==1.17.1
