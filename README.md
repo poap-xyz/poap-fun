@@ -9,10 +9,27 @@
 </div>
 
 ## Intro
-Add project description
+Poap Fun is a raffle web app supported by the Proof of Attendance Protocol (POAP)
 
 ## Features
 Add project features
+
+## Container Architecture
+The project is built with docker containers, maintaining different parts of the application independent of eachother. In the following sections each container will be briefely described. If your are looking to run the containers please see the deployment section.
+### Nginx
+Provides a simple web proxy to distinguish subdomains and route to appropriate servers.
+### Web
+Django application running the API
+### Node
+Contains Node app serving the React frontend
+### postgres
+Contains the database which backs the Django application
+### redis
+Used as a message broker for celery queues
+### celeryworker
+Runs the celery tasks dispatched from the Django application
+### celerybeat
+Runs the beat schedule configured by the Django application
 
 ## Deployment
 ### Prerequisites
