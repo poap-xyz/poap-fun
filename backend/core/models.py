@@ -21,7 +21,7 @@ class User(AbstractUser):
     profile_image = models.URLField(max_length=200, null=True, blank=True, default=None)
 
 
-class Raffle(models.Model):
+class Raffle(TimeStampedModel):
     """
     Represents a raffle.
     """
@@ -34,8 +34,8 @@ class Raffle(models.Model):
     description = models.TextField(_('description'))
     contact = models.EmailField(_('contact email'))
     # all raffle dates MUST be in UTC TODO find a way to enforce this invariant
-    raffle_datetime = models.DateTimeField(_('raffle date and time'))
-    raffle_token = models.CharField(_('raffle token'), max_length=256, editable=False)
+    draw_datetime = models.DateTimeField(_('raffle date and time'))
+    token = models.CharField(_('raffle token'), max_length=256, editable=False)
 
     @property
     def active(self):
@@ -50,7 +50,7 @@ class Raffle(models.Model):
         super().save(**kwargs)
 
 
-class Prize(models.Model):
+class Prize(TimeStampedModel):
     """
     Represents the price to be won in a raffle.
     """
@@ -59,11 +59,11 @@ class Prize(models.Model):
         verbose_name = _('prize')
         verbose_name_plural = _('prizes')
 
-    prize_name = models.CharField(_('prize name'), max_length=255)
+    name = models.CharField(_('prize name'), max_length=255)
     raffle = models.ForeignKey(Raffle, verbose_name='raffle', related_name='prizes', on_delete=models.PROTECT)
 
 
-class RafflePOAP(models.Model):
+class RafflePOAP(TimeStampedModel):
     """
     Explicit many to many relationship mapping table between a raffle and it's required poaps.
     """
@@ -80,7 +80,7 @@ class RafflePOAP(models.Model):
     )
 
 
-class POAP(models.Model):
+class POAP(TimeStampedModel):
     """
     Represents a valid poap that can be required by a raffle.
     """
