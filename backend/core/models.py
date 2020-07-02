@@ -31,12 +31,12 @@ class Raffle(TimeStampedModel):
     """
 
     class Meta:
-        verbose_name = _('raffle')
-        verbose_name_plural = _('raffles')
+        verbose_name = _("raffle")
+        verbose_name_plural = _("raffles")
 
-    name = models.CharField(_('name'), max_length=256)
-    description = models.TextField(_('description'))
-    contact = models.EmailField(_('contact email'))
+    name = models.CharField(_("name"), max_length=256)
+    description = models.TextField(_("description"))
+    contact = models.EmailField(_("contact email"))
     # all raffle dates MUST be in UTC TODO find a way to enforce this invariant
     draw_datetime = models.DateTimeField(_("raffle's draw date and time"))
     end_datetime = models.DateTimeField(_("raffle's end date and time"))
@@ -59,6 +59,12 @@ class Raffle(TimeStampedModel):
             self.token = make_password(self.token)
         super().save(**kwargs)
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"Raffle(id: {self.id}, name: {self.name})"
+
 
 class Prize(TimeStampedModel):
     """
@@ -69,8 +75,8 @@ class Prize(TimeStampedModel):
         verbose_name = _('prize')
         verbose_name_plural = _('prizes')
 
-    name = models.CharField(_('prize name'), max_length=255)
-    raffle = models.ForeignKey(Raffle, verbose_name='raffle', related_name='prizes', on_delete=models.PROTECT)
+    def __repr__(self):
+        return f"Prize(id: {self.id}, name: {self.name}, raffle: {self.raffle})"
 
 
 class RafflePOAP(TimeStampedModel):
@@ -79,25 +85,31 @@ class RafflePOAP(TimeStampedModel):
     """
 
     class Meta:
-        verbose_name = _('raffle poap')
-        verbose_name_plural = _('raffle poaps')
+        verbose_name = _("raffle poap")
+        verbose_name_plural = _("raffle poaps")
 
     raffle = models.ForeignKey(
-        Raffle, verbose_name=_('raffle'), related_name='raffle_poaps', editable=False, on_delete=models.PROTECT
+        Raffle, verbose_name=_("raffle"), related_name="raffle_poaps", editable=False, on_delete=models.PROTECT
     )
     poap = models.ForeignKey(
-        Raffle, verbose_name=_('poap'), related_name='poap_raffles', editable=False, on_delete=models.PROTECT
+        Raffle, verbose_name=_("poap"), related_name="poap_raffles", editable=False, on_delete=models.PROTECT
     )
 
+    def __str__(self):
+        return f"RafflePoap(id: {self.id},raffle: {self.raffle}, poap:{self.poap})"
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Event(TimeStampedModel):
     """
     Represents a valid poap that can be required by a raffle.
     """
+
     class Meta:
-        verbose_name = _('poap')
-        verbose_name_plural = _('poaps')
+        verbose_name = _("poap")
+        verbose_name_plural = _("poaps")
 
     # represents the poap identifier for the POAP API
     poap_id = models.CharField(_('poap id'), max_length=255, editable=False)
