@@ -48,7 +48,7 @@ class Raffle(TimeStampedModel):
 
     def verify_token(self, raw_token):
         logger.info(f"verifying token for {self.__repr__()}")
-        # leverage django"s hashing implementations
+        # leverage django's hashing implementations
         return check_password(raw_token, self.token)
 
     def save(self, **kwargs):
