@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='event_id',
-            field=models.CharField(default=1, editable=False, max_length=255, verbose_name='event id'),
+            field=models.CharField(default='1', editable=False, max_length=255, verbose_name='event id'),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -87,19 +87,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='participant',
             name='poap_id',
-            field=models.CharField(default=1, max_length=100, verbose_name='poap id'),
+            field=models.CharField(default='1', max_length=100, verbose_name='poap id'),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='raffle',
             name='one_address_one_vote',
-            field=models.BooleanField(default=1, verbose_name='one address one vote'),
+            field=models.BooleanField(default=True, verbose_name='one address one vote'),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='raffle',
             name='registration_deadline',
-            field=models.DateTimeField(default=True, verbose_name="raffle's registration deadline"),
+            field=models.DateTimeField(default='2020-07-02 15:04:44.440067', verbose_name="raffle's registration deadline"),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(
