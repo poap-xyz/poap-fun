@@ -120,5 +120,29 @@ class Event(TimeStampedModel):
         verbose_name_plural = _("poaps")
 
     # represents the poap identifier for the POAP API
-    poap_id = models.CharField(_('poap id'), max_length=255, editable=False)
+    poap_id = models.CharField(_("poap id"), max_length=255, editable=False)
 
+    def __str__(self):
+        return self.poap_id
+
+    def __repr__(self):
+        return f"Event(id: {self.id}, poap_id: {self.poap_id})"
+
+
+class Participant(TimeStampedModel):
+    """
+    Represents the participant in a raffle
+    """
+
+    class Meta:
+        verbose_name = _("participant")
+        verbose_name_plural = _("participants")
+
+    address = models.CharField(_("address"), max_length=50)
+    raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.address
+
+    def __repr__(self):
+        return f"Participant(id: {self.id}, address: {self.address})"
