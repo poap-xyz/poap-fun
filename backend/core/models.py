@@ -38,8 +38,9 @@ class Raffle(TimeStampedModel):
     description = models.TextField(_('description'))
     contact = models.EmailField(_('contact email'))
     # all raffle dates MUST be in UTC TODO find a way to enforce this invariant
-    draw_datetime = models.DateTimeField(_('raffle date and time'))
-    token = models.CharField(_('raffle token'), max_length=256, editable=False)
+    draw_datetime = models.DateTimeField(_("raffle's draw date and time"))
+    end_datetime = models.DateTimeField(_("raffle's end date and time"))
+    token = models.CharField(_("raffle token"), max_length=256, editable=False)
 
     @property
     def active(self):
