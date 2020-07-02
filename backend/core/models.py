@@ -90,7 +90,8 @@ class RafflePOAP(TimeStampedModel):
     )
 
 
-class POAP(TimeStampedModel):
+
+class Event(TimeStampedModel):
     """
     Represents a valid poap that can be required by a raffle.
     """
