@@ -12,12 +12,14 @@ class RaffleTestCase(TestCase):
         self.description = 'raffle description'
         self.contact = 'test@email.com'
         self.draw_datetime = datetime.now()
+        self.end_datetime = datetime.now()
         self.token = 'token'
         self.raffle = Raffle.objects.create(
             name=self.name,
             description=self.description,
             contact=self.contact,
             draw_datetime=self.draw_datetime,
+            end_datetime=self.end_datetime,
             token=self.token,
         )
 
