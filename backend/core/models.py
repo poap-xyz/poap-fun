@@ -1,8 +1,12 @@
+import logging
+
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext as _
 from pytz import utc
+
+logger = logging.getLogger("app")
 
 
 class TimeStampedModel(models.Model):
@@ -42,13 +46,15 @@ class Raffle(TimeStampedModel):
         return utc.now < self.draw_datetime
 
     def verify_token(self, raw_token):
-        # leverage django's hashing implementations
+        logger.info(f"verifying token for {self.__repr__()}")
+        # leverage django"s hashing implementations
         return check_password(raw_token, self.token)
 
     def save(self, **kwargs):
         # if the object does not have the id, then we are
         # creating and not saving, thus we hash the token
         if not self.id:
+            logger.info(f"creating {self.__repr__()}")
             self.token = make_password(self.token)
         super().save(**kwargs)
 
