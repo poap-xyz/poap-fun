@@ -37,10 +37,14 @@ class Raffle(TimeStampedModel):
     name = models.CharField(_("name"), max_length=256)
     description = models.TextField(_("description"))
     contact = models.EmailField(_("contact email"))
+    token = models.CharField(_("raffle token"), max_length=256, editable=False)
     # all raffle dates MUST be in UTC TODO find a way to enforce this invariant
     draw_datetime = models.DateTimeField(_("raffle's draw date and time"))
     end_datetime = models.DateTimeField(_("raffle's end date and time"))
-    token = models.CharField(_("raffle token"), max_length=256, editable=False)
+    registration_deadline = models.DateTimeField(_("raffle's registration deadline"))
+    # if true, no matter how many poaps the address has, it counts as one vote.
+    # if false, each of the address's poaps counts as a vote
+    one_address_one_vote = models.BooleanField(_("one address one vote"))
 
     @property
     def active(self):
@@ -87,46 +91,48 @@ class Prize(TimeStampedModel):
         return f"Prize(id: {self.id}, name: {self.name}, raffle: {self.raffle})"
 
 
-class RafflePOAP(TimeStampedModel):
+class Event(TimeStampedModel):
     """
-    Explicit many to many relationship mapping table between a raffle and it's required poaps.
+    Represents a valid event that can be required by a raffle.
     """
 
     class Meta:
-        verbose_name = _("raffle poap")
-        verbose_name_plural = _("raffle poaps")
+        verbose_name = _("event")
+        verbose_name_plural = _("events")
+
+    # represents the event identifier for the POAP API
+    event_id = models.CharField(_("event id"), max_length=255, editable=False)
+    # For internal and debugging use only
+    name = models.CharField(_("name"), max_length=256)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"Event(id: {self.id}, event_id: {self.event_id}, name:{self.name})"
+
+
+class RaffleEvent(TimeStampedModel):
+    """
+    Explicit many to many relationship mapping table between a raffle and it's required events.
+    """
+
+    class Meta:
+        verbose_name = _("raffle event")
+        verbose_name_plural = _("raffle events")
 
     raffle = models.ForeignKey(
-        Raffle, verbose_name=_("raffle"), related_name="raffle_poaps", editable=False, on_delete=models.PROTECT
+        Raffle, verbose_name=_("raffle"), related_name="raffle_events", editable=False, on_delete=models.PROTECT
     )
-    poap = models.ForeignKey(
-        Raffle, verbose_name=_("poap"), related_name="poap_raffles", editable=False, on_delete=models.PROTECT
+    event = models.ForeignKey(
+        Event, verbose_name=_("event"), related_name="event_raffles", editable=False, on_delete=models.PROTECT
     )
 
     def __str__(self):
-        return f"RafflePoap(id: {self.id},raffle: {self.raffle}, poap:{self.poap})"
+        return f"RafflePoap(id: {self.id},raffle: {self.raffle}, event:{self.event})"
 
     def __repr__(self):
         return self.__str__()
-
-
-class Event(TimeStampedModel):
-    """
-    Represents a valid poap that can be required by a raffle.
-    """
-
-    class Meta:
-        verbose_name = _("poap")
-        verbose_name_plural = _("poaps")
-
-    # represents the poap identifier for the POAP API
-    poap_id = models.CharField(_("poap id"), max_length=255, editable=False)
-
-    def __str__(self):
-        return self.poap_id
-
-    def __repr__(self):
-        return f"Event(id: {self.id}, poap_id: {self.poap_id})"
 
 
 class Participant(TimeStampedModel):
@@ -137,12 +143,93 @@ class Participant(TimeStampedModel):
     class Meta:
         verbose_name = _("participant")
         verbose_name_plural = _("participants")
+        unique_together = [["raffle", "poap_id"]]
 
     address = models.CharField(_("address"), max_length=50)
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
+    poap_id = models.CharField(_("poap id"), max_length=100)
 
     def __str__(self):
         return self.address
 
     def __repr__(self):
         return f"Participant(id: {self.id}, address: {self.address})"
+
+
+class ResultsTable(TimeStampedModel):
+    """
+    Represents the results from a raffle
+    """
+
+    class Meta:
+        verbose_name = _("results table")
+        verbose_name_plural = _("results tables")
+
+    raffle = models.ForeignKey(
+        Raffle, verbose_name=_("raffle"), related_name="result_table", on_delete=models.PROTECT, unique=True
+    )
+
+    def __str__(self):
+        return f"Results table for raffle {self.raffle}"
+
+    def __repr__(self):
+        return f"ResultsTable(raffle.id: {self.raffle.id})"
+
+
+class ResultsTableEntry(TimeStampedModel):
+    """
+    Represents a participant entry in the results table of a raffle
+    """
+
+    class Meta:
+        verbose_name = _("results table entry")
+        verbose_name_plural = _("results table entries")
+
+    participant = models.ForeignKey(
+        Participant, verbose_name=_("participant"), related_name="results_table_entries", on_delete=models.PROTECT
+    )
+    results_table = models.ForeignKey(
+        ResultsTable, verbose_name=_('results_table'), related_name="results_table_entries", on_delete=models.PROTECT
+    )
+    # The order for the table entry in which it was selected for
+    # the raffle. eg, 1 for first place, 2 for 2nd place etc...
+    order = models.IntegerField(_("order"))
+
+    def __str__(self):
+        return f"results table entry for table {self.results_table}, participant {self.participant}"
+
+    def __repr__(self):
+        return (
+            f"ResultsTableEntry("
+            f"id: {self.id}, participant: {self.participant}, results_table:{self.results_table}, order: {self.order}"
+            f")"
+        )
+
+
+class BlockData(TimeStampedModel):
+    """
+    Represents the block data used to draw the results of the raffle
+    """
+
+    class Meta:
+        verbose_name = _("block data")
+        verbose_name_plural = _("block data")
+
+    # the raffle in which this block was used
+    raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="blocks_data", on_delete=models.PROTECT)
+    # The order in which the block was used in the raffle
+    order = models.IntegerField(_("order"))
+
+    block_number = models.BigIntegerField(_("block number"))
+
+    # The block nonce may not fit in the DB, save the 64 least significant bits
+    nonce = models.BigIntegerField(_("block nonce"))
+
+    # the seed that was derived from the nonce (nonces often do not fit in integers)
+    seed = models.IntegerField(_("seed"), null=True, blank=True)
+
+    def __str__(self):
+        return f"Block data N°{self.order} for {self.raffle}"
+
+    def __repr__(self):
+        return f"BlockData(id: {self.id}, raffle: {self.raffle}, raffle_id: {self.raffle.id})"
