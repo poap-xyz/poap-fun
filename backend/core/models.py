@@ -72,8 +72,16 @@ class Prize(TimeStampedModel):
     """
 
     class Meta:
-        verbose_name = _('prize')
-        verbose_name_plural = _('prizes')
+        verbose_name = _("prize")
+        verbose_name_plural = _("prizes")
+
+    name = models.CharField(_("prize name"), max_length=255)
+    raffle = models.ForeignKey(Raffle, verbose_name="raffle", related_name="prizes", on_delete=models.PROTECT)
+    # The order in which the prize is ranked eg. First prize, Second price and so on
+    order = models.IntegerField(_("order"))
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return f"Prize(id: {self.id}, name: {self.name}, raffle: {self.raffle})"
