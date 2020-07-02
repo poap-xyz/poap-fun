@@ -6,6 +6,8 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from pytz import utc
 
+from core.validators import validate_image_size
+
 logger = logging.getLogger("app")
 
 
@@ -25,6 +27,27 @@ class User(AbstractUser):
     profile_image = models.URLField(max_length=200, null=True, blank=True, default=None)
 
 
+class Event(TimeStampedModel):
+    """
+    Represents a valid event that can be required by a raffle.
+    """
+
+    class Meta:
+        verbose_name = _("event")
+        verbose_name_plural = _("events")
+
+    # represents the event identifier for the POAP API
+    event_id = models.CharField(_("event id"), max_length=255)
+    # For internal and debugging use only
+    name = models.CharField(_("name"), max_length=256)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"Event(id: {self.id}, event_id: {self.event_id}, name:{self.name})"
+
+
 class Raffle(TimeStampedModel):
     """
     Represents a raffle.
@@ -37,14 +60,15 @@ class Raffle(TimeStampedModel):
     name = models.CharField(_("name"), max_length=256)
     description = models.TextField(_("description"))
     contact = models.EmailField(_("contact email"))
-    token = models.CharField(_("raffle token"), max_length=256, editable=False)
+    token = models.CharField(_("raffle token"), max_length=256)
     # all raffle dates MUST be in UTC TODO find a way to enforce this invariant
     draw_datetime = models.DateTimeField(_("raffle's draw date and time"))
-    end_datetime = models.DateTimeField(_("raffle's end date and time"))
+    end_datetime = models.DateTimeField(_("raffle's end date and time"), null=True, blank=True)
     registration_deadline = models.DateTimeField(_("raffle's registration deadline"))
     # if true, no matter how many poaps the address has, it counts as one vote.
     # if false, each of the address's poaps counts as a vote
     one_address_one_vote = models.BooleanField(_("one address one vote"))
+    events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
 
     @property
     def active(self):
@@ -91,27 +115,6 @@ class Prize(TimeStampedModel):
         return f"Prize(id: {self.id}, name: {self.name}, raffle: {self.raffle})"
 
 
-class Event(TimeStampedModel):
-    """
-    Represents a valid event that can be required by a raffle.
-    """
-
-    class Meta:
-        verbose_name = _("event")
-        verbose_name_plural = _("events")
-
-    # represents the event identifier for the POAP API
-    event_id = models.CharField(_("event id"), max_length=255, editable=False)
-    # For internal and debugging use only
-    name = models.CharField(_("name"), max_length=256)
-
-    def __str__(self):
-        return self.name
-
-    def __repr__(self):
-        return f"Event(id: {self.id}, event_id: {self.event_id}, name:{self.name})"
-
-
 class RaffleEvent(TimeStampedModel):
     """
     Explicit many to many relationship mapping table between a raffle and it's required events.
@@ -120,12 +123,13 @@ class RaffleEvent(TimeStampedModel):
     class Meta:
         verbose_name = _("raffle event")
         verbose_name_plural = _("raffle events")
+        unique_together = [["raffle", "event"]]
 
     raffle = models.ForeignKey(
-        Raffle, verbose_name=_("raffle"), related_name="raffle_events", editable=False, on_delete=models.PROTECT
+        Raffle, verbose_name=_("raffle"), related_name="raffle_events", on_delete=models.CASCADE
     )
     event = models.ForeignKey(
-        Event, verbose_name=_("event"), related_name="event_raffles", editable=False, on_delete=models.PROTECT
+        Event, verbose_name=_("event"), related_name="event_raffles", on_delete=models.CASCADE
     )
 
     def __str__(self):
@@ -165,7 +169,7 @@ class ResultsTable(TimeStampedModel):
         verbose_name = _("results table")
         verbose_name_plural = _("results tables")
 
-    raffle = models.ForeignKey(
+    raffle = models.OneToOneField(
         Raffle, verbose_name=_("raffle"), related_name="result_table", on_delete=models.PROTECT, unique=True
     )
 
@@ -233,3 +237,10 @@ class BlockData(TimeStampedModel):
 
     def __repr__(self):
         return f"BlockData(id: {self.id}, raffle: {self.raffle}, raffle_id: {self.raffle.id})"
+
+
+class TextEditorImage(TimeStampedModel):
+    """
+    Represents the image uploaded by Tiny MCE
+    """
+    location = models.ImageField(upload_to='text_editor_images/', validators=[validate_image_size])

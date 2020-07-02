@@ -45,3 +45,18 @@ class CustomUserAdmin(UserAdmin):
             }
         ),
     )
+
+
+@admin.register(Raffle)
+class RaffleAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Prize)
+class PrizeAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    pass

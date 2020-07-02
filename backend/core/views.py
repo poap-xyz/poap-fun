@@ -1,22 +1,25 @@
+import os
 from datetime import datetime
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import Group
+from rest_framework.parsers import FileUploadParser
 
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.serializers import JSONWebTokenSerializer
 from rest_framework_jwt.settings import api_settings
-from rest_framework_jwt.views import JSONWebTokenAPIView
+from rest_framework_jwt.views import JSONWebTokenAPIView, APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.filters import OrderingFilter
 from rest_framework import status, viewsets
 from django_filters import rest_framework as filters
 
+from backend import settings
 from core.filters import UserFilter
-from core.models import User
+from core.models import User, Raffle
 
-from .serializers import UserSerializer, GroupSerializer
+from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer
 
 
 class CustomObtainJSONWebToken(JSONWebTokenAPIView):
@@ -100,3 +103,23 @@ class GroupViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', ]
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+
+class RaffleViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Raffle.objects.all()
+    serializer_class = RaffleSerializer
+
+
+class TextEditorImageView(APIView):
+    permission_classes = [AllowAny]
+
+    parser_class = (FileUploadParser,)
+
+    def post(self, request):
+        image_serializer = TextEditorImageSerializer(data=request.data)
+        if image_serializer.is_valid():
+            image_serializer.save()
+            return Response(image_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
