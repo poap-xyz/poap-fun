@@ -112,7 +112,6 @@ class RaffleSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        print(validated_data)
         prizes_data = validated_data.pop("prizes")
         events_data = validated_data.pop("events")
         raffle = Raffle.objects.create(**validated_data)
