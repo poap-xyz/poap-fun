@@ -7,9 +7,13 @@ from . import views
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet, basename='users'),
 router.register(r'groups', views.GroupViewSet, basename='groups')
+router.register(r'raffles', views.RaffleViewSet, basename='raffles')
+router.register(r'events', views.EventViewSet, basename='events')
+router.register(r'prizes', views.PrizeViewSet, basename='prizes')
 
 urlpatterns = [
     url(r'^login/refresh/$', refresh_jwt_token),
     url(r'^login/$', views.CustomObtainJSONWebToken.as_view()),
+    url(r'^raffle/image$', views.TextEditorImageView.as_view()),
 ]
 urlpatterns += router.urls
