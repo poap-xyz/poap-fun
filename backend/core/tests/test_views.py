@@ -39,7 +39,6 @@ class TestRaffleAPIView:
         )
         response_content = json.loads(response.content)
         token = response_content.get("token")
-        print(f"in_test_raffle_update {token}")
 
         raffle_edit_url = reverse("raffles-detail", kwargs={"id": response_content.get("id")})
 

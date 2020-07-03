@@ -7,8 +7,6 @@ class RaffleTokenPermission(permissions.BasePermission):
     """
     def has_object_permission(self, request, view, obj):
         raffle_token = request.headers.get("Authorization", None)
-        print(f"request headers are: {request.headers}")
-        print(f"raffle token in permission class {raffle_token}")
         is_valid = False
 
         try:

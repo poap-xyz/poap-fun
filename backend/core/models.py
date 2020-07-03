@@ -81,7 +81,6 @@ class Raffle(TimeStampedModel):
         return utc.now < self.draw_datetime
 
     def is_valid_token(self, raw_token):
-        print(raw_token)
         logger.info(f"verifying token for {self.__repr__()}")
         # leverage django's hashing implementations
         return check_password(raw_token, self.token)
