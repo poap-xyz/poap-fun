@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from pytz import utc
 
+from core.utils import generate_unique_filename
 from core.validators import validate_image_size
 
 logger = logging.getLogger("app")
@@ -239,8 +240,10 @@ class BlockData(TimeStampedModel):
         return f"BlockData(id: {self.id}, raffle: {self.raffle}, raffle_id: {self.raffle.id})"
 
 
+
 class TextEditorImage(TimeStampedModel):
     """
     Represents the image uploaded by Tiny MCE
     """
-    location = models.ImageField(upload_to='text_editor_images/', validators=[validate_image_size])
+
+    location = models.ImageField(upload_to=generate_unique_filename('text_editor_images/'), validators=[validate_image_size])
