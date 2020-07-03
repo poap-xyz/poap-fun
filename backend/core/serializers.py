@@ -84,10 +84,6 @@ class PrizeSerializer(serializers.ModelSerializer):
         model = Prize
         fields = ["name", "order"]
 
-    def validate(self, data):
-        print(data)
-        return data
-
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
