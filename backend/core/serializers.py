@@ -99,12 +99,13 @@ class EventSerializer(serializers.ModelSerializer):
 class RaffleSerializer(serializers.ModelSerializer):
     prizes = PrizeSerializer(many=True)
     events = EventSerializer(many=True)
+    token = serializers.CharField(allow_blank=True, read_only=True, required=False, source="_token", default="")
 
     class Meta:
         model = Raffle
         fields = [
-            "name", "description", "contact", "draw_datetime", "end_datetime",
-            "registration_deadline", "one_address_one_vote", "prizes", "events"
+            "id", "name", "description", "contact", "draw_datetime", "end_datetime",
+            "registration_deadline", "one_address_one_vote", "prizes", "events", "token"
         ]
 
     def create(self, validated_data):
