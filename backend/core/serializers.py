@@ -127,6 +127,17 @@ class RaffleSerializer(serializers.ModelSerializer):
             RaffleEvent.objects.create(event=event, raffle=raffle)
         return raffle
 
+    def update(self, instance, validated_data):
+        prizes_data = validated_data.pop("prizes", None)
+        events_data = validated_data.pop("events", None)
+        if prizes_data and events_data:
+            raise ValidationError("cannot modify prizes or events through a raffle, use their respective resources")
+        if prizes_data:
+            raise ValidationError("cannot modify prizes through a raffle, use the prize resource")
+        if events_data:
+            raise ValidationError("cannot modify events through a raffle, use the event resource")
+        return super(RaffleSerializer, self).update(instance, validated_data)
+
 
 class TextEditorImageSerializer(serializers.ModelSerializer):
     class Meta:
