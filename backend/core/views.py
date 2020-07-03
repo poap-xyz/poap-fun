@@ -17,9 +17,9 @@ from django_filters import rest_framework as filters
 
 from backend import settings
 from core.filters import UserFilter
-from core.models import User, Raffle
+from core.models import User, Raffle, Event
 
-from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer
+from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer, EventSerializer
 
 
 class CustomObtainJSONWebToken(JSONWebTokenAPIView):
@@ -105,10 +105,18 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 
+class EventViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    lookup_field = 'id'
+
+
 class RaffleViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Raffle.objects.all()
     serializer_class = RaffleSerializer
+    lookup_field = 'id'
 
 
 class TextEditorImageView(APIView):
