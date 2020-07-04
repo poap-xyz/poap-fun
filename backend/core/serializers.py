@@ -82,13 +82,13 @@ class UserSerializer(serializers.ModelSerializer):
 class PrizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prize
-        fields = ["name", "order"]
+        fields = ["id", "name", "order"]
 
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ["event_id", "name"]
+        fields = ["id", "event_id", "name"]
 
     def validate(self, data):
         if not valid_poap_event(data):
