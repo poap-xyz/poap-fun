@@ -94,10 +94,10 @@ a:link, a:visited {
     color: #6534FF;
 }
 
-#header a:link, #header a:visited {
+#header a:link, #header a:visited, div.breadcrumbs a{
     color: #6534FF;
 
 }
-#header a:hover {
+#header a:hover, div.breadcrumbs a:hover {
     border-bottom-color: #FCCDD3;
 }

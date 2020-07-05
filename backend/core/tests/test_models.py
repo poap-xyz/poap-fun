@@ -13,15 +13,18 @@ class RaffleTestCase(TestCase):
         self.contact = 'test@email.com'
         self.draw_datetime = datetime.now()
         self.end_datetime = datetime.now()
-        self.token = 'token'
+        self.one_address_one_vote = True
+        self.registration_deadline = datetime.now()
         self.raffle = Raffle.objects.create(
             name=self.name,
             description=self.description,
             contact=self.contact,
             draw_datetime=self.draw_datetime,
             end_datetime=self.end_datetime,
-            token=self.token,
+            one_address_one_vote=self.one_address_one_vote,
+            registration_deadline=self.registration_deadline
         )
+        self.token = self.raffle._token
 
     def test_hash_token(self):
         """
@@ -33,7 +36,7 @@ class RaffleTestCase(TestCase):
         """
         Test that the hash verification mechanism works
         """
-        assert self.raffle.verify_token(self.token)
+        assert self.raffle.is_valid_token(self.token)
 
     def test_modification_integrity(self):
         """
@@ -41,5 +44,5 @@ class RaffleTestCase(TestCase):
         """
         self.raffle.description = 'new description'
         self.raffle.save()
-        assert self.raffle.verify_token(self.token)
+        assert self.raffle.is_valid_token(self.token)
 

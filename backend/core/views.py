@@ -18,6 +18,7 @@ from django_filters import rest_framework as filters
 from backend import settings
 from core.filters import UserFilter
 from core.models import User, Raffle, Event, Prize
+from .permissions import RaffleTokenPermission, PrizeRaffleTokenPermission
 
 from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer, EventSerializer, \
     PrizeSerializer
@@ -114,17 +115,33 @@ class EventViewSet(viewsets.ModelViewSet):
 
 
 class PrizeViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
     queryset = Prize.objects.all()
     serializer_class = PrizeSerializer
     lookup_field = 'id'
 
+    def get_permissions(self):
+        restricted_actions = ['update', 'partial_update', 'destroy']
+
+        if self.action in restricted_actions:
+            permission_classes = [PrizeRaffleTokenPermission]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
 
 class RaffleViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
     queryset = Raffle.objects.all()
     serializer_class = RaffleSerializer
     lookup_field = 'id'
+
+    def get_permissions(self):
+        restricted_actions = ['update', 'partial_update', 'destroy']
+
+        if self.action in restricted_actions:
+            permission_classes = [RaffleTokenPermission]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
 
 class TextEditorImageView(APIView):

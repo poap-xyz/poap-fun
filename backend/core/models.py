@@ -9,6 +9,9 @@ from pytz import utc
 from core.utils import generate_unique_filename
 from core.validators import validate_image_size
 
+from mnemonic import Mnemonic
+
+
 logger = logging.getLogger("app")
 
 
@@ -70,22 +73,33 @@ class Raffle(TimeStampedModel):
     # if false, each of the address's poaps counts as a vote
     one_address_one_vote = models.BooleanField(_("one address one vote"))
     events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
+    # used to store raw token to return after creation
+    _token = ''
 
     @property
     def active(self):
         return utc.now < self.draw_datetime
 
-    def verify_token(self, raw_token):
+    def is_valid_token(self, raw_token):
         logger.info(f"verifying token for {self.__repr__()}")
         # leverage django's hashing implementations
         return check_password(raw_token, self.token)
+
+    @staticmethod
+    def generate_token():
+        mnemo = Mnemonic("english")
+        raw_token = mnemo.generate(strength=128)
+        token = make_password(raw_token)
+        return raw_token, token
 
     def save(self, **kwargs):
         # if the object does not have the id, then we are
         # creating and not saving, thus we hash the token
         if not self.id:
             logger.info(f"creating {self.__repr__()}")
-            self.token = make_password(self.token)
+            raw_token, token = self.generate_token()
+            self._token = raw_token
+            self.token = token
         super().save(**kwargs)
 
     def __str__(self):
@@ -238,7 +252,6 @@ class BlockData(TimeStampedModel):
 
     def __repr__(self):
         return f"BlockData(id: {self.id}, raffle: {self.raffle}, raffle_id: {self.raffle.id})"
-
 
 
 class TextEditorImage(TimeStampedModel):

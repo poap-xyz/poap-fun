@@ -82,17 +82,13 @@ class UserSerializer(serializers.ModelSerializer):
 class PrizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prize
-        fields = ["name", "order"]
-
-    def validate(self, data):
-        print(data)
-        return data
+        fields = ["id", "name", "order"]
 
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ["event_id", "name"]
+        fields = ["id", "event_id", "name"]
 
     def validate(self, data):
         if not valid_poap_event(data):
@@ -103,12 +99,13 @@ class EventSerializer(serializers.ModelSerializer):
 class RaffleSerializer(serializers.ModelSerializer):
     prizes = PrizeSerializer(many=True)
     events = EventSerializer(many=True)
+    token = serializers.CharField(allow_blank=True, read_only=True, required=False, source="_token", default="")
 
     class Meta:
         model = Raffle
         fields = [
-            "name", "description", "contact", "draw_datetime", "end_datetime",
-            "registration_deadline", "one_address_one_vote", "prizes", "events"
+            "id", "name", "description", "contact", "draw_datetime", "end_datetime",
+            "registration_deadline", "one_address_one_vote", "prizes", "events", "token"
         ]
 
     def create(self, validated_data):
