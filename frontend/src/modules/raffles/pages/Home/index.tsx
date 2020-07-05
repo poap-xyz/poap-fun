@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
 
-// layouts
+// Layouts
 import MainLayout from 'ui/layouts/MainLayout';
 
-// components
-// import RegisterForm from 'modules/common/components/RegisterForm';
+// Components
+import Hero from 'ui/components/Hero';
 
 const Home: FC = () => (
   <MainLayout>
-    <h1>Home Page!!!</h1>
+    <Hero />
   </MainLayout>
 );
 

@@ -9,7 +9,7 @@ export const mainStyles = css`
     /* brand */
     --primary-color: #6534ff;
     --secondary-color: #94a0d4;
-    --tertiary-color: #d8d2ff;
+    --tertiary-color: #e98d9b;
     --dark-secondary-color: #4144d9;
     --light-violet: #f2f0ff;
 
@@ -149,18 +149,21 @@ export const mainStyles = css`
     color: var(--primary-color);
   }
 
+  h1 {
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 44px;
+  }
   h2 {
     font-weight: normal;
-    font-size: 36px;
-    line-height: 44px;
-    margin-bottom: 36px;
+    font-size: 24px;
+    line-height: 26px;
   }
 
   h3 {
     font-weight: normal;
     font-size: 16px;
     line-height: 24px;
-    margin-bottom: 32px;
   }
 
   h4 {
