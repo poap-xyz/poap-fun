@@ -1,0 +1,30 @@
+name: master workflow
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  deploy:
+    name: deploys
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Deploy recipe in AWS server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.TESTING_HOST }}
+          username: ${{ secrets.TESTING_USERNAME }}
+          key: ${{ secrets.TESTING_SERVER_PEM_KEY }}
+          port: ${{ secrets.TESTING_PORT }}
+          script: |
+            cd ~/poap-fun
+            docker system prune -f
+            git pull origin development
+            make deploy FILE=docker-compose.testing.yml
+      - name: Slack Notify
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: New testing release at at https://fun.xivis.com/
+          SLACK_USERNAME: cd-bot

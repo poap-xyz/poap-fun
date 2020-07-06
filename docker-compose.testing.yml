@@ -7,8 +7,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
   nginx:
     environment:
-      REACT_DEFAULT_HOST: 'dev.poap.fun'
-      API_DEFAULT_HOST: 'api-dev.poap.fun'
+      REACT_DEFAULT_HOST: 'fun.xivis.com'
+      API_DEFAULT_HOST: 'apifun.xivis.com'
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
