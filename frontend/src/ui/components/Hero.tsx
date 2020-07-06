@@ -16,7 +16,7 @@ const HeroWrap = styled.div`
   padding-top: 25px;
   .title {
     text-align: center;
-    padding: 100px 0 60px;
+    padding: 100px 24px 60px;
     h1 {
     }
     h2 {
