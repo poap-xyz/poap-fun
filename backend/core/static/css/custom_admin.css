@@ -1,12 +1,16 @@
 #header {
-    background: white;
+    background: #c6baee;
     color: white;
 }
 
 #header .logo {
-    width: 100px;
-    margin: 3px 0px 8px 0px;
-    border-radius: 4px 4px 4px 4px;
+    height: 40px;
+    margin: 0;
+    border-radius: 0;
+}
+
+.login #header .logo {
+    height: 100px;
 }
 
 #branding h1, #branding h1 a:link, #branding h1 a:visited {
@@ -14,11 +18,17 @@
     font-weight: bold;
     font-size: 26px;
     font-family: Arial, sans-serif;
+    margin: 0;
 }
 
 .login #header {
     height: auto;
     padding: 5px 16px 0 !important;
+}
+
+.login .submit-row {
+    padding: 0 !important;
+    text-align: center !important;
 }
 
 .module h2, .module caption, .inline-group h2 {
@@ -100,4 +110,6 @@ a:link, a:visited {
 }
 #header a:hover, div.breadcrumbs a:hover {
     border-bottom-color: #FCCDD3;
+    color: #6534FF;
+    font-weight: bold;
 }
