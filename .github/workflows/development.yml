@@ -21,10 +21,10 @@ jobs:
             cd ~/poap-fun
             docker system prune -f
             git pull origin development
-            make deploy FILE=docker-compose.testing.yml
+            make deploy COMPOSE_ENV=testing
       - name: Slack Notify
         uses: rtCamp/action-slack-notify@master
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: New testing release at at https://fun.xivis.com/
+          SLACK_MESSAGE: New testing release at https://fun.xivis.com/
           SLACK_USERNAME: cd-bot

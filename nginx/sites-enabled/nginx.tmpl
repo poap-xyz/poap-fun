@@ -97,7 +97,7 @@ server {
 
 server {
     listen 80;
-    server_name {{ $react_default_host }};
+    server_name {{ $react_default_host }} www.{{ $react_default_host }};
     charset utf-8;
 
     location / {
@@ -113,11 +113,6 @@ server {
 }
 
 {{ if eq $api_default_host "api.localhost" }}
-server {
-    server_name www.{{ $api_default_host }};
-    return 301 $scheme://{{ $api_default_host }}$request_uri;
-}
-
 server {
     listen 80 default_server;
     return 500;
