@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 import datetime
 from .local_settings import *
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'fake_key')
 DEBUG = True if os.getenv('DEBUG', 'true') == 'true' else False
 
 ADMINS = (
-    ('VonPix', 'info@vonpix.com'),
+    ('Xivis', 'info@xivis.com'),
 )
 
 
@@ -46,6 +48,9 @@ INSTALLED_APPS = [
     # Basic app
     'core',
 
+    # Backup
+    'django_azure_backup',
+
     # Third-party apps
     'rest_framework',
     'hijack',
@@ -62,10 +67,11 @@ INSTALLED_APPS = [
 if DEBUG:
     INSTALLED_APPS += ['rosetta']
 else:
-    INSTALLED_APPS += ['raven.contrib.django.raven_compat']
-    RAVEN_CONFIG = {
-        'dsn': 'https://bb3de6a27fa441a0a161763a02368d1d:6532db6fef23492eae22b929d02796f4@sentry.io/254318'
-    }
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_SDK", "https://xxxx.ingest.sentry.io/0000"),
+        integrations=[DjangoIntegration()],
+        send_default_pii=True
+    )
 
 
 # IMPORTANT - CUSTOM MODEL FOR USER

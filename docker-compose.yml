@@ -15,6 +15,7 @@ services:
       - celerybeat:celerybeat
     volumes:
       - ./backend:/usr/src/app
+      - ./backups:/usr/src/backups
       - /usr/src/app/static
       - mediadata:/usr/src/app/media
     env_file: .env

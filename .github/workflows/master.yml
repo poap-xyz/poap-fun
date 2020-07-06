@@ -1,9 +1,9 @@
-name: development workflow
+name: master workflow
 
 on:
   push:
     branches:
-      - development
+      - master
 
 jobs:
   deploy:
@@ -13,18 +13,18 @@ jobs:
       - name: Deploy recipe in AWS server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.TESTING_HOST }}
-          username: ${{ secrets.TESTING_USERNAME }}
-          key: ${{ secrets.TESTING_SERVER_PEM_KEY }}
-          port: ${{ secrets.TESTING_PORT }}
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USERNAME }}
+          key: ${{ secrets.PRODUCTION_SERVER_PEM_KEY }}
+          port: ${{ secrets.PRODUCTION_PORT }}
           script: |
             cd ~/poap-fun
             docker system prune -f
-            git pull origin development
-            make deploy COMPOSE_ENV=testing
+            git pull origin master
+            make deploy COMPOSE_ENV=production
       - name: Slack Notify
         uses: rtCamp/action-slack-notify@master
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: New testing release at https://fun.xivis.com/
+          SLACK_MESSAGE: New production release at https://poap.fun/
           SLACK_USERNAME: cd-bot
