@@ -1,5 +1,12 @@
 import { colors } from './colors';
 
+export const BREAKPOINTS = {
+  xs: '30em',
+  sm: '48em',
+  md: '62em',
+  lg: '80em',
+};
+
 const fontSizes = {
   xs: '12px',
   sm: '14px',
@@ -19,7 +26,7 @@ const fontWeights = {
   bold: 700,
 };
 
-const breakpoints = ['30em', '48em', '62em', '80em'];
+const breakpoints = [BREAKPOINTS.xs, BREAKPOINTS.sm, BREAKPOINTS.md, BREAKPOINTS.lg];
 
 const space = {
   px: '1px',

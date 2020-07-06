@@ -21,35 +21,8 @@ export const Layout = styled(AntdLayout)<LayoutProps>`
     }
 
     &-footer {
-      padding: 0;
+      padding: 24px;
       background: var(--system-white);
-    }
-
-    &-sider {
-      background: var(--system-white);
-      box-shadow: var(--box-shadow);
-
-      .logo {
-        padding: 50px 35px 40px;
-      }
-
-      .ant-menu {
-        border-right: 0 !important;
-
-        &-item {
-          padding-left: 48px !important;
-        }
-
-        &-item-selected {
-          &::after {
-            display: none !important;
-          }
-        }
-
-        &-submenu-title {
-          padding-left: 48px !important;
-        }
-      }
     }
 
     &-content {
@@ -58,4 +31,4 @@ export const Layout = styled(AntdLayout)<LayoutProps>`
   }
 `;
 
-export const { Header, Content } = (Layout as any).__emotion_base;
+export const { Header, Content, Footer } = (Layout as any).__emotion_base;

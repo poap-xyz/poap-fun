@@ -145,7 +145,7 @@ export const mainStyles = css`
   h4,
   h5,
   h6 {
-    font-family: var(--alt-font);
+    font-family: var(--main-font);
     color: var(--primary-color);
   }
 
