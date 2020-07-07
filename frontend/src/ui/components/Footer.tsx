@@ -7,16 +7,12 @@ import BuiltOnEth from 'ui/components/BuiltOnEth';
 import Community from 'ui/components/Community';
 import Credits from 'ui/components/Credits';
 import Logo from 'ui/components/Logo';
+import { Container } from 'ui/styled/Container';
 
 // Constants
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 const FooterWrap = styled.div`
-  @media (min-width: ${BREAKPOINTS.lg}) {
-    margin-right: auto;
-    margin-left: auto;
-    width: ${BREAKPOINTS.lg};
-  }
   .footer-table-row {
     display: flex;
     flex-direction: row;
@@ -55,20 +51,22 @@ const CreditsWrap = styled.div`
 
 const Footer: FC = () => (
   <FooterWrap>
-    <div className={'footer-table-row'}>
-      <div className={'footer-table-cell'}>
-        <a href={'https://www.poap.xyz'} target={'_blank'} rel="noopener noreferrer">
-          <Logo />
-        </a>
-        <BuiltOnEth />
+    <Container>
+      <div className={'footer-table-row'}>
+        <div className={'footer-table-cell'}>
+          <a href={'https://www.poap.xyz'} target={'_blank'} rel="noopener noreferrer">
+            <Logo />
+          </a>
+          <BuiltOnEth />
+        </div>
+        <div className={'footer-table-cell'}>
+          <Community />
+        </div>
       </div>
-      <div className={'footer-table-cell'}>
-        <Community />
-      </div>
-    </div>
-    <CreditsWrap>
-      <Credits />
-    </CreditsWrap>
+      <CreditsWrap>
+        <Credits />
+      </CreditsWrap>
+    </Container>
   </FooterWrap>
 );
 

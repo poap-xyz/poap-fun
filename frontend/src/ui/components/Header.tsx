@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 // Components
 import Logo from 'ui/components/Logo';
 import { Button } from 'ui/styled/antd/Button';
+import { Container } from 'ui/styled/Container';
 
 // Constants
 import { ROUTES } from 'lib/routes';
@@ -24,14 +25,8 @@ const HeaderWrap = styled.div`
   }
 
   .container {
-    width: 100%;
     display: flex;
     justify-content: space-between;
-    @media (min-width: ${BREAKPOINTS.lg}) {
-      margin-right: auto;
-      margin-left: auto;
-      width: ${BREAKPOINTS.lg};
-    }
   }
 `;
 
@@ -69,7 +64,7 @@ type HeaderProps = {
 
 const Header: FC<HeaderProps> = ({ isLoggedIn, isAvatar }) => (
   <HeaderWrap>
-    <div className={'container'}>
+    <Container className={'container'}>
       <BrandNav>
         <NavLink to={ROUTES.home}>
           <Logo />
@@ -81,7 +76,7 @@ const Header: FC<HeaderProps> = ({ isLoggedIn, isAvatar }) => (
           <Button type="primary">Create Raffle</Button>
         </NavLink>
       </Nav>
-    </div>
+    </Container>
   </HeaderWrap>
 );
 

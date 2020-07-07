@@ -24,13 +24,14 @@ export const mainStyles = css`
     --system-black: #000000;
     --system-gray: #eaedf4;
     --system-light-gray: #eaedf4;
-    --font-color: #8297ad;
+    --font-color: #4d5680;
     --separator-color: #e4ecf2;
     --btn-disabled: #f3f5f9;
     --label-input: #131d66;
     --picker-color: #5e768f;
     --input-color: #5e768f;
     --border-color: #b1becc;
+    --system-placeholder: #adbbcc;
 
     /* message */
     --msg-success: #0fab87;
