@@ -11,7 +11,6 @@ from core.utils import generate_unique_filename
 from core.validators import validate_image_size
 
 
-
 logger = logging.getLogger("app")
 
 
@@ -260,4 +259,4 @@ class TextEditorImage(TimeStampedModel):
     Represents the image uploaded by Tiny MCE
     """
 
-    file = models.ImageField(upload_to=generate_unique_filename('text_editor_images/'), validators=[validate_image_size])
+    file = models.ImageField(upload_to=generate_unique_filename, validators=[validate_image_size])

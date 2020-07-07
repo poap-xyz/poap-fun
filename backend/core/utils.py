@@ -1,5 +1,6 @@
 import datetime
 import os
+from django.utils.deconstruct import deconstructible
 
 
 # TODO implement check with poap API (check name and id
@@ -7,8 +8,13 @@ def valid_poap_event(poap_event):
     return True
 
 
-def generate_unique_filename(path):
-    def wrapper(instance, filename):
+@deconstructible
+class GenerateUniqueFilename(object):
+
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
         head, ext = os.path.splitext(filename)
         # get filename
         if instance.pk:
@@ -18,5 +24,8 @@ def generate_unique_filename(path):
             unix_epoch_millis = datetime.datetime.now().timestamp() * 1000000
             filename = f"{head}{unix_epoch_millis:.0f}{ext}"
         # return the whole path to the file
-        return os.path.join(path, filename)
-    return wrapper
+        return os.path.join(self.path, filename)
+
+
+generate_unique_filename = GenerateUniqueFilename('text_editor_images/')
+
