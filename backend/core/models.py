@@ -1,5 +1,7 @@
 import logging
 import random
+from datetime import datetime
+
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
@@ -73,6 +75,8 @@ class Raffle(TimeStampedModel):
     # if false, each of the address's poaps counts as a vote
     one_address_one_vote = models.BooleanField(_("one address one vote"))
     events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
+    # marked as true when all results have been generated for the raffle
+    finalized = models.BooleanField(_("finalized"), default=False)
     # used to store raw token to return after creation
     _token = ''
 
@@ -205,10 +209,10 @@ class ResultsTableEntry(TimeStampedModel):
         verbose_name_plural = _("results table entries")
 
     participant = models.ForeignKey(
-        Participant, verbose_name=_("participant"), related_name="results_table_entries", on_delete=models.PROTECT
-    )
+        Participant, verbose_name=_("participant"), related_name="entries", on_delete=models.PROTECT
+)
     results_table = models.ForeignKey(
-        ResultsTable, verbose_name=_('results_table'), related_name="results_table_entries", on_delete=models.PROTECT
+        ResultsTable, verbose_name=_('results_table'), related_name="entries", on_delete=models.PROTECT
     )
     # The order for the table entry in which it was selected for
     # the raffle. eg, 1 for first place, 2 for 2nd place etc...
@@ -260,3 +264,4 @@ class TextEditorImage(TimeStampedModel):
     """
 
     file = models.ImageField(upload_to=generate_unique_filename, validators=[validate_image_size])
+
