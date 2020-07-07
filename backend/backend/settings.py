@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'solo',
     'celery',
     'drf_yasg',
-
+    'django_celery_beat',
 ]
 
 if DEBUG:

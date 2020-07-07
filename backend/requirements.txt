@@ -31,5 +31,9 @@ pylint-django==2.0.4
 Pillow==5.2.0
 model-bakery==1.1.0
 
+# 3rd party
+web3==5.11.1
+django-celery-beat==2.0.0
+
 # dev requirements
 drf-yasg==1.17.1
