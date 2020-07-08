@@ -7,13 +7,9 @@ import { Card } from 'ui/styled/antd/Card';
 import StatusTag from 'ui/components/StatusTag';
 
 // Types
-import { Event } from 'lib/types';
+import { CompleteRaffle } from 'lib/types';
 type RaffleCardProps = {
-  title: string;
-  prize: string;
-  active: boolean;
-  deadline: string;
-  badges: Event[];
+  raffle: CompleteRaffle;
 };
 
 // Styled component
@@ -105,29 +101,29 @@ const RaffleCardWrapper = styled.div`
   }
 `;
 
-const RaffleCard: FC<RaffleCardProps> = ({ title, prize, active, deadline, badges }) => {
+const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
   return (
     <Card>
       <RaffleCardWrapper>
         <div className={'card-top-row'}>
           <div className={'card-top-row-title'}>
-            <h4>{title}</h4>
-            <StatusTag active={active} />
+            <h4>{raffle.name}</h4>
+            <StatusTag active={true} />
           </div>
-          <h5>{prize}</h5>
+          {raffle.prizes.length > 0 && <h5>{raffle.prizes[0].name}</h5>}
         </div>
         <div className={'card-bottom-row'}>
           <div>
             <div className={'bottom-title'}>Inscription deadline</div>
             <div className={'bottom-data'}>
-              <div className={'deadline'}>{deadline}</div>
+              <div className={'deadline'}>{raffle.registration_deadline}</div>
             </div>
           </div>
           <div>
             <div className={'bottom-title'}>Elegible POAPs</div>
             <div className={'bottom-data'}>
               <div className={'badge'}>
-                {badges.map((badge) => {
+                {raffle.events.slice(0, 3).map((badge) => {
                   return (
                     <div key={badge.id}>
                       <Tooltip title={badge.name}>
