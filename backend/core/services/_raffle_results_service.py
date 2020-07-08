@@ -40,7 +40,7 @@ class RaffleResultsService:
             a list of the participants which have not been set in the results table.
         """
 
-        results_table = raffle.result_table
+        results_table = raffle.results_table
         results = results_table.entries
         participants = raffle.participants
 
@@ -123,7 +123,7 @@ class RaffleResultsService:
         prev_block = BlockData.objects.filter(raffle=raffle).order_by("-order").first()
         block_data = cls._get_block_data(raffle, prev_block)
 
-        results_table = raffle.result_table
+        results_table = raffle.results_table
 
         remaining_participants = cls._get_remaining_participants(raffle)
 

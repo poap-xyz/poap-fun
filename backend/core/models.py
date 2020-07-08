@@ -189,7 +189,7 @@ class ResultsTable(TimeStampedModel):
         verbose_name_plural = _("results tables")
 
     raffle = models.OneToOneField(
-        Raffle, verbose_name=_("raffle"), related_name="result_table", on_delete=models.PROTECT, unique=True
+        Raffle, verbose_name=_("raffle"), related_name="results_table", on_delete=models.PROTECT, unique=True
     )
 
     def __str__(self):
