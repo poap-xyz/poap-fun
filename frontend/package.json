@@ -1,33 +1,78 @@
 {
-  "name": "test-test",
+  "name": "poap-fun",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@sentry/browser": "5.9.1",
-    "axios": "0.19.0",
-    "connected-react-router": "^6.6.0",
+    "@emotion/core": "^10.0.28",
+    "@emotion/styled": "^10.0.27",
+    "antd": "^4.4.0",
+    "constate": "^2.0.0",
+    "emotion-theming": "^10.0.27",
     "express": "4.17.1",
-    "history": "^4.10.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-redux": "7.1.3",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.0",
-    "redux": "4.0.4",
-    "redux-persist": "^6.0.0",
-    "redux-saga": "^1.1.3",
-    "styled-components": "^4.4.1",
-    "typescript": "~3.7.2"
+    "formik": "^2.1.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-icons": "^3.10.0",
+    "react-modal-hook": "^3.0.0",
+    "react-query": "^2.4.6",
+    "react-query-devtools": "^2.1.1",
+    "react-router-dom": "^5.2.0",
+    "wretch": "^1.7.2",
+    "yup": "^0.29.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.2",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.41",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-query": "^1.1.2",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/yup": "^0.29.3",
+    "babel-plugin-emotion": "^10.0.33",
+    "babel-plugin-import": "^1.13.0",
+    "customize-cra": "^1.0.0",
+    "customize-cra-react-refresh": "^1.1.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-simple-import-sort": "^5.0.3",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
+    "react-app-rewired": "^2.1.6",
+    "react-scripts": "3.4.1",
+    "ts-node": "^8.5.4",
+    "typescript": "~3.8.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
     "start:server": "ts-node server.ts"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:cypress/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": [],
+    "rules": {
+      "react/prop-types": 0,
+      "prettier/prettier": "error",
+      "react/jsx-sort-props": "error"
+    }
   },
   "browserslist": {
     "production": [
@@ -39,35 +84,6 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.2",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-redux": "^7.1.5",
-    "@types/react-router-dom": "^5.1.3",
-    "@types/styled-components": "^4.4.1",
-    "eslint-config-prettier": "^6.6.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-react": "^7.16.0",
-    "husky": "^3.1.0",
-    "lint-staged": "^9.4.3",
-    "prettier": "^1.19.1",
-    "ts-node": "^8.5.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "**/*.+(js)": [
-      "eslint --fix",
-      "prettier --write"
     ]
   }
 }
