@@ -10,6 +10,7 @@ from model_bakery import baker
 from rest_framework import status
 from core.tests.test_fixtures import *
 
+
 class TestRaffleAPIView:
 
     @pytest.mark.urls("core.urls")
