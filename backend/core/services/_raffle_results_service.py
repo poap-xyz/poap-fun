@@ -41,6 +41,8 @@ class RaffleResultsService:
         Returns:
             a list of the participants which have not been set in the results table.
         """
+        if not raffle.participants:
+            return []
 
         results_table = raffle.results_table
         results = results_table.entries
@@ -49,6 +51,8 @@ class RaffleResultsService:
         # the initial table state is such that the participants
         # are ordered by the address alphabetically
         participants = participants.order_by("address")
+        if raffle.one_address_one_vote:
+            participants = participants.distinct("address")
 
         # calculate fixed participants
         fixed_participants = [result.participant for result in results.all()]
@@ -89,6 +93,12 @@ class RaffleResultsService:
             finished: True if all remaining participants have been set
             in the results table. False if some participants remain
         """
+        if not participants or len(participants) == 0:
+            results_table.raffle.finalized = True
+            results_table.raffle.save()
+            return True
+
+
         amount_of_participants = len(participants)
         amount_of_participants_to_be_saved = math.ceil(amount_of_participants*slicing_percentage)
         # if we are placing n-1, then the last one is already the winner
@@ -113,7 +123,6 @@ class RaffleResultsService:
         with transaction.atomic():
             ResultsTableEntry.objects.bulk_create(entries)
             block_data.save()
-
 
         finalized = amount_of_participants == amount_of_participants_to_be_saved
         if finalized:
@@ -173,14 +182,14 @@ class RaffleResultsService:
         prev_block = BlockData.objects.filter(raffle=raffle).order_by("-order").first()
         block_data = cls._get_block_data(raffle, prev_block)
 
-        results_table = raffle.results_table
+        results_table, _ = ResultsTable.objects.get_or_create(raffle=raffle)
 
         remaining_participants = cls._get_remaining_participants(raffle)
 
         recombined_remaining_participants = cls._shuffle_list(remaining_participants, block_data.seed)
 
         finished = cls._save_new_results_table_entries(
-            results_table, recombined_remaining_participants, slicing_percentage
+            results_table, recombined_remaining_participants, slicing_percentage, block_data
         )
 
         return finished

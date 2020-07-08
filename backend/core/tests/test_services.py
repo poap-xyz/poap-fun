@@ -38,3 +38,5 @@ class TestRaffleResultsService:
         table_entries_count = ResultsTableEntry.objects.filter(results_table=raffle.results_table).count()
         raffle_participants_count = raffle.participants.count()
         assert table_entries_count == raffle_participants_count
+
+    # TODO missing test for one_address_one_vote
