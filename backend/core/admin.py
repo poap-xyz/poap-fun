@@ -60,3 +60,18 @@ class PrizeAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(Participant)
+class ParticipantAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ResultsTable)
+class ResultsTabletAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ResultsTableEntry)
+class ResultsTableEntryAdmin(admin.ModelAdmin):
+    pass
