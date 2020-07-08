@@ -18,6 +18,7 @@ import RaffleCard from 'ui/components/RaffleCard';
 import RaffleSearchSchema from './schema';
 
 // Types
+import { Event } from 'lib/types';
 export type RaffleSearchFormValue = {
   query: string;
 };
@@ -45,6 +46,23 @@ const RaffleGrid: FC = () => {
   }, [values]); //eslint-disable-line
 
   const raffles = [1, 2, 3, 4, 5, 6, 7];
+  const badges: Event[] = [
+    {
+      id: 1,
+      name: 'ETH Buenos Aires',
+      image_url: 'https://storage.googleapis.com/poapmedia/festival-hackathon-2020-logo-1593630063500.png',
+    },
+    {
+      id: 2,
+      name: 'ETH Buenos Aires',
+      image_url: 'https://storage.googleapis.com/poapmedia/festival-hackathon-2020-logo-1593630063500.png',
+    },
+    {
+      id: 3,
+      name: 'ETH Buenos Aires',
+      image_url: 'https://storage.googleapis.com/poapmedia/festival-hackathon-2020-logo-1593630063500.png',
+    },
+  ];
 
   return (
     <Container sidePadding>
@@ -67,8 +85,14 @@ const RaffleGrid: FC = () => {
       <Row gutter={16}>
         {raffles.map((raffle) => {
           return (
-            <Col span={8} key={raffle}>
-              <RaffleCard title={`Raffle #${raffle}`} active={raffle < 5} prize={'Awesome book'} />
+            <Col xs={24} sm={12} md={12} lg={8} key={raffle}>
+              <RaffleCard
+                title={`Raffle #${raffle} `}
+                active={raffle < 5}
+                prize={'Awesome book'}
+                deadline={'22-OCT-2020 CET'}
+                badges={badges}
+              />
             </Col>
           );
         })}

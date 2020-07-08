@@ -30,14 +30,6 @@ export const antdStyles = css`
   .ant-tooltip {
     &-inner {
       background-color: var(--label-input);
-      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-      border-radius: 4px;
-      font-size: 14px;
-      line-height: 24px;
-      padding: 5px 8px;
-    }
-    &-arrow {
-      background-color: var(--label-input);
     }
   }
 

@@ -9,6 +9,7 @@ type StatusTagProps = {
 // Styled component
 const Tag = styled.div<StatusTagProps>`
   width: 66px;
+  height: 27px;
   text-align: center;
   font-family: var(--alt-font);
   font-size: 12px;

@@ -1,58 +1,142 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
+import { Tooltip } from 'antd';
 import { Card } from 'ui/styled/antd/Card';
 
 // Components
 import StatusTag from 'ui/components/StatusTag';
 
 // Types
+import { Event } from 'lib/types';
 type RaffleCardProps = {
   title: string;
   prize: string;
   active: boolean;
+  deadline: string;
+  badges: Event[];
 };
 
 // Styled component
 const RaffleCardWrapper = styled.div`
   width: 100%;
-  h4 {
-    color: var(--primary-color);
-    font-family: var(--alt-font);
-    font-size: 20px;
-    line-height: 27px;
-    margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .card-top-row {
+    .card-top-row-title {
+      display: grid;
+      grid-template-columns: auto 65px;
+      h4 {
+        color: var(--primary-color);
+        font-family: var(--alt-font);
+        font-size: 20px;
+        line-height: 27px;
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* number of lines to show */
+        -webkit-box-orient: vertical;
+      }
+    }
+
+    h5 {
+      color: var(--font-color);
+      font-family: var(--alt-font);
+      font-size: 14px;
+      line-height: 19px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
-  h5 {
-    color: var(--font-color);
-    font-family: var(--alt-font);
-    font-size: 14px;
-    line-height: 19px;
+  .card-bottom-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .bottom-title {
+      font-family: var(--mix-font);
+      color: var(--system-placeholder);
+      font-size: 10px;
+      line-height: 12px;
+      margin-bottom: 10px;
+    }
+
+    .deadline {
+      color: var(--font-color);
+      background: var(--system-light-gray);
+      border-radius: 6px;
+      font-size: 10px;
+      line-height: 12px;
+      padding: 6px 10px;
+    }
+    .bottom-data {
+      .badge {
+        text-align: center;
+        position: relative;
+        div {
+          width: 28px;
+          height: 28px;
+          padding: 1px;
+          border-radius: 28px;
+          border: 2px solid white;
+          background: var(--system-light-gray);
+          position: absolute;
+          top: -3px;
+          &:first-of-type {
+            left: 0;
+          }
+          &:nth-of-type(2) {
+            left: 20px;
+          }
+          &:nth-of-type(3) {
+            left: 40px;
+          }
+          img {
+            width: 20px;
+            height: 20px;
+          }
+        }
+      }
+    }
   }
 `;
 
-const RaffleCard: FC<RaffleCardProps> = ({ title, prize, active }) => {
+const RaffleCard: FC<RaffleCardProps> = ({ title, prize, active, deadline, badges }) => {
   return (
     <Card>
       <RaffleCardWrapper>
         <div className={'card-top-row'}>
-          <h4>{title}</h4>
-          <StatusTag active={active} />
+          <div className={'card-top-row-title'}>
+            <h4>{title}</h4>
+            <StatusTag active={active} />
+          </div>
+          <h5>{prize}</h5>
         </div>
-        <h5>{prize}</h5>
         <div className={'card-bottom-row'}>
-          <div className={'card-bottom-cell'}>
+          <div>
             <div className={'bottom-title'}>Inscription deadline</div>
-            <div className={'bottom-data deadline'}>
-              <div className={'deadline'}>22-OCT-2020 CET</div>
+            <div className={'bottom-data'}>
+              <div className={'deadline'}>{deadline}</div>
             </div>
           </div>
-          <div className={'card-bottom-cell'}>
+          <div>
             <div className={'bottom-title'}>Elegible POAPs</div>
-            <div className={'bottom-data badges'}>
-              <div className={'Badge'}>P</div>
-              <div className={'Badge'}>O</div>
-              <div className={'Badge'}>A</div>
+            <div className={'bottom-data'}>
+              <div className={'badge'}>
+                {badges.map((badge) => {
+                  return (
+                    <div key={badge.id}>
+                      <Tooltip title={badge.name}>
+                        <img src={badge.image_url} alt={badge.name} />
+                      </Tooltip>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

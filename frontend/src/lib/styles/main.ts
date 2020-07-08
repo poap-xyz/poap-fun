@@ -5,6 +5,7 @@ export const mainStyles = css`
     /* fonts */
     --main-font: 'Archivo', sans-serif;
     --alt-font: 'Archivo Narrow', sans-serif;
+    --mix-font: 'Roboto', sans-serif;
 
     /* brand */
     --primary-color: #6534ff;
