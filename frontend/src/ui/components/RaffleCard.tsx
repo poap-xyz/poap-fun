@@ -63,7 +63,7 @@ const RaffleCardWrapper = styled.div`
 
     .deadline {
       color: var(--font-color);
-      background: var(--system-light-gray);
+      background: var(--system-gray);
       border-radius: 6px;
       font-size: 10px;
       line-height: 12px;
@@ -79,7 +79,7 @@ const RaffleCardWrapper = styled.div`
           padding: 1px;
           border-radius: 28px;
           border: 2px solid white;
-          background: var(--system-light-gray);
+          background: var(--system-gray);
           position: absolute;
           top: -3px;
           &:first-of-type {
@@ -103,7 +103,7 @@ const RaffleCardWrapper = styled.div`
 
 const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
   return (
-    <Card>
+    <Card height={170}>
       <RaffleCardWrapper>
         <div className={'card-top-row'}>
           <div className={'card-top-row-title'}>

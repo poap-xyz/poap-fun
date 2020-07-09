@@ -60,7 +60,6 @@ export const antdStyles = css`
     border-color: var(--separator-color);
     color: var(--success-font-color);
     border-radius: 4px;
-    max-width: 256px;
     .ant-input {
       &-prefix {
         display: flex;
@@ -77,7 +76,7 @@ export const antdStyles = css`
     input {
       color: var(--input-color);
       &::placeholder {
-        color: var(--font-color) !important;
+        color: var(--system-placeholder) !important;
         opacity: 1;
       }
     }
@@ -99,7 +98,6 @@ export const antdStyles = css`
       }
     }
     .ant-input-group {
-      display: block;
       &-addon {
         font-family: var(--alt-font);
         color: var(--label-input);
@@ -108,13 +106,19 @@ export const antdStyles = css`
         border: 0;
         padding-bottom: 4px;
         padding-left: 0;
+        button {
+          background: var(--primary-color);
+          border-color: var(--primary-color);
+        }
       }
       .ant-input {
         border-radius: 4px !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
         border-color: var(--separator-color) !important;
         color: var(--success-font-color) !important;
         &::placeholder {
-          color: var(--font-color) !important;
+          color: var(--system-placeholder) !important;
           opacity: 1;
         }
         &:hover,

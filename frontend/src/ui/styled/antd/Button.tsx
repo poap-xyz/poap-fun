@@ -4,6 +4,7 @@ import { Button as AntdButton } from 'antd';
 type ButtonProps = {
   width?: number;
   width160?: boolean;
+  margin?: boolean;
 };
 
 export const Button = styled(AntdButton)<ButtonProps>`
@@ -15,6 +16,7 @@ export const Button = styled(AntdButton)<ButtonProps>`
   letter-spacing: 0.3px;
   height: 40px !important;
   width: ${({ width }) => (width ? width + 'px' : '100%')};
+  margin: ${({ margin }) => (margin ? '24px 0' : '0')};
 
   &.ant-btn-loading {
     position: absolute;

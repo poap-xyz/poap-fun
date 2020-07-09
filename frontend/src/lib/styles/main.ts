@@ -24,7 +24,6 @@ export const mainStyles = css`
     --system-white: #ffffff;
     --system-black: #000000;
     --system-gray: #eaedf4;
-    --system-light-gray: #eaedf4;
     --font-color: #4d5680;
     --separator-color: #e4ecf2;
     --btn-disabled: #f3f5f9;

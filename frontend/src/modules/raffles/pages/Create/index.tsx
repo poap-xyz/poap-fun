@@ -1,11 +1,14 @@
 import React, { FC } from 'react';
 
-// layouts
+// Layouts
 import MainLayout from 'ui/layouts/MainLayout';
+
+// Components
+import RaffleCreateForm from 'modules/raffles/components/RaffleCreateForm';
 
 const CreateRaffle: FC = () => (
   <MainLayout>
-    <h1>Create Page</h1>
+    <RaffleCreateForm />
   </MainLayout>
 );
 

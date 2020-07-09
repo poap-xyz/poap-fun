@@ -124,3 +124,4 @@ export const Input = styled(InputAntd)`
 
 export const { TextArea } = (Input as any).__emotion_base;
 export const { Group } = (Input as any).__emotion_base;
+export const { Search } = (Input as any).__emotion_base;
