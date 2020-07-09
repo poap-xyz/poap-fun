@@ -16,9 +16,13 @@ import TitlePrimary from 'ui/components/TitlePrimary';
 import PrizeRowForm from 'ui/components/PrizeRowForm';
 import DatePicker from 'ui/components/DatePicker';
 import TimePicker from 'ui/components/TimePicker';
+import SelectEvent from 'ui/components/SelectEvent';
 
 // Helpers
 import { injectErrorsFromBackend } from 'lib/helpers/formik';
+
+// Hooks
+import { useEvents } from 'lib/hooks/useEvents';
 
 // Schema
 import RaffleCreateFormSchema from './schema';
@@ -30,6 +34,7 @@ export type RaffleCreateFormValue = {
   description: string;
   contact: string;
   weightedVote: boolean;
+  events: number[];
   raffleDate: moment.Moment | undefined;
   raffleTime: moment.Moment | undefined;
 };
@@ -38,6 +43,7 @@ const initialValues: RaffleCreateFormValue = {
   name: '',
   description: '',
   contact: '',
+  events: [],
   weightedVote: false,
   raffleDate: undefined,
   raffleTime: undefined,
@@ -45,6 +51,9 @@ const initialValues: RaffleCreateFormValue = {
 
 const RaffleCreateForm: FC = () => {
   const [prizes, setPrizes] = useState<Prize[]>([]);
+
+  const { data: events } = useEvents();
+
   const handleOnSubmit = async ({
     name,
     description,
@@ -52,6 +61,7 @@ const RaffleCreateForm: FC = () => {
     weightedVote,
     raffleDate,
     raffleTime,
+    events,
   }: RaffleCreateFormValue) => {
     console.log('name: ', name);
     console.log('description: ', description);
@@ -59,6 +69,7 @@ const RaffleCreateForm: FC = () => {
     console.log('weightedVote: ', weightedVote);
     console.log('raffleTime: ', raffleTime);
     console.log('raffleDate: ', raffleDate);
+    console.log('events: ', events);
   };
 
   // Lib hooks
@@ -108,6 +119,18 @@ const RaffleCreateForm: FC = () => {
                 label="Raffle Name"
                 name="name"
                 placeholder="Enter a name so players can find it"
+                touched={touched}
+                values={values}
+              />
+            </Col>
+            <Col span={24}>
+              <SelectEvent
+                errors={errors}
+                label="POAP Selection"
+                name="events"
+                options={events}
+                placeholder="Select eligible events"
+                setFieldValue={setFieldValue}
                 touched={touched}
                 values={values}
               />

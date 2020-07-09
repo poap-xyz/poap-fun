@@ -1,9 +1,3 @@
-export type Event = {
-  id: number;
-  name: string;
-  image_url: string;
-};
-
 export type PoapEvent = {
   id: number;
   fancy_id: string;
@@ -17,6 +11,10 @@ export type PoapEvent = {
   start_date: string;
   end_date: string;
   virtual_event: boolean;
+};
+
+export type PoapEventDictionary = {
+  [id: number]: PoapEvent;
 };
 
 export type Prize = {
