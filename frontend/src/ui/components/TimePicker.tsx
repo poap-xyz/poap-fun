@@ -5,12 +5,12 @@ import { FormikValues, FormikHelpers, FormikTouched, FormikErrors } from 'formik
 
 // Components
 import { Item } from 'ui/styled/antd/Form';
-import { DatePicker as BaseDatePicker } from 'ui/styled/antd/DatePicker';
+import { TimePicker as BaseTimePicker } from 'ui/styled/antd/TimePicker';
 
 // Types
 type SetFieldValue = Pick<FormikHelpers<FormikValues>, 'setFieldValue'>['setFieldValue'];
 
-type DatePickerProps = {
+type TimePickerProps = {
   className?: string;
   name: string;
   placeholder: string;
@@ -19,7 +19,7 @@ type DatePickerProps = {
   setFieldValue: SetFieldValue;
   touched: FormikTouched<FormikValues>;
   errors?: FormikErrors<FormikValues>;
-  label?: string;
+  label?: string | React.ReactNode;
   futureDates?: boolean;
 };
 
@@ -29,27 +29,18 @@ const Content = styled.div`
   justify-content: flex-start;
 `;
 
-const DatePicker: FC<DatePickerProps> = ({
+const TimePicker: FC<TimePickerProps> = ({
   className,
   setFieldValue,
   name,
   errors,
   placeholder,
   label,
-  format = 'DD-MMM-YYYY',
+  format = 'HH:mm',
   touched,
   values,
-  futureDates = false,
 }) => {
-  const handleDateChange = (date: moment.Moment | null) => setFieldValue(name, date);
-
-  const disabledPast = (current: moment.Moment) => {
-    // Can not select days before today and today
-    return current && current < moment().startOf('day');
-  };
-
-  const allowAll = (current: moment.Moment) => false;
-
+  const handleTimeChange = (time: moment.Moment | null) => setFieldValue(name, time);
   return (
     <Item
       className={className}
@@ -58,18 +49,17 @@ const DatePicker: FC<DatePickerProps> = ({
       validateStatus={touched?.[name] && errors?.[name] ? 'error' : ''}
     >
       <Content>
-        <BaseDatePicker
+        <BaseTimePicker
           fullWidth={true}
-          disabledDate={futureDates ? disabledPast : allowAll}
           name={name}
           placeholder={placeholder}
           format={format}
           value={values[name] ? values[name] : undefined}
-          onChange={handleDateChange}
+          onChange={handleTimeChange}
         />
       </Content>
     </Item>
   );
 };
 
-export default DatePicker;
+export default TimePicker;

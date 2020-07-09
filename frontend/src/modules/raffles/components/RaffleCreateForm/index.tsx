@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { useFormik } from 'formik';
-import { Col, Row } from 'antd';
-import { Dayjs } from 'dayjs';
+import { Col, Row, Tooltip } from 'antd';
+import moment from 'moment-timezone';
 
 // Components
 import Input from 'ui/components/Input';
@@ -15,6 +15,7 @@ import Checkbox from 'ui/components/Checkbox';
 import TitlePrimary from 'ui/components/TitlePrimary';
 import PrizeRowForm from 'ui/components/PrizeRowForm';
 import DatePicker from 'ui/components/DatePicker';
+import TimePicker from 'ui/components/TimePicker';
 
 // Helpers
 import { injectErrorsFromBackend } from 'lib/helpers/formik';
@@ -29,7 +30,8 @@ export type RaffleCreateFormValue = {
   description: string;
   contact: string;
   weightedVote: boolean;
-  raffleDate: Dayjs | undefined;
+  raffleDate: moment.Moment | undefined;
+  raffleTime: moment.Moment | undefined;
 };
 
 const initialValues: RaffleCreateFormValue = {
@@ -38,19 +40,29 @@ const initialValues: RaffleCreateFormValue = {
   contact: '',
   weightedVote: false,
   raffleDate: undefined,
+  raffleTime: undefined,
 };
 
 const RaffleCreateForm: FC = () => {
   const [prizes, setPrizes] = useState<Prize[]>([]);
-  const handleOnSubmit = async ({ name, description, contact, weightedVote }: RaffleCreateFormValue) => {
+  const handleOnSubmit = async ({
+    name,
+    description,
+    contact,
+    weightedVote,
+    raffleDate,
+    raffleTime,
+  }: RaffleCreateFormValue) => {
     console.log('name: ', name);
     console.log('description: ', description);
     console.log('contact: ', contact);
     console.log('weightedVote: ', weightedVote);
+    console.log('raffleTime: ', raffleTime);
+    console.log('raffleDate: ', raffleDate);
   };
 
   // Lib hooks
-  const { values, errors, touched, handleChange, submitForm } = useFormik({
+  const { values, errors, touched, handleChange, submitForm, setFieldValue } = useFormik({
     initialValues,
     validationSchema: RaffleCreateFormSchema,
     onSubmit: injectErrorsFromBackend<RaffleCreateFormValue>(handleOnSubmit),
@@ -74,6 +86,14 @@ const RaffleCreateForm: FC = () => {
   };
 
   const handleSubmitClick = () => submitForm();
+
+  const timeLabel = (
+    <>
+      <Tooltip title={`Browser timezone: ${moment.tz.guess()}`}>
+        <span>Raffle Time (UTC {moment().utcOffset() / 60})</span>
+      </Tooltip>
+    </>
+  );
 
   return (
     <Container sidePadding thinWidth>
@@ -101,21 +121,24 @@ const RaffleCreateForm: FC = () => {
                 values={values}
               />
             </Col>
-            <Col span={12}>
+            <Col offset={4} span={8}>
               <DatePicker
-                handleChange={handleChange}
+                setFieldValue={setFieldValue}
                 name="raffleDate"
                 label="Raffle Date"
+                placeholder="Pick a date"
+                futureDates
                 touched={touched}
                 errors={errors}
                 values={values}
               />
             </Col>
-            <Col span={12}>
-              <DatePicker
-                handleChange={handleChange}
-                name="raffleDate"
-                label="Raffle Date"
+            <Col span={8}>
+              <TimePicker
+                setFieldValue={setFieldValue}
+                name="raffleTime"
+                label={timeLabel}
+                placeholder="Pick a time"
                 touched={touched}
                 errors={errors}
                 values={values}
