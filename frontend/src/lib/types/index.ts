@@ -59,3 +59,24 @@ export type FetchResponseRaffle = {
   count: number;
   results: Raffle[];
 };
+
+export type CreatePrize = {
+  name: string;
+  order: number;
+};
+
+export type CreateEvent = {
+  event_id: string;
+  name: string;
+};
+
+export type CreateRaffleValues = {
+  name: string;
+  description: string;
+  contact: string;
+  draw_datetime: string;
+  registration_deadline: string;
+  one_address_one_vote: boolean;
+  prizes: CreatePrize[];
+  events: CreateEvent[];
+};

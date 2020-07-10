@@ -1,5 +1,4 @@
 // @ts-nocheck
-// FIXME - Delete - missing react-query types
 import { useQuery } from 'react-query';
 
 // Lib

@@ -4,7 +4,7 @@ import moment from 'moment';
 export default yup.object().shape({
   name: yup.string().required('This field is required'),
   contact: yup.string().email('Invalid email').required('This field is required'),
-  events: yup.array().required('This field is required'),
+  eligibleEvents: yup.array().required('This field is required'),
   raffleDate: yup
     .date()
     .required('This field is required')

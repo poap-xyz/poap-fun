@@ -18,10 +18,6 @@ export const Button = styled(AntdButton)<ButtonProps>`
   width: ${({ width }) => (width ? width + 'px' : '100%')};
   margin: ${({ margin }) => (margin ? '24px 0' : '0')};
 
-  &.ant-btn-loading {
-    position: absolute;
-  }
-
   &:hover {
     color: var(--secondary-color) !important;
     border: 1px solid var(--secondary-color) !important;
