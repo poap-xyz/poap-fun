@@ -17,6 +17,9 @@ import PrizeRowForm from 'ui/components/PrizeRowForm';
 import DatePicker from 'ui/components/DatePicker';
 import TimePicker from 'ui/components/TimePicker';
 import SelectEvent from 'ui/components/SelectEvent';
+import Editor from 'ui/components/Editor';
+
+// Constants
 
 // Helpers
 import { injectErrorsFromBackend } from 'lib/helpers/formik';
@@ -31,7 +34,6 @@ import RaffleCreateFormSchema from './schema';
 import { Prize } from 'lib/types';
 export type RaffleCreateFormValue = {
   name: string;
-  description: string;
   contact: string;
   weightedVote: boolean;
   events: number[];
@@ -41,7 +43,6 @@ export type RaffleCreateFormValue = {
 
 const initialValues: RaffleCreateFormValue = {
   name: '',
-  description: '',
   contact: '',
   events: [],
   weightedVote: false,
@@ -51,12 +52,12 @@ const initialValues: RaffleCreateFormValue = {
 
 const RaffleCreateForm: FC = () => {
   const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [description, setDescription] = useState<string>('');
 
   const { data: events } = useEvents();
 
   const handleOnSubmit = async ({
     name,
-    description,
     contact,
     weightedVote,
     raffleDate,
@@ -64,12 +65,12 @@ const RaffleCreateForm: FC = () => {
     events,
   }: RaffleCreateFormValue) => {
     console.log('name: ', name);
-    console.log('description: ', description);
     console.log('contact: ', contact);
     console.log('weightedVote: ', weightedVote);
     console.log('raffleTime: ', raffleTime);
     console.log('raffleDate: ', raffleDate);
     console.log('events: ', events);
+    console.log('content: ', description);
   };
 
   // Lib hooks
@@ -95,6 +96,8 @@ const RaffleCreateForm: FC = () => {
     let newPrize: Prize = { id: position, order: position, name: value };
     setPrizes([...prizes, newPrize]);
   };
+
+  const handleEditorChange = (content: string, editor: any) => setDescription(content);
 
   const handleSubmitClick = () => submitForm();
 
@@ -168,15 +171,7 @@ const RaffleCreateForm: FC = () => {
               />
             </Col>
             <Col span={24}>
-              <Input
-                errors={errors}
-                handleChange={handleChange}
-                label="Raffle Description"
-                name="description"
-                placeholder="Be creative"
-                touched={touched}
-                values={values}
-              />
+              <Editor title={'Raffle description'} onChange={handleEditorChange} />
             </Col>
             <Col span={24}>
               <InputSearch

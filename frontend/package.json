@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
+    "@tinymce/tinymce-react": "^3.6.0",
     "antd": "^4.4.0",
     "constate": "^2.0.0",
     "emotion-theming": "^10.0.27",
