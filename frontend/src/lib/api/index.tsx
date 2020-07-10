@@ -16,7 +16,7 @@ export const endpoints = {
   fun: {
     raffles: {
       all: `${REACT_APP_API_FUN}/api/v1/raffles/`,
-      images: `${REACT_APP_API_FUN}/api/v1/raffles/text-editor-image`,
+      images: `${REACT_APP_API_FUN}/api/v1/raffles/text-editor-image/`,
     },
   },
 };

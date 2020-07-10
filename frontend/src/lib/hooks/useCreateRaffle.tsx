@@ -5,7 +5,6 @@ import { useMutation } from 'react-query';
 import { api, endpoints } from 'lib/api';
 
 // Hooks
-// import { useAuthContext } from 'lib/hooks/common/useAuth';
 import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Types

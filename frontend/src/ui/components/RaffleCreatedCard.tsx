@@ -52,6 +52,7 @@ const RaffleCreatedCard: FC<RaffleCreatedCardProps> = ({ raffle }) => {
           <h2>Raffle Created!</h2>
           <NavLink to={createRaffleLink(raffle, true)}>{createRaffleLink(raffle, false)}</NavLink>
         </div>
+        {/* TODO - UPDATE! */}
         <div className={'code'}>123456</div>
         <div className={'warning'}>
           <p>Save this code!</p>
