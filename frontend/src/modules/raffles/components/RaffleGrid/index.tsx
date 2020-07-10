@@ -4,9 +4,9 @@ import { Row, Col } from 'antd';
 import { FiSearch } from 'react-icons/fi';
 
 // Lib
-import { injectErrorsFromBackend } from 'lib/helpers/formik';
 import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffles } from 'lib/hooks/useRaffles';
+import { useDebounce } from 'lib/hooks/useDebounce';
 
 // Helpers
 import { mergeRaffleEvent } from 'lib/helpers/api';
@@ -19,7 +19,7 @@ import { Button } from 'ui/styled/antd/Button';
 import { Container } from 'ui/styled/Container';
 import { SearchForm } from 'ui/styled/SearchForm';
 import { LoadMore } from 'ui/styled/LoadMore';
-import SectionTitle from 'ui/components/SectionTitle';
+import TitleSecondary from 'ui/components/TitleSecondary';
 import RaffleCard from 'ui/components/RaffleCard';
 
 /// Constants
@@ -43,55 +43,42 @@ const RaffleGrid: FC = () => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [query, setQuery] = useState<string>('');
   const [raffles, setRaffles] = useState<CompleteRaffle[]>([]);
+  const debouncedSearchTerm: string = useDebounce(query, 500);
 
   const { data: events } = useEvents();
-  const [fetchRaffles, { isLoading }] = useRaffles();
+  const { data: apiRaffles, isLoading } = useRaffles({ page, query: debouncedSearchTerm });
 
   // Component methods
   const changePage = () => setPage(page + 1);
-
-  const doFetch = (page: number, query: string, raffles: CompleteRaffle[]) => {
-    fetchRaffles({ page, query }).then((response) => {
-      if (response && response.results && events) {
-        setRaffles([...raffles, ...mergeRaffleEvent(response.results, events)]);
-        setTotalPages(Math.ceil(response.count / API_PAGE_SIZE));
-      }
-    });
-  };
-
-  const handleOnSubmit = async ({ query }: RaffleSearchFormValue) => {
-    console.log('Query: ', query);
-  };
 
   // Lib hooks
   const { values, errors, touched, handleChange } = useFormik({
     initialValues,
     validationSchema: RaffleSearchSchema,
-    onSubmit: injectErrorsFromBackend<RaffleSearchFormValue>(handleOnSubmit),
+    onSubmit: () => {},
   });
 
   // Effects
   useEffect(() => {
-    // TODO - Add some Throttling
-    if (values.query) {
-      setQuery(values.query);
-      setRaffles([]);
-      if (page > 1) {
-        setPage(1);
-      } else {
-        doFetch(page, values.query, []);
-      }
-    }
+    if (values.query) setQuery(values.query);
   }, [values]); //eslint-disable-line
 
   useEffect(() => {
-    if (!events) return;
-    doFetch(page, query, raffles);
-  }, [events, page]); //eslint-disable-line
+    if (debouncedSearchTerm) {
+      setRaffles([]);
+      setPage(1);
+    }
+  }, [debouncedSearchTerm]); //eslint-disable-line
+
+  useEffect(() => {
+    if (!events || !apiRaffles) return;
+    setRaffles([...raffles, ...mergeRaffleEvent(apiRaffles.results, events)]);
+    setTotalPages(Math.ceil(apiRaffles.count / API_PAGE_SIZE));
+  }, [apiRaffles, events]); //eslint-disable-line
 
   return (
     <Container sidePadding>
-      <SectionTitle title={'Last raffle'} />
+      <TitleSecondary title={'Last raffle'} />
       <SearchForm>
         <Form>
           <Input

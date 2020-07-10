@@ -1,9 +1,3 @@
-export type Event = {
-  id: number;
-  name: string;
-  image_url: string;
-};
-
 export type PoapEvent = {
   id: number;
   fancy_id: string;
@@ -17,6 +11,10 @@ export type PoapEvent = {
   start_date: string;
   end_date: string;
   virtual_event: boolean;
+};
+
+export type PoapEventDictionary = {
+  [id: number]: PoapEvent;
 };
 
 export type Prize = {
@@ -60,4 +58,25 @@ export type CompleteRaffle = {
 export type FetchResponseRaffle = {
   count: number;
   results: Raffle[];
+};
+
+export type CreatePrize = {
+  name: string;
+  order: number;
+};
+
+export type CreateEvent = {
+  event_id: string;
+  name: string;
+};
+
+export type CreateRaffleValues = {
+  name: string;
+  description: string;
+  contact: string;
+  draw_datetime: string;
+  registration_deadline: string;
+  one_address_one_vote: boolean;
+  prizes: CreatePrize[];
+  events: CreateEvent[];
 };

@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import styled from '@emotion/styled';
 
 // Types
-type SectionTitleProps = {
+type TitleSecondaryProps = {
   title: string;
 };
 
@@ -18,7 +18,7 @@ const Title = styled.div`
   }
 `;
 
-const SectionTitle: FC<SectionTitleProps> = ({ title }) => {
+const TitleSecondary: FC<TitleSecondaryProps> = ({ title }) => {
   return (
     <Title>
       <h3>{title}</h3>
@@ -26,4 +26,4 @@ const SectionTitle: FC<SectionTitleProps> = ({ title }) => {
   );
 };
 
-export default SectionTitle;
+export default TitleSecondary;

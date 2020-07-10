@@ -13,6 +13,8 @@ import { Container } from 'ui/styled/Container';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 const FooterWrap = styled.div`
+  box-shadow: inset 0px 1px 0px #eaedf4;
+  padding-top: 50px;
   .footer-table-row {
     display: flex;
     flex-direction: row;

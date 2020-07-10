@@ -5,11 +5,14 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
+    "@tinymce/tinymce-react": "^3.6.0",
     "antd": "^4.4.0",
     "constate": "^2.0.0",
     "emotion-theming": "^10.0.27",
     "express": "4.17.1",
     "formik": "^2.1.4",
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-icons": "^3.10.0",
@@ -17,6 +20,7 @@
     "react-query": "^2.4.6",
     "react-query-devtools": "^2.1.1",
     "react-router-dom": "^5.2.0",
+    "slugify": "^1.4.4",
     "wretch": "^1.7.2",
     "yup": "^0.29.1"
   },

@@ -1,4 +1,5 @@
-import { useMutation } from 'react-query';
+// @ts-nocheck
+import { useQuery } from 'react-query';
 
 // Lib
 import { api, endpoints } from 'lib/api';
@@ -9,10 +10,10 @@ type FetchRafflesValues = {
   query?: string;
 };
 
-export const useRaffles = () => {
-  const fetchRaffles = ({ page, query }: FetchRafflesValues): Promise<FetchResponseRaffle> =>
-    api().url(endpoints.fun.raffles.all).query({ page, query }).get().json();
+export const useRaffles = ({ page, query }: FetchRafflesValues) => {
+  const fetchRaffles = (key: string, page: number, query: string): Promise<FetchResponseRaffle> =>
+    api().url(endpoints.fun.raffles.all).query({ page, name: query }).get().json();
 
   // react query
-  return useMutation(fetchRaffles);
+  return useQuery(['raffles', page, query], fetchRaffles);
 };
