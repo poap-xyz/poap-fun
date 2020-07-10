@@ -20,6 +20,7 @@
     "react-query": "^2.4.6",
     "react-query-devtools": "^2.1.1",
     "react-router-dom": "^5.2.0",
+    "slugify": "^1.4.4",
     "wretch": "^1.7.2",
     "yup": "^0.29.1"
   },

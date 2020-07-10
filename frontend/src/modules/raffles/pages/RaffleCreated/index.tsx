@@ -4,10 +4,11 @@ import React, { FC } from 'react';
 import MainLayout from 'ui/layouts/MainLayout';
 
 // Components
+import RaffleCreated from 'modules/raffles/components/RaffleCreated';
 
 const RaffleCreate: FC = () => (
   <MainLayout>
-    <h1>Raffle created :)</h1>
+    <RaffleCreated />
   </MainLayout>
 );
 

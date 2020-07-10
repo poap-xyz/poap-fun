@@ -144,7 +144,7 @@ const RaffleCreateForm: FC = () => {
 
   return (
     <Container sidePadding thinWidth>
-      <TitlePrimary title={'Create New Raffle'} goBack />
+      <TitlePrimary title={'Create New Raffle'} />
       <Card>
         <Form>
           <Row gutter={24}>
