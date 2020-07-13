@@ -31,8 +31,5 @@ pylint-django==2.0.4
 Pillow==5.2.0
 model-bakery==1.1.0
 
-# 3rd party
-mnemonic==0.19
-
 # dev requirements
 drf-yasg==1.17.1
