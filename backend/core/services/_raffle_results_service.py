@@ -149,7 +149,8 @@ class RaffleResultsService:
 
         order = prev_block.order + 1 if prev_block else 0
         nonce = raw_block_data.get("nonce")
-        seed = int.from_bytes(bytes(nonce), "big")
+        nonce = int.from_bytes(bytes(nonce)[0:4], "big")
+        seed = int.from_bytes(bytes(nonce)[0:4], "big")
         block_data = BlockData(
             raffle=raffle,
             nonce=nonce,

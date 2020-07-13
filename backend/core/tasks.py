@@ -33,7 +33,7 @@ def generate_results_for_expired_raffles_task():
     periodic_tasks = PeriodicTask.objects.filter(task="core.tasks.generate_raffle_results_task").all()
     for periodic_task in periodic_tasks:
         raffle_id = json.loads(periodic_task.args)[0]
-        raffle = Raffle.objects.filter(id=raffle_id)
+        raffle = Raffle.objects.filter(id=raffle_id).first()
         if not raffle:
             logger.warning(
                 f"raffle with id {raffle_id} not found while trying to evaluate task {periodic_task.id} for deletion"
@@ -49,7 +49,7 @@ def generate_results_for_expired_raffles_task():
     raffles = Raffle.objects.filter(finalized=False, draw_datetime__lte=datetime.utcnow())
 
     for raffle in raffles:
-        PeriodicTask.objects.create(
+        task, _ = PeriodicTask.objects.get_or_create(
             interval=schedule,
             name=f"generating_results_for_raffle_{raffle.id}",
             task="core.tasks.generate_raffle_results_task",
