@@ -6,7 +6,7 @@ import { FiTrash } from 'react-icons/fi';
 type PrizeRowFormProps = {
   order: number;
   prize: string;
-  deleteAction: () => void;
+  deleteAction?: () => void;
 };
 
 // Styled component
@@ -42,9 +42,7 @@ const PrizeRowForm: FC<PrizeRowFormProps> = ({ order, prize, deleteAction }) => 
         <span>{order}º</span>
         {prize}
       </div>
-      <div className={'action'}>
-        <FiTrash onClick={deleteAction} />
-      </div>
+      <div className={'action'}>{deleteAction && <FiTrash onClick={deleteAction} />}</div>
     </PrizeHolder>
   );
 };

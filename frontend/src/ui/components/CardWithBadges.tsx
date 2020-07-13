@@ -13,7 +13,7 @@ const CardWrapper = styled.div`
   .left-badges {
     position: absolute;
     left: -115px;
-    top: 100px;
+    top: 75px;
     img {
       width: 120px;
     }
@@ -21,7 +21,7 @@ const CardWrapper = styled.div`
   .right-badges {
     position: absolute;
     right: -50px;
-    top: 100px;
+    top: 75px;
     img {
       width: 50px;
     }

@@ -5,6 +5,7 @@ import { FiArrowLeft } from 'react-icons/fi';
 
 // Constants
 import { ROUTES } from 'lib/routes';
+import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Types
 type TitlePrimaryProps = {
@@ -30,6 +31,11 @@ const Title = styled.div`
     left: -30px;
     top: 70px;
     transform: scale(2);
+
+    @media (max-width: ${BREAKPOINTS.xs}) {
+      left: 5px;
+      top: 10px;
+    }
   }
 `;
 

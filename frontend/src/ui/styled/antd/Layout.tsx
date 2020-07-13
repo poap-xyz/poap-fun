@@ -3,6 +3,7 @@ import { Layout as AntdLayout } from 'antd';
 
 type LayoutProps = {
   gray?: boolean;
+  paddedContent?: boolean;
 };
 
 export const Layout = styled(AntdLayout)<LayoutProps>`
@@ -21,12 +22,12 @@ export const Layout = styled(AntdLayout)<LayoutProps>`
     }
 
     &-footer {
-      padding: 24px;
+      padding: 0 24px 24px;
       background: var(--system-white);
     }
 
     &-content {
-      padding: 100px 0 24px;
+      padding: ${({ paddedContent }) => (paddedContent ? '100px 0 24px' : '100px 0 0')};
     }
   }
 `;

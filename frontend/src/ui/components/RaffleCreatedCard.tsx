@@ -50,10 +50,11 @@ const RaffleCreatedCard: FC<RaffleCreatedCardProps> = ({ raffle }) => {
         <div className={'title'}>
           <img src={Check} alt={'Raffle created'} />
           <h2>Raffle Created!</h2>
-          <NavLink to={createRaffleLink(raffle, true)}>{createRaffleLink(raffle, false)}</NavLink>
+          <NavLink to={createRaffleLink(raffle, true)} target={'_blank'}>
+            {createRaffleLink(raffle, false)}
+          </NavLink>
         </div>
-        {/* TODO - UPDATE! */}
-        <div className={'code'}>123456</div>
+        {raffle.token && <div className={'code'}>{raffle.token}</div>}
         <div className={'warning'}>
           <p>Save this code!</p>
           <p>You will need it in case you need to edit the raffle</p>

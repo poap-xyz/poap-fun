@@ -23,13 +23,15 @@ import { StateProvider } from 'lib/hooks/useCustomState';
 import Home from 'modules/raffles/pages/Home';
 import RaffleCreate from 'modules/raffles/pages/RaffleCreate';
 import RaffleCreated from 'modules/raffles/pages/RaffleCreated';
+import RafflePage from 'modules/raffles/pages/RafflePage';
 
 const queryConfig = { mutations: { throwOnError: true } };
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const publicRoutes = [
-  { Component: RaffleCreated, path: ROUTES.raffleCreated },
   { Component: RaffleCreate, path: ROUTES.raffleCreation },
+  { Component: RaffleCreated, path: ROUTES.raffleCreated },
+  { Component: RafflePage, path: ROUTES.raffleDetail },
   { Component: Home, path: ROUTES.home },
 ];
 

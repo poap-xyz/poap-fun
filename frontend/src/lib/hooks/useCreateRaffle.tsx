@@ -3,6 +3,7 @@ import { useMutation } from 'react-query';
 
 // Lib
 import { api, endpoints } from 'lib/api';
+import { safeGetItem } from 'lib/helpers/localStorage';
 
 // Hooks
 import { useStateContext } from 'lib/hooks/useCustomState';
@@ -21,6 +22,13 @@ export const useCreateRaffle = () => {
     onSuccess: (raffle: Raffle) => {
       saveRaffle(raffle);
       localStorage.setItem(`raffle-${raffle.id}`, JSON.stringify(raffle));
+      let ids = safeGetItem('raffles-created');
+      if (ids) {
+        ids.push(raffle.id);
+      } else {
+        ids = [raffle.id];
+      }
+      localStorage.setItem('raffles-created', JSON.stringify(ids));
     },
   });
 };
