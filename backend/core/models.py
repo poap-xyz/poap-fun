@@ -60,6 +60,7 @@ class Raffle(TimeStampedModel):
     class Meta:
         verbose_name = _("raffle")
         verbose_name_plural = _("raffles")
+        ordering = ['-draw_datetime']
 
     name = models.CharField(_("name"), max_length=256)
     description = models.TextField(_("description"))
@@ -117,6 +118,7 @@ class Prize(TimeStampedModel):
     class Meta:
         verbose_name = _("prize")
         verbose_name_plural = _("prizes")
+        ordering = ['order']
 
     name = models.CharField(_("prize name"), max_length=255)
     raffle = models.ForeignKey(Raffle, verbose_name="raffle", related_name="prizes", on_delete=models.PROTECT)
