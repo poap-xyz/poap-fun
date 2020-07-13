@@ -5,8 +5,13 @@ import HeaderContent from 'ui/components/Header';
 import FooterContent from 'ui/components/Footer';
 import { Layout, Header, Content, Footer } from 'ui/styled/antd/Layout';
 
-const MainLayout: FC = ({ children }) => (
-  <Layout>
+// Types
+type MainLayoutProps = {
+  paddedContent?: boolean;
+};
+
+const MainLayout: FC<MainLayoutProps> = ({ children, paddedContent = true }) => (
+  <Layout paddedContent={paddedContent}>
     <Header>
       <HeaderContent />
     </Header>

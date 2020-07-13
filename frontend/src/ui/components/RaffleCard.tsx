@@ -2,9 +2,13 @@ import React, { FC } from 'react';
 import styled from '@emotion/styled';
 import { Tooltip } from 'antd';
 import { Card } from 'ui/styled/antd/Card';
+import { NavLink } from 'react-router-dom';
 
 // Components
 import StatusTag from 'ui/components/StatusTag';
+
+// Helpers
+import { createRaffleLink } from 'lib/helpers/raffles';
 
 // Types
 import { CompleteRaffle } from 'lib/types';
@@ -94,6 +98,7 @@ const RaffleCardWrapper = styled.div`
           img {
             width: 20px;
             height: 20px;
+            border-radius: 20px;
           }
         }
       }
@@ -103,41 +108,43 @@ const RaffleCardWrapper = styled.div`
 
 const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
   return (
-    <Card height={170}>
-      <RaffleCardWrapper>
-        <div className={'card-top-row'}>
-          <div className={'card-top-row-title'}>
-            <h4>{raffle.name}</h4>
-            <StatusTag active={true} />
-          </div>
-          {raffle.prizes.length > 0 && <h5>{raffle.prizes[0].name}</h5>}
-        </div>
-        <div className={'card-bottom-row'}>
-          <div>
-            <div className={'bottom-title'}>Inscription deadline</div>
-            <div className={'bottom-data'}>
-              <div className={'deadline'}>{raffle.registration_deadline}</div>
+    <NavLink to={createRaffleLink(raffle, true)}>
+      <Card height={170}>
+        <RaffleCardWrapper>
+          <div className={'card-top-row'}>
+            <div className={'card-top-row-title'}>
+              <h4>{raffle.name}</h4>
+              <StatusTag active={true} />
             </div>
+            {raffle.prizes.length > 0 && <h5>{raffle.prizes[0].name}</h5>}
           </div>
-          <div>
-            <div className={'bottom-title'}>Elegible POAPs</div>
-            <div className={'bottom-data'}>
-              <div className={'badge'}>
-                {raffle.events.slice(0, 3).map((badge) => {
-                  return (
-                    <div key={badge.id}>
-                      <Tooltip title={badge.name}>
-                        <img src={badge.image_url} alt={badge.name} />
-                      </Tooltip>
-                    </div>
-                  );
-                })}
+          <div className={'card-bottom-row'}>
+            <div>
+              <div className={'bottom-title'}>Inscription deadline</div>
+              <div className={'bottom-data'}>
+                <div className={'deadline'}>{raffle.registration_deadline}</div>
+              </div>
+            </div>
+            <div>
+              <div className={'bottom-title'}>Elegible POAPs</div>
+              <div className={'bottom-data'}>
+                <div className={'badge'}>
+                  {raffle.events.slice(0, 3).map((badge) => {
+                    return (
+                      <div key={badge.id}>
+                        <Tooltip title={badge.name}>
+                          <img src={badge.image_url} alt={badge.name} />
+                        </Tooltip>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </RaffleCardWrapper>
-    </Card>
+        </RaffleCardWrapper>
+      </Card>
+    </NavLink>
   );
 };
 

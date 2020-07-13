@@ -38,6 +38,7 @@ export type Raffle = {
   end_datetime: string | null;
   registration_deadline: string;
   one_address_one_vote: string;
+  token?: string;
   prizes: Prize[];
   events: SimpleEvent[];
 };
