@@ -1,4 +1,5 @@
 import logging
+import random
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
@@ -8,8 +9,6 @@ from pytz import utc
 
 from core.utils import generate_unique_filename
 from core.validators import validate_image_size
-
-from mnemonic import Mnemonic
 
 
 logger = logging.getLogger("app")
@@ -60,6 +59,7 @@ class Raffle(TimeStampedModel):
     class Meta:
         verbose_name = _("raffle")
         verbose_name_plural = _("raffles")
+        ordering = ['-draw_datetime']
 
     name = models.CharField(_("name"), max_length=256)
     description = models.TextField(_("description"))
@@ -87,8 +87,7 @@ class Raffle(TimeStampedModel):
 
     @staticmethod
     def generate_token():
-        mnemo = Mnemonic("english")
-        raw_token = mnemo.generate(strength=128)
+        raw_token = str(random.randint(0, 999999)).zfill(6)
         token = make_password(raw_token)
         return raw_token, token
 
@@ -117,6 +116,7 @@ class Prize(TimeStampedModel):
     class Meta:
         verbose_name = _("prize")
         verbose_name_plural = _("prizes")
+        ordering = ['raffle', 'order']
 
     name = models.CharField(_("prize name"), max_length=255)
     raffle = models.ForeignKey(Raffle, verbose_name="raffle", related_name="prizes", on_delete=models.PROTECT)
@@ -259,4 +259,4 @@ class TextEditorImage(TimeStampedModel):
     Represents the image uploaded by Tiny MCE
     """
 
-    location = models.ImageField(upload_to=generate_unique_filename('text_editor_images/'), validators=[validate_image_size])
+    file = models.ImageField(upload_to=generate_unique_filename, validators=[validate_image_size])

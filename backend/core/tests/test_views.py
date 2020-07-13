@@ -1,7 +1,9 @@
 import json
+import tempfile
 
 import pytest
 import requests
+from PIL import Image
 from django.urls import reverse
 from model_bakery import baker
 
@@ -146,3 +148,27 @@ class TestPrizeAPIView:
         )
         response_content = json.loads(response.content)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+class TestTextEditorImageAPIView:
+
+    @pytest.mark.urls("core.urls")
+    @pytest.mark.django_db
+    def test_image_upload(self, api_client):
+
+        image = Image.new('RGB', (100, 100))
+
+        tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
+        image.save(tmp_file)
+        tmp_file.seek(0)
+
+        image_post_url = reverse("text-editor-image")
+        response = api_client.post(
+            image_post_url,
+            format="multipart",
+            data={"file": tmp_file}
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        content = json.loads(response.content)
+        location = content.get("location", None)
+        assert location
