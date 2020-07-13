@@ -1,3 +1,4 @@
+import functools
 import math
 import random
 from typing import List, Tuple, Optional
@@ -50,9 +51,12 @@ class RaffleResultsService:
 
         # the initial table state is such that the participants
         # are ordered by the address alphabetically
-        participants = participants.order_by("address")
         if raffle.one_address_one_vote:
+            participants = participants.order_by("address", "poap_id")
             participants = participants.distinct("address")
+
+        # sort participants by poap id
+        participants = sorted(participants.all(), key=lambda p: p.poap_id)
 
         # calculate fixed participants
         fixed_participants = [result.participant for result in results.all()]
@@ -65,11 +69,45 @@ class RaffleResultsService:
 
         return remaining_participants
 
-    @staticmethod
+    @classmethod
+    def _split_by_gas_limit(cls, gas_limit, participants):
+
+        if not participants:
+            return None
+        if len(participants) == 1:
+            return participants
+
+        eliminated_participants = []
+        valid_split = False
+        order = 1
+        while not valid_split:
+            prev_iteration_digit = None
+            comparing_digits_identical = True
+            gas_limit_last_digit = gas_limit % 10
+            for participant in participants:
+                poap_id = participant.poap_id
+                poap_id_cmp_digit = math.floor(poap_id/order) % 10
+
+                if poap_id_cmp_digit == gas_limit_last_digit:
+                    eliminated_participants.append(participant)
+
+                if prev_iteration_digit and prev_iteration_digit != poap_id_cmp_digit:
+                    comparing_digits_identical = False
+                prev_iteration_digit = poap_id_cmp_digit
+
+            if not comparing_digits_identical:
+                valid_split = True
+            else:
+                eliminated_participants = []
+            order *= 10
+
+        return eliminated_participants
+
+    @classmethod
     def _save_new_results_table_entries(
+            cls,
             results_table: ResultsTable,
             participants: List[Participant],
-            slicing_percentage: float,
             block_data: BlockData
     ) -> bool:
         """
@@ -81,9 +119,6 @@ class RaffleResultsService:
         Args:
             participants:
                 pool of participants used
-            slicing_percentage:
-                number between 0 and 1 representing the % of participants
-                that will be saved to the results table
             results_table:
                 the results table to which the participants are saved
             block_data:
@@ -98,20 +133,15 @@ class RaffleResultsService:
             results_table.raffle.save()
             return True
 
+        eliminated_participants = cls._split_by_gas_limit(block_data.gas_limit, participants)
 
-        amount_of_participants = len(participants)
-        amount_of_participants_to_be_saved = math.ceil(amount_of_participants*slicing_percentage)
-        # if we are placing n-1, then the last one is already the winner
-        if amount_of_participants_to_be_saved == amount_of_participants - 1:
-            amount_of_participants_to_be_saved = amount_of_participants
-        unsaved_participants = participants[-amount_of_participants_to_be_saved:]
         # calculate the starting order
-        order = amount_of_participants - amount_of_participants_to_be_saved
+        order = len(participants) - len(eliminated_participants)
         entries = []
-        for unsaved_participant in unsaved_participants:
+        for eliminated_participant in eliminated_participants:
             entry = ResultsTableEntry(
                 results_table=results_table,
-                participant=unsaved_participant,
+                participant=eliminated_participant,
                 order=order
             )
             entries.append(entry)
@@ -124,7 +154,7 @@ class RaffleResultsService:
             ResultsTableEntry.objects.bulk_create(entries)
             block_data.save()
 
-        finalized = amount_of_participants == amount_of_participants_to_be_saved
+        finalized = len(participants) == len(eliminated_participants)
         if finalized:
             results_table.raffle.finalized = True
             results_table.raffle.save()
@@ -148,13 +178,11 @@ class RaffleResultsService:
             return None
 
         order = prev_block.order + 1 if prev_block else 0
-        nonce = raw_block_data.get("nonce")
-        nonce = int.from_bytes(bytes(nonce)[0:4], "big")
-        seed = int.from_bytes(bytes(nonce)[0:4], "big")
+        gas_limit = raw_block_data.get("gasLimit")
         block_data = BlockData(
             raffle=raffle,
-            nonce=nonce,
-            seed=seed,
+            gas_limit=gas_limit,
+            seed=gas_limit,
             block_number=raw_block_data.get("number"),
             order=order
         )
@@ -162,7 +190,7 @@ class RaffleResultsService:
         return block_data
 
     @classmethod
-    def generate_next_result_step(cls, raffle: Raffle, slicing_percentage: float) -> bool:
+    def generate_next_result_step(cls, raffle: Raffle) -> bool:
         """
         Runs a single iteration of the result's table generation process.
         Args:
@@ -187,10 +215,8 @@ class RaffleResultsService:
 
         remaining_participants = cls._get_remaining_participants(raffle)
 
-        recombined_remaining_participants = cls._shuffle_list(remaining_participants, block_data.seed)
-
         finished = cls._save_new_results_table_entries(
-            results_table, recombined_remaining_participants, slicing_percentage, block_data
+            results_table, remaining_participants, block_data
         )
 
         return finished

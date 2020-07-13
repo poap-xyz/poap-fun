@@ -24,7 +24,7 @@ def generate_raffle_results_task(raffle_id):
         logger.warning(f"raffle with id {raffle_id} not found when trying to generate results")
         return
 
-    finished = raffle_results_service.generate_next_result_step(raffle, 0.5)
+    finished = raffle_results_service.generate_next_result_step(raffle)
 
 
 @app.task()
