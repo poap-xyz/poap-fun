@@ -169,7 +169,7 @@ class Participant(TimeStampedModel):
 
     address = models.CharField(_("address"), max_length=50)
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
-    poap_id = models.CharField(_("poap id"), max_length=100)
+    poap_id = models.BigIntegerField(_("poap id"))
 
     def __str__(self):
         return self.address
@@ -245,10 +245,7 @@ class BlockData(TimeStampedModel):
     block_number = models.BigIntegerField(_("block number"))
 
     # The block nonce may not fit in the DB, save the 64 least significant bits
-    nonce = models.BigIntegerField(_("block nonce"))
-
-    # the seed that was derived from the nonce (nonces often do not fit in integers)
-    seed = models.IntegerField(_("seed"), null=True, blank=True)
+    gas_limit = models.BigIntegerField(_("block nonce"))
 
     def __str__(self):
         return f"Block data N°{self.order} for {self.raffle}"
