@@ -14,6 +14,6 @@ router.register(r'prizes', views.PrizeViewSet, basename='prizes')
 urlpatterns = [
     url(r'^login/refresh/$', refresh_jwt_token),
     url(r'^login/$', views.CustomObtainJSONWebToken.as_view()),
-    url(r'^raffles/text-editor-image/$', views.TextEditorImageView.as_view()),
+    url(r'^raffles/text-editor-image/$', views.TextEditorImageView.as_view(), name='text-editor-image'),
 ]
 urlpatterns += router.urls
