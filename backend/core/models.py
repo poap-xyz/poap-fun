@@ -260,4 +260,4 @@ class TextEditorImage(TimeStampedModel):
     Represents the image uploaded by Tiny MCE
     """
 
-    location = models.ImageField(upload_to=generate_unique_filename('text_editor_images/'), validators=[validate_image_size])
+    file = models.ImageField(upload_to=generate_unique_filename('text_editor_images/'), validators=[validate_image_size])
