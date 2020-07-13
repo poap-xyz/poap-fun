@@ -5,7 +5,6 @@ raffle_data = {
     "description": "this is a test raffle used as an example",
     "contact": "info@xivis.com",
     "draw_datetime": "2020-06-14T04:12:36",
-    "registration_deadline": "2020-06-14T04:12:36",
     "one_address_one_vote": True,
 }
 raffle = Raffle.objects.create(**raffle_data)

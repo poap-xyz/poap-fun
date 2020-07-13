@@ -70,7 +70,6 @@ class Raffle(TimeStampedModel):
     # all raffle dates MUST be in UTC TODO find a way to enforce this invariant
     draw_datetime = models.DateTimeField(_("raffle's draw date and time"))
     end_datetime = models.DateTimeField(_("raffle's end date and time"), null=True, blank=True)
-    registration_deadline = models.DateTimeField(_("raffle's registration deadline"))
     # if true, no matter how many poaps the address has, it counts as one vote.
     # if false, each of the address's poaps counts as a vote
     one_address_one_vote = models.BooleanField(_("one address one vote"))
