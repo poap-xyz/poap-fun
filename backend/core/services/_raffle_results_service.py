@@ -78,6 +78,7 @@ class RaffleResultsService:
             return participants
 
         eliminated_participants = []
+        remaining_participants = []
         valid_split = False
         order = 1
         while not valid_split:
@@ -90,6 +91,8 @@ class RaffleResultsService:
 
                 if poap_id_cmp_digit == gas_limit_last_digit:
                     eliminated_participants.append(participant)
+                else:
+                    remaining_participants.append(participant)
 
                 if prev_iteration_digit and prev_iteration_digit != poap_id_cmp_digit:
                     comparing_digits_identical = False
@@ -99,7 +102,20 @@ class RaffleResultsService:
                 valid_split = True
             else:
                 eliminated_participants = []
+                remaining_participants = []
             order *= 10
+
+        prev_address = None
+        more_than_one_remaining_participant = False
+        for participant in remaining_participants:
+            if prev_address and prev_address != participant.address:
+                more_than_one_remaining_participant = True
+                break
+            prev_address = participant.address
+
+        # raffle is already over
+        if not more_than_one_remaining_participant:
+            eliminated_participants = remaining_participants + eliminated_participants
 
         return eliminated_participants
 
@@ -182,7 +198,6 @@ class RaffleResultsService:
         block_data = BlockData(
             raffle=raffle,
             gas_limit=gas_limit,
-            seed=gas_limit,
             block_number=raw_block_data.get("number"),
             order=order
         )

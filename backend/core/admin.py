@@ -75,3 +75,8 @@ class ResultsTabletAdmin(admin.ModelAdmin):
 @admin.register(ResultsTableEntry)
 class ResultsTableEntryAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(BlockData)
+class BlockDataAdmin(admin.ModelAdmin):
+    pass

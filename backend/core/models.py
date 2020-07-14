@@ -245,7 +245,7 @@ class BlockData(TimeStampedModel):
     block_number = models.BigIntegerField(_("block number"))
 
     # The block nonce may not fit in the DB, save the 64 least significant bits
-    gas_limit = models.BigIntegerField(_("block nonce"))
+    gas_limit = models.BigIntegerField(_("gas limit"))
 
     def __str__(self):
         return f"Block data N°{self.order} for {self.raffle}"

@@ -2,7 +2,7 @@ import random
 import random
 import sys
 
-from core.models import ResultsTableEntry
+from core.models import ResultsTableEntry, Raffle
 from core.services import raffle_results_service
 from core.tests.test_fixtures import *
 
@@ -127,4 +127,27 @@ class TestRaffleResultsService:
         table_entries_count = ResultsTableEntry.objects.filter(results_table=raffle.results_table).count()
         assert table_entries_count == 0
 
-    # TODO missing test for one_address_one_vote
+    @pytest.mark.django_db
+    def test_raffle_finalization(self):
+        raffle = baker.make('core.Raffle')
+        baker.make('core.ResultsTable', raffle=raffle)
+        participant_1 = baker.make(
+            'core.Participant', raffle=raffle, address="0x1", poap_id=124  # poap_id = 124
+        )
+        participant_2 = baker.make(
+            'core.Participant', raffle=raffle, address="0x2", poap_id=154  # poap_id = 154
+        )
+        participant_3 = baker.make(
+            'core.Participant', raffle=raffle, address="0x1", poap_id=134  # poap_id = 154
+        )
+
+        participants = [participant_1, participant_2, participant_3]
+
+        block_data = baker.make("core.BlockData", gas_limit=105)
+        raffle_results_service._save_new_results_table_entries(
+            raffle.results_table, participants, block_data=block_data
+        )
+        table_entries_count = ResultsTableEntry.objects.filter(results_table=raffle.results_table).count()
+        assert table_entries_count == 3
+        raffle = Raffle.objects.filter(id=raffle.id).first()
+        assert raffle.finalized
