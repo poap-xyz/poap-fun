@@ -5,7 +5,6 @@ import { FiLink } from 'react-icons/fi';
 
 // Components
 import { Card } from 'ui/styled/antd/Card';
-import { Button } from 'ui/styled/antd/Button';
 import PrizeRowForm from 'ui/components/PrizeRowForm';
 import RaffleShareContent from 'ui/components/RaffleShareContent';
 import Separator from 'ui/styled/Separator';

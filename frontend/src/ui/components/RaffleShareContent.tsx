@@ -75,7 +75,7 @@ const RaffleShareContent: FC<ShareProps> = ({ id }) => {
     return (
       'https://telegram.me/share/' +
       objectToGetParams({
-        link,
+        url: link,
         text: message,
       })
     );
@@ -84,7 +84,7 @@ const RaffleShareContent: FC<ShareProps> = ({ id }) => {
     return (
       'https://twitter.com/share' +
       objectToGetParams({
-        link,
+        url: link,
         text: message,
         via: 'poapxyz',
       })
