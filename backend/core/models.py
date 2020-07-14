@@ -1,11 +1,11 @@
 import logging
 import random
+from datetime import datetime
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext as _
-from pytz import utc
 
 from core.utils import generate_unique_filename
 from core.validators import validate_image_size
@@ -76,9 +76,22 @@ class Raffle(TimeStampedModel):
     # used to store raw token to return after creation
     _token = ''
 
+    @staticmethod
+    def get_valid_raffles_for_event_set(event_ids):
+        event_ids_set = set(event_ids)
+        raffles = Raffle.objects.filter(draw_datetime__gte=datetime.utcnow(), events__event_id__in=event_ids)
+        raffles = raffles.prefetch_related('events')
+        raffles = raffles.distinct().all()
+        valid_raffles = []
+        for raffle in raffles:
+            raffle_events = {event.event_id for event in raffle.events.all()}
+            if raffle_events.issubset(event_ids_set):
+                valid_raffles.append(raffle)
+        return raffles
+
     @property
     def active(self):
-        return utc.now < self.draw_datetime
+        return datetime.utcnow() < self.draw_datetime
 
     def is_valid_token(self, raw_token):
         logger.info(f"verifying token for {self.__repr__()}")

@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 
@@ -16,7 +17,7 @@ from rest_framework import status, viewsets
 from django_filters import rest_framework as filters
 
 from backend import settings
-from core.filters import UserFilter
+from core.filters import UserFilter, RaffleFilter
 from core.models import User, Raffle, Event, Prize
 from .permissions import RaffleTokenPermission, PrizeRaffleTokenPermission
 
@@ -133,6 +134,18 @@ class RaffleViewSet(viewsets.ModelViewSet):
     queryset = Raffle.objects.all()
     serializer_class = RaffleSerializer
     lookup_field = 'id'
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
+    ordering_fields = ['name', 'description', 'contact', 'draw_datetime', 'end_datetime']
+    filter_class = RaffleFilter
+
+    def list(self, request, **kwargs):
+        events = request.query_params.get('events_participated_in', None)
+        if not events:
+            return super(RaffleViewSet, self).list(request, **kwargs)
+
+        raffles = Raffle.get_valid_raffles_for_event_set(json.loads(events))
+        serializer = RaffleSerializer(raffles, many=True)
+        return Response({"results": serializer.data})
 
     def get_permissions(self):
         restricted_actions = ['update', 'partial_update', 'destroy']
