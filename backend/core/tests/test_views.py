@@ -119,7 +119,7 @@ class TestRaffleAPIView:
 
     @pytest.mark.urls("core.urls")
     @pytest.mark.django_db
-    def test_filter_by_participation(self, api_client):
+    def test_filter_by_event_participation(self, api_client):
         raffle_1_draw_datetime = datetime.utcnow() + timedelta(hours=9)
         raffle_1 = baker.make("core.Raffle", name="raffle 1", draw_datetime=raffle_1_draw_datetime)
         event_1 = baker.make("core.Event", event_id=1)
@@ -136,6 +136,20 @@ class TestRaffleAPIView:
         response = api_client.get(raffle_list_url)
         content = json.loads(response.content)
         print(f"content: {content}")
+        assert response.status_code == status.HTTP_200_OK
+        assert len(content["results"]) == 1
+        assert content["results"][0]["name"] == "raffle 1"
+
+    @pytest.mark.urls("core.urls")
+    @pytest.mark.django_db
+    def test_filter_by_participant(self, api_client):
+        raffle_1 = baker.make("core.Raffle", name="raffle 1")
+        raffle_2 = baker.make("core.Raffle")
+        participant = baker.make("core.Participant", address="0x1", raffle=raffle_1)
+
+        raffle_list_url = f"{reverse('raffles-list')}?participants__address=0x1"
+        response = api_client.get(raffle_list_url)
+        content = json.loads(response.content)
         assert response.status_code == status.HTTP_200_OK
         assert len(content["results"]) == 1
         assert content["results"][0]["name"] == "raffle 1"
