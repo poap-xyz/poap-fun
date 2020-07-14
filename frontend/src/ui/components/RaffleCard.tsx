@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom';
 import StatusTag from 'ui/components/StatusTag';
 
 // Helpers
-import { createRaffleLink } from 'lib/helpers/raffles';
+import { createRaffleLink, isRaffleActive } from 'lib/helpers/raffles';
 
 // Types
 import { CompleteRaffle } from 'lib/types';
@@ -114,7 +114,7 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
           <div className={'card-top-row'}>
             <div className={'card-top-row-title'}>
               <h4>{raffle.name}</h4>
-              <StatusTag active={true} />
+              <StatusTag active={isRaffleActive(raffle)} />
             </div>
             {raffle.prizes.length > 0 && <h5>{raffle.prizes[0].name}</h5>}
           </div>

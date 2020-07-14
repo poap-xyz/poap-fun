@@ -21,6 +21,7 @@ import { mergeRaffleEvent } from 'lib/helpers/api';
 
 // Types
 import { CompleteRaffle } from 'lib/types';
+import StatusTag from '../../../../ui/components/StatusTag';
 
 const RaffleCreated: FC = () => {
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
@@ -37,6 +38,14 @@ const RaffleCreated: FC = () => {
   }, [raffle, events]); //eslint-disable-line
 
   const isActive: boolean = completeRaffle ? isRaffleActive(completeRaffle) : false;
+  const title =
+    isActive && completeRaffle ? (
+      <div className={'active-raffle'}>
+        <div className={'title'}>{completeRaffle?.name}</div> <StatusTag active={true} className={'status'} />
+      </div>
+    ) : (
+      ''
+    );
 
   // TODO - fix
   let participants: number[] = Array.from({ length: 20 }, () => Math.floor(Math.random() * 10000));
@@ -45,8 +54,14 @@ const RaffleCreated: FC = () => {
     <Container sidePadding thinWidth>
       {completeRaffle && (
         <>
-          <TitlePrimary title={completeRaffle.name} goBack />
-          {isActive && <Countdown datetime={completeRaffle.draw_datetime} />}
+          {isActive && (
+            <>
+              <TitlePrimary title={title} goBack editAction={() => {}} />
+              <Countdown datetime={completeRaffle.draw_datetime} />
+            </>
+          )}
+          {!isActive && <TitlePrimary title={completeRaffle.name} goBack />}
+
           <RaffleContent raffle={completeRaffle} />
           {isActive && <Button type={'primary'}>Join Raffle</Button>}
           <RaffleParticipants participants={participants} />
