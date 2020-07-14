@@ -1,6 +1,7 @@
 import functools
 import math
 import random
+from datetime import datetime
 from typing import List, Tuple, Optional
 
 from django.db import transaction
@@ -11,23 +12,6 @@ from core.models import Raffle, Participant, ResultsTable, BlockData, ResultsTab
 
 
 class RaffleResultsService:
-
-    @staticmethod
-    def _shuffle_list(input_list: List, seed: int) -> List:
-        """
-        Given a seed and an input list, shuffles the
-        list with the random seed to produce a shuffled list.
-
-        Args:
-            seed: The seed to be used.
-            input_list: The input list to be shuffled.
-
-        Returns:
-            output_list: a shuffled list.
-        """
-        random.seed(seed)
-        random.shuffle(input_list)
-        return input_list
 
     @staticmethod
     def _get_remaining_participants(raffle: Raffle) -> List[Participant]:
@@ -173,6 +157,7 @@ class RaffleResultsService:
         finalized = len(participants) == len(eliminated_participants)
         if finalized:
             results_table.raffle.finalized = True
+            results_table.raffle.end_datetime = datetime.utcnow()
             results_table.raffle.save()
         return finalized
 

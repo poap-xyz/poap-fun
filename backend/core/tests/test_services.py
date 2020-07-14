@@ -132,13 +132,13 @@ class TestRaffleResultsService:
         raffle = baker.make('core.Raffle')
         baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
-            'core.Participant', raffle=raffle, address="0x1", poap_id=124  # poap_id = 124
+            'core.Participant', raffle=raffle, address="0x1", poap_id=124
         )
         participant_2 = baker.make(
-            'core.Participant', raffle=raffle, address="0x2", poap_id=154  # poap_id = 154
+            'core.Participant', raffle=raffle, address="0x2", poap_id=154
         )
         participant_3 = baker.make(
-            'core.Participant', raffle=raffle, address="0x1", poap_id=134  # poap_id = 154
+            'core.Participant', raffle=raffle, address="0x1", poap_id=134
         )
 
         participants = [participant_1, participant_2, participant_3]
