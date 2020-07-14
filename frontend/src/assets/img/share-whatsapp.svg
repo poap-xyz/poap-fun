@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="450" height="450" viewBox="0 0 450 450">
+  <defs>
+    <style>
+      .cls-1 {
+        filter: url(#filter);
+      }
+
+      .cls-2 {
+        filter: url(#filter-2);
+      }
+
+      .cls-3, .cls-4, .cls-6 {
+        fill-rule: evenodd;
+      }
+
+      .cls-3 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-4 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-5 {
+        filter: url(#filter-3);
+      }
+
+      .cls-6 {
+        fill: #fefefe;
+        filter: url(#filter-4);
+      }
+    </style>
+    <filter id="filter" filterUnits="userSpaceOnUse">
+      <feOffset result="offset" dy="3" in="SourceAlpha"/>
+      <feGaussianBlur result="blur" stdDeviation="2.828"/>
+      <feFlood result="flood" flood-opacity="0.28"/>
+      <feComposite result="composite" operator="in" in2="blur"/>
+      <feBlend result="blend" in="SourceGraphic"/>
+    </filter>
+    <filter id="filter-2" filterUnits="userSpaceOnUse">
+      <feOffset result="offset" dy="5" in="SourceAlpha"/>
+      <feGaussianBlur result="blur" stdDeviation="6.083"/>
+      <feFlood result="flood" flood-opacity="0.04"/>
+      <feComposite result="composite" operator="in" in2="blur"/>
+      <feBlend result="blend" in="SourceGraphic"/>
+    </filter>
+    <linearGradient id="linear-gradient" x1="225.391" y1="430.438" x2="225.391" y2="24.313" gradientUnits="userSpaceOnUse">
+      <stop offset="-0.05" stop-color="#20b038"/>
+      <stop offset="1.05" stop-color="#67d670"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="225.391" y1="437.719" x2="225.391" y2="17.031" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f9f9f9"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <filter id="filter-3" filterUnits="userSpaceOnUse">
+      <feOffset result="offset" dy="5" in="SourceAlpha"/>
+      <feGaussianBlur result="blur" stdDeviation="4"/>
+      <feFlood result="flood" flood-opacity="0.06"/>
+      <feComposite result="composite" operator="in" in2="blur"/>
+      <feBlend result="blend" in="SourceGraphic"/>
+    </filter>
+    <filter id="filter-4" x="113" y="123" width="227" height="210" filterUnits="userSpaceOnUse">
+      <feOffset result="offset" in="SourceAlpha"/>
+      <feGaussianBlur result="blur" stdDeviation="2.236"/>
+      <feFlood result="flood" flood-opacity="0.07"/>
+      <feComposite result="composite" operator="in" in2="blur"/>
+      <feBlend result="blend" in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="WhatsApp_Logo" data-name="WhatsApp Logo" class="cls-1">
+    <g id="WA_Logo" data-name="WA Logo" class="cls-2">
+      <path class="cls-3" d="M22.526,430.43l28.66-104.285a200.309,200.309,0,0,1-26.966-100.61C24.265,114.574,114.89,24.3,226.241,24.3a201.666,201.666,0,0,1,202.02,201.4c-0.045,110.96-90.678,201.244-202.018,201.244H226.16a202.468,202.468,0,0,1-96.54-24.5Z"/>
+      <path class="cls-4" d="M15.25,437.714L44.938,329.689A207.488,207.488,0,0,1,17.005,225.47C17.051,110.529,110.927,17.017,226.271,17.017A208.9,208.9,0,0,1,435.537,225.634C435.491,340.577,341.607,434.1,226.274,434.1h-0.086a209.759,209.759,0,0,1-100-25.373Zm116.075-66.73,6.351,3.755A174.167,174.167,0,0,0,226.2,398.891h0.071c95.868,0,173.894-77.727,173.932-173.269a173.627,173.627,0,0,0-173.863-173.4c-95.94,0-173.967,77.721-174,173.255A172.389,172.389,0,0,0,78.93,317.694l4.136,6.553L65.495,388.186Z"/>
+      <g id="_2" data-name="2" class="cls-5">
+        <path class="cls-6" d="M173.97,138.324c-3.916-8.677-8.037-8.853-11.764-9.005-3.048-.127-6.536-0.12-10.021-0.12a19.243,19.243,0,0,0-13.944,6.521c-4.793,5.212-18.3,17.814-18.3,43.452s18.736,50.408,21.35,53.883,36.175,57.77,89.323,78.654c44.169,17.354,53.158,13.9,62.744,13.035s30.936-12.6,35.293-24.768,4.357-22.6,3.05-24.771-4.793-3.475-10.022-6.082-30.936-15.211-35.729-16.948-8.278-2.607-11.764,2.608-13.507,16.947-16.558,20.422-6.1,3.914-11.328,1.306-22.077-8.108-42.049-25.854c-15.543-13.811-26.038-30.871-29.088-36.087s-0.325-8.033,2.293-10.628c2.352-2.335,5.229-6.085,7.843-9.127s3.486-5.212,5.229-8.69,0.871-6.518-.436-9.126S178.62,148.627,173.97,138.324Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
