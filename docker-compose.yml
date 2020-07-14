@@ -122,7 +122,7 @@ services:
     depends_on:
       - postgres
       - redis
-    command: celery beat --app=backend -s /tmp/celerybeat-schedule -S django_celery_beat.schedulers:DatabaseScheduler --pidfile=/tmp/celery.pid --loglevel=DEBUG
+    command: celery beat --app=backend -s /tmp/celerybeat-schedule --pidfile=/tmp/celery.pid --loglevel=DEBUG
     networks:
       - back-tier
 
