@@ -207,9 +207,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = True
 
-from .celery_beat_schedule import beat_schedule
-CELERY_BEAT_SCHEDULE = beat_schedule
-
 # Logging
 from django.utils.log import DEFAULT_LOGGING
 LOGLEVEL = os.getenv('LOGLEVEL', 'info').upper()
