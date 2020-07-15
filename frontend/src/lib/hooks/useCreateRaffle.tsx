@@ -23,8 +23,8 @@ export const useCreateRaffle = () => {
       saveRaffle(raffle);
       localStorage.setItem(`raffle-${raffle.id}`, JSON.stringify(raffle));
       let ids = safeGetItem('raffles-created');
-      if (ids) {
-        ids.push(raffle.id);
+      if (ids && Array.isArray(ids)) {
+        if (ids.indexOf(raffle.id) === -1) ids.push(raffle.id);
       } else {
         ids = [raffle.id];
       }
