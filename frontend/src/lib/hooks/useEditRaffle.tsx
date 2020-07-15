@@ -10,16 +10,28 @@ import { safeGetItem } from 'lib/helpers/localStorage';
 import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Types
-import { Raffle } from 'lib/types';
+import { Raffle, CreatePrize } from 'lib/types';
 type UpdateRaffleValues = {
   id: number;
   token: string;
   name?: string;
   description?: string;
+  contact?: string;
+  draw_datetime?: string;
   one_address_one_vote?: boolean;
+  prizes?: CreatePrize[];
 };
 
-const patchRaffle = ({ id, token, name, description, one_address_one_vote }: UpdateRaffleValues): Promise<Raffle> => {
+const patchRaffle = ({
+  id,
+  token,
+  name,
+  description,
+  one_address_one_vote,
+  contact,
+  draw_datetime,
+  prizes,
+}: UpdateRaffleValues): Promise<Raffle> => {
   return api()
     .auth(token)
     .url(endpoints.fun.raffles.detail(id))
@@ -28,6 +40,9 @@ const patchRaffle = ({ id, token, name, description, one_address_one_vote }: Upd
         name,
         description,
         one_address_one_vote,
+        contact,
+        draw_datetime,
+        prizes,
       }),
     )
     .patch()

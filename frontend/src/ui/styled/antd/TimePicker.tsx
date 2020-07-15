@@ -19,6 +19,7 @@ export const TimePicker = styled(TimePickerAntd)<TimePickerProps>`
     }
 
     & > input {
+      font-size: 16px !important;
       color: var(--picker-color) !important;
 
       &::placeholder {
@@ -41,9 +42,5 @@ export const TimePicker = styled(TimePickerAntd)<TimePickerProps>`
         color: var(--font-color) !important;
       }
     }
-  }
-
-  .ant-calendar-picker-input {
-    font-size: 14px;
   }
 `;

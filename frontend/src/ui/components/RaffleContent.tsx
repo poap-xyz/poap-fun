@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import { Tooltip } from 'antd';
 import styled from '@emotion/styled';
 import { FiLink } from 'react-icons/fi';
 

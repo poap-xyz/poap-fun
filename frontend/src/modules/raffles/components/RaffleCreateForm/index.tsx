@@ -22,6 +22,7 @@ import Editor from 'ui/components/Editor';
 
 // Helpers
 import { injectErrorsFromBackend } from 'lib/helpers/formik';
+import { mergeRaffleDatetime } from 'lib/helpers/api';
 
 // Constants
 import { ROUTES } from 'lib/routes';
@@ -77,14 +78,7 @@ const RaffleCreateForm: FC = () => {
 
     // Combine dates and get timezone
     if (!raffleDate || !raffleTime) return;
-    let raffleDatetime = raffleDate
-      .hours(raffleTime.hours())
-      .minutes(raffleTime.minutes())
-      .seconds(0)
-      .format('YYYY-MM-DD HH:mm:ss');
-    let tz = moment().utcOffset() / 60;
-    let offset = tz > 0 ? `+${tz.toString().padStart(2, '0')}` : `-${(tz * -1).toString().padStart(2, '0')}`;
-    raffleDatetime = `${raffleDatetime}${offset}:00`;
+    let raffleDatetime = mergeRaffleDatetime(raffleDate, raffleTime);
 
     let newRaffle: CreateRaffleValues = {
       name,

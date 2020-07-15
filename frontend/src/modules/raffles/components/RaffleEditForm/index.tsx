@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import { useHistory, useParams, generatePath } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
 import moment from 'moment-timezone';
 
@@ -22,22 +22,22 @@ import InputTitle from 'ui/styled/InputTitle';
 import EventDisplay from 'ui/components/EventDisplay';
 
 // Helpers
-import { injectErrorsFromBackend } from 'lib/helpers/formik';
-import { mergeRaffleEvent } from 'lib/helpers/api';
+import { mergeRaffleEvent, mergeRaffleDatetime } from 'lib/helpers/api';
+import { createRaffleLink } from 'lib/helpers/raffles';
 
 // Constants
-import { ROUTES } from 'lib/routes';
 
 // Hooks
 import { useEvents } from 'lib/hooks/useEvents';
 import { useEditRaffle } from 'lib/hooks/useEditRaffle';
+import { useDeletePrize } from 'lib/hooks/usePrizes';
 import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Schema
 import RaffleEditFormSchema from './schema';
 
 // Types
-import { Prize, CompleteRaffle } from 'lib/types';
+import { Prize, CompleteRaffle, CreatePrize } from 'lib/types';
 export type RaffleEditFormValue = {
   name: string;
   contact: string;
@@ -54,33 +54,60 @@ const RaffleEditForm: FC = () => {
 
   const { data: events } = useEvents();
 
-  const [prizes, setPrizes] = useState<Prize[]>(raffle.prizes);
+  let sortedPrizes: Prize[] = raffle.prizes
+    .sort((a, b) => a.id - b.id)
+    .map((prize, i) => {
+      let each: Prize = { id: i + 1, name: prize.name, order: i + 1 };
+      return each;
+    });
+  const [prizes, setPrizes] = useState<Prize[]>(sortedPrizes);
   const [description, setDescription] = useState<string>(raffle.description);
   const [completeRaffle, setCompleteRaffle] = useState<CompleteRaffle | null>(null);
 
   const handleOnSubmit = async ({ name, contact, weightedVote, raffleDate, raffleTime }: RaffleEditFormValue) => {
-    console.log('name: ', name);
-    console.log('contact: ', contact);
-    console.log('weightedVote: ', weightedVote);
-    console.log('Submit PATCH');
+    if (raffle.token) {
+      // Combine dates and get timezone
+      if (!raffleDate || !raffleTime) return;
+      let raffleDatetime = mergeRaffleDatetime(raffleDate, raffleTime);
+
+      // Delete all prizes
+      if (raffle.prizes.length > 0) {
+        await Promise.all(raffle.prizes.map((prize) => deletePrize({ id: prize.id, token: raffle.token })));
+      }
+      let submitPrizes: CreatePrize[] = prizes.map((prize) => ({ name: prize.name, order: prize.order }));
+
+      let patchedRaffle = await patchRaffle({
+        id: raffle.id,
+        token: raffle.token,
+        name,
+        description,
+        contact,
+        one_address_one_vote: !weightedVote,
+        draw_datetime: raffleDatetime,
+        prizes: submitPrizes,
+      });
+      if (patchedRaffle) push(createRaffleLink(patchedRaffle, true));
+    }
   };
 
   // Hooks
   const [patchRaffle, { isLoading }] = useEditRaffle();
+  const [deletePrize] = useDeletePrize();
+  const localDrawDateTime = moment.utc(raffle.draw_datetime).local();
 
   const initialValues: RaffleEditFormValue = {
     name: raffle.name,
     contact: raffle.contact,
     weightedVote: !raffle.one_address_one_vote,
-    raffleDate: moment.utc(raffle.draw_datetime).local(),
-    raffleTime: moment.utc(raffle.draw_datetime).local(),
+    raffleDate: localDrawDateTime,
+    raffleTime: moment(new Date()).hours(localDrawDateTime.hours()).minutes(localDrawDateTime.minutes()),
   };
 
   // Lib hooks
   const { values, errors, touched, handleChange, submitForm, setFieldValue } = useFormik({
     initialValues,
     validationSchema: RaffleEditFormSchema,
-    onSubmit: injectErrorsFromBackend<RaffleEditFormValue>(handleOnSubmit),
+    onSubmit: handleOnSubmit,
   });
 
   useEffect(() => {
