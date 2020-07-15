@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent, Participant
-from core.services import poap_validation_service
+from core.services import poap_integration_service
 
 UserModel = get_user_model()
 
@@ -91,7 +91,7 @@ class EventSerializer(serializers.ModelSerializer):
         fields = ["id", "event_id", "name"]
 
     def validate(self, data):
-        if not poap_validation_service.valid_poap_event(data):
+        if not poap_integration_service.valid_poap_event(data):
             return ValidationError("The poap event is invalid")
         return data
 
@@ -99,7 +99,13 @@ class EventSerializer(serializers.ModelSerializer):
 class RaffleSerializer(serializers.ModelSerializer):
     prizes = PrizeSerializer(many=True)
     events = EventSerializer(many=True)
-    token = serializers.CharField(allow_blank=True, read_only=True, required=False, source="_token", default="")
+    token = serializers.CharField(
+        allow_blank=True,
+        read_only=True,
+        required=False,
+        source="_token",
+        default=""
+    )
 
     class Meta:
         model = Raffle
@@ -115,7 +121,8 @@ class RaffleSerializer(serializers.ModelSerializer):
         for prize_data in prizes_data:
             Prize.objects.create(raffle=raffle, **prize_data)
         for event_data in events_data:
-            # the event is validated in the serializer, so if it does not exist we create it
+            # the event is validated in the serializer,
+            # so if it does not exist we create it
             event, _ = Event.objects.get_or_create(event_id=event_data["event_id"])
             # update the name if the name has changed
             if event_data["name"] != event.name:
@@ -142,15 +149,45 @@ class ParticipantSerializer(serializers.ModelSerializer):
         model = Participant
         fields = "__all__"
 
+
+class MultiParticipantSerializer(serializers.Serializer):
+    """
+    Specific serializer used to validate the creation of
+    multiple participants from a single address
+    """
+    address = serializers.CharField(max_length=50)
+    signature = serializers.CharField(max_length=255)
+    raffle_id = serializers.IntegerField()
+
+    def validate_raffle_id(self, value):
+        if not Raffle.objects.filter(id=value).exists():
+            return ValidationError("raffle id must belong to a valid raffle")
+        return value
+
     def validate(self, attrs):
         # validate that the participant is who he claims to be
-        authenticated = poap_validation_service.valid_participant_address(attrs["address"], attrs["signature"])
+        authenticated = poap_integration_service.valid_participant_address(
+            attrs["address"], attrs["signature"], attrs["raffle_id"]
+        )
         if not authenticated:
-            return ValidationError("the address does not correspond with the signature")
+            return ValidationError(
+                "the address does not correspond with the signature"
+            )
+        return attrs
 
-        has_claimed_poap = poap_validation_service.address_has_poap(attrs["poap_id"])
-        if not has_claimed_poap:
-            return ValidationError({"poap_id": "address does not have possession this poap"})
+    def update(self, instance, validated_data):
+        raise NotImplementedError
+
+    def create(self, validated_data):
+        address = validated_data.get("address")
+        signature = validated_data.get("signature")
+        raffle_id = validated_data.get("raffle_id")
+        Participant.objects.create_from_address(
+            address=address,
+            signature=signature,
+            raffle_id=raffle_id
+        )
+
 
 
 class TextEditorImageSerializer(serializers.ModelSerializer):
