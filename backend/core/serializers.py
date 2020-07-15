@@ -125,7 +125,7 @@ class RaffleSerializer(serializers.ModelSerializer):
         return raffle
 
     def update(self, instance, validated_data):
-        prizes_data = validated_data.pop("prizes", None)
+        prizes_data = validated_data.pop("prizes", [])
         events_data = validated_data.pop("events", None)
         if events_data:
             raise ValidationError("cannot modify events through a raffle, use the event resource")
