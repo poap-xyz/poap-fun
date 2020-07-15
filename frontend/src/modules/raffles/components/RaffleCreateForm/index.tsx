@@ -21,7 +21,6 @@ import SelectEvent from 'ui/components/SelectEvent';
 import Editor from 'ui/components/Editor';
 
 // Helpers
-import { injectErrorsFromBackend } from 'lib/helpers/formik';
 import { mergeRaffleDatetime } from 'lib/helpers/api';
 
 // Constants
@@ -102,7 +101,7 @@ const RaffleCreateForm: FC = () => {
   const { values, errors, touched, handleChange, submitForm, setFieldValue } = useFormik({
     initialValues,
     validationSchema: RaffleCreateFormSchema,
-    onSubmit: injectErrorsFromBackend<RaffleCreateFormValue>(handleOnSubmit),
+    onSubmit: handleOnSubmit,
   });
 
   const removePrize = (order: number) => {
