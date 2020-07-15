@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { useHistory, useParams, generatePath } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
@@ -18,14 +18,18 @@ import PrizeRowForm from 'ui/components/PrizeRowForm';
 import DatePicker from 'ui/components/DatePicker';
 import TimePicker from 'ui/components/TimePicker';
 import Editor from 'ui/components/Editor';
+import InputTitle from 'ui/styled/InputTitle';
+import EventDisplay from 'ui/components/EventDisplay';
 
 // Helpers
 import { injectErrorsFromBackend } from 'lib/helpers/formik';
+import { mergeRaffleEvent } from 'lib/helpers/api';
 
 // Constants
 import { ROUTES } from 'lib/routes';
 
 // Hooks
+import { useEvents } from 'lib/hooks/useEvents';
 import { useEditRaffle } from 'lib/hooks/useEditRaffle';
 import { useStateContext } from 'lib/hooks/useCustomState';
 
@@ -33,7 +37,7 @@ import { useStateContext } from 'lib/hooks/useCustomState';
 import RaffleEditFormSchema from './schema';
 
 // Types
-import { Prize } from 'lib/types';
+import { Prize, CompleteRaffle } from 'lib/types';
 export type RaffleEditFormValue = {
   name: string;
   contact: string;
@@ -48,10 +52,16 @@ const RaffleEditForm: FC = () => {
   const { rafflesInfo } = useStateContext();
   const raffle = rafflesInfo[id];
 
+  const { data: events } = useEvents();
+
   const [prizes, setPrizes] = useState<Prize[]>(raffle.prizes);
   const [description, setDescription] = useState<string>(raffle.description);
+  const [completeRaffle, setCompleteRaffle] = useState<CompleteRaffle | null>(null);
 
   const handleOnSubmit = async ({ name, contact, weightedVote, raffleDate, raffleTime }: RaffleEditFormValue) => {
+    console.log('name: ', name);
+    console.log('contact: ', contact);
+    console.log('weightedVote: ', weightedVote);
     console.log('Submit PATCH');
   };
 
@@ -72,6 +82,12 @@ const RaffleEditForm: FC = () => {
     validationSchema: RaffleEditFormSchema,
     onSubmit: injectErrorsFromBackend<RaffleEditFormValue>(handleOnSubmit),
   });
+
+  useEffect(() => {
+    if (!events || !raffle) return;
+    let completeRaffles = mergeRaffleEvent([raffle], events);
+    if (completeRaffles.length > 0) setCompleteRaffle(completeRaffles[0]);
+  }, [events]); //eslint-disable-line
 
   const removePrize = (order: number) => {
     let newPrizes = prizes
@@ -120,7 +136,10 @@ const RaffleEditForm: FC = () => {
                 values={values}
               />
             </Col>
-            <Col span={24}>POAPs</Col>
+            <Col span={24}>
+              <InputTitle>POAP{raffle.prizes.length > 1 && `s`}</InputTitle>
+              {completeRaffle && <EventDisplay events={completeRaffle.events} />}
+            </Col>
             <Col span={24}>
               <Checkbox
                 handleChange={handleChange}

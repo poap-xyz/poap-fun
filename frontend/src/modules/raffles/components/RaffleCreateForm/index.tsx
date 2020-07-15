@@ -90,7 +90,6 @@ const RaffleCreateForm: FC = () => {
       name,
       description,
       contact,
-      registration_deadline: raffleDatetime,
       draw_datetime: raffleDatetime,
       one_address_one_vote: !weightedVote,
       prizes: submitPrizes,

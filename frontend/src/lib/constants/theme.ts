@@ -7,6 +7,8 @@ export const BREAKPOINTS = {
   lg: '80em',
 };
 
+export const DATETIMEFORMAT = 'DD-MMM-YYYY HH:mm';
+
 const fontSizes = {
   xs: '12px',
   sm: '14px',

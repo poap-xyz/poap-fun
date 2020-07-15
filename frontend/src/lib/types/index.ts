@@ -36,7 +36,6 @@ export type Raffle = {
   contact: string;
   draw_datetime: string;
   end_datetime: string | null;
-  registration_deadline: string;
   one_address_one_vote: boolean;
   token?: string;
   prizes: Prize[];
@@ -50,7 +49,6 @@ export type CompleteRaffle = {
   contact: string;
   draw_datetime: string;
   end_datetime: string | null;
-  registration_deadline: string;
   one_address_one_vote: boolean;
   prizes: Prize[];
   events: PoapEvent[];
@@ -76,7 +74,6 @@ export type CreateRaffleValues = {
   description: string;
   contact: string;
   draw_datetime: string;
-  registration_deadline: string;
   one_address_one_vote: boolean;
   prizes: CreatePrize[];
   events: CreateEvent[];

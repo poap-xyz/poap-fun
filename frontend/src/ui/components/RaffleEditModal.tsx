@@ -27,16 +27,19 @@ const EditModal = styled.div`
   .subtitle {
     text-align: center;
     font-weight: normal;
+    padding: 40px 30px 60px;
   }
   .custom-input {
     text-align: center;
     padding: 20px 0;
+    margin-top: 50px;
     input {
       text-align: center;
+      padding-left: 10px;
       width: 275px;
       letter-spacing: 10px;
-      font-size: 50px;
-      border: 1px solid var(--system-placeholder);
+      font-size: 30px;
+      border: 0px solid var(--system-placeholder);
       border-radius: 3px;
       color: var(--tertiary-color);
     }
@@ -74,10 +77,10 @@ const RaffleEditModal: FC<EditProps> = ({ id, onSuccess }) => {
   return (
     <EditModal>
       <h3>{raffle.name}</h3>
-      <div className={'subtitle'}>Please, enter the 6 digit code that was given at the raffle's creation</div>
       <div className={'custom-input'}>
         <InputMask mask={'999999'} maskChar={'_'} value={token} alwaysShowMask onChange={handleInput} />
       </div>
+      <div className={'subtitle'}>Please enter the 6 digit code that was given at the raffle's creation</div>
       <div className={'submit'}>
         <Button type={'primary'} loading={isLoading} onClick={handleSubmitClick}>
           Submit
