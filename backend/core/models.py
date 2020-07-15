@@ -1,12 +1,15 @@
 import logging
 import random
+from collections import deque
 from datetime import datetime
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext as _
 
+from core.services import poap_integration_service
 from core.utils import generate_unique_filename
 from core.validators import validate_image_size
 
@@ -115,6 +118,13 @@ class Raffle(TimeStampedModel):
     def __repr__(self):
         return f"Raffle(id: {self.id}, name: {self.name})"
 
+    @classmethod
+    def can_participate_in_raffle(cls, event_ids, raffle):
+        valid_events = set([event.event_id for event in raffle.events])
+        attended_events = set(event_ids)
+        attended_events_in_valid_events = attended_events.intersection(valid_events)
+        return len(attended_events_in_valid_events) > 0
+
 
 class Prize(TimeStampedModel):
     """
@@ -162,6 +172,38 @@ class RaffleEvent(TimeStampedModel):
         return self.__str__()
 
 
+class ParticipantManager(models.Manager):
+
+    def create_from_address(self, address, signature, raffle_id):
+        event_and_poap_ids = poap_integration_service.get_poaps_for_address(address)
+        if not event_and_poap_ids:
+            return ValidationError("could not get poaps for address")
+        event_ids, poap_ids = event_and_poap_ids
+
+        raffle = Raffle.objects.filter(id=raffle_id).first()
+        if not raffle:
+            logger.error(
+                f"Cannot find raffle {raffle_id} when trying to create participants from address {address}"
+            )
+            return ValidationError("raffle does not exist")
+
+        if not Raffle.can_participate_in_raffle(event_ids, raffle):
+            return ValidationError("the participant does not have all required poaps")
+
+        participants = deque()
+        for poap_id in poap_ids:
+            participant = Participant(
+                address=address,
+                signature=signature,
+                poap_id=poap_id,
+                raffle=raffle_id
+            )
+            participants.append(participant)
+
+        Participant.objects.bulk_create(participants)
+        return participants
+
+
 class Participant(TimeStampedModel):
     """
     Represents the participant in a raffle
@@ -176,6 +218,8 @@ class Participant(TimeStampedModel):
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
     poap_id = models.CharField(_("poap id"), max_length=100)
     signature = models.CharField(_("signature"), max_length=255)
+
+    objects = ParticipantManager()
 
     def __str__(self):
         return self.address
