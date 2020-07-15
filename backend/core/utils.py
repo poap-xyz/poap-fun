@@ -1,8 +1,8 @@
 import datetime
 import os
+
+from web3.auto.infura import w3
 from django.utils.deconstruct import deconstructible
-
-
 
 
 @deconstructible
@@ -25,3 +25,9 @@ class GenerateUniqueFilename(object):
 
 
 generate_unique_filename = GenerateUniqueFilename('text_editor_images/')
+
+
+def verify_and_recover_message(message, signature):
+    # TODO implement
+    return message
+

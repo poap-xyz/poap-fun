@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import Group
 from django_filters import rest_framework as filters
 from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -18,7 +19,7 @@ from core.filters import UserFilter, ParticipantFilter, RaffleFilter
 from core.models import User, Raffle, Event, Prize, Participant
 from .permissions import RaffleTokenPermission, PrizeRaffleTokenPermission
 from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer, EventSerializer, \
-    PrizeSerializer, ParticipantSerializer
+    PrizeSerializer, ParticipantSerializer, MultiParticipantSerializer
 
 
 class CustomObtainJSONWebToken(JSONWebTokenAPIView):
@@ -126,7 +127,7 @@ class PrizeViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
-class RaffleViewSet(viewsets.ModelViewSet):
+class RaffleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Raffle.objects.all()
     serializer_class = RaffleSerializer
     lookup_field = 'id'
@@ -158,6 +159,36 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     serializer_class = ParticipantSerializer
     filter_backends = filters.DjangoFilterBackend
     filter_class = ParticipantFilter
+
+    @action(detail=False, methods=['Post'])
+    def signup_address(self, request):
+        signature = request.data.get("signature", None)
+        message = request.data.get("message", None)
+
+        if not message and not signature:
+            return Response(
+                ("you must provide a message containing the raffle id and"
+                 " the address, along with a signature for the message"),
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not message:
+            return Response(
+                "you must provide a message containing the raffle id and address",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not signature:
+            return Response(
+                "Missing signature for message",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = MultiParticipantSerializer(request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class TextEditorImageView(APIView):
