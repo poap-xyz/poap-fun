@@ -27,7 +27,7 @@ const RaffleCreated: FC = () => {
 
   const { id } = useParams();
   // Lib hooks
-  const { data: raffle } = useRaffle({ id });
+  const { data: raffle } = useRaffle({ id: parseInt(id, 10) });
   const { data: events } = useEvents();
 
   useEffect(() => {

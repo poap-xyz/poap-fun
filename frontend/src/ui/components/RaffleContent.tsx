@@ -1,15 +1,16 @@
 import React, { FC } from 'react';
 import { Tooltip } from 'antd';
 import styled from '@emotion/styled';
+import { FiLink } from 'react-icons/fi';
 
 // Components
 import { Card } from 'ui/styled/antd/Card';
 import PrizeRowForm from 'ui/components/PrizeRowForm';
+import RaffleShareContent from 'ui/components/RaffleShareContent';
 import Separator from 'ui/styled/Separator';
 
-// Helpers
-
-// Assets
+// Lib
+import { useModal } from 'lib/hooks/useModal';
 
 // Types
 import { CompleteRaffle } from 'lib/types';
@@ -55,13 +56,34 @@ const Title = styled.h3`
   font-weight: bold;
   font-size: 18px;
 `;
+const Share = styled.div`
+  text-align: right;
+  font-family: var(--alt-font);
+  color: var(--secondary-color);
+  font-size: 16px;
+  line-height: 22px;
+  cursor: pointer;
+`;
 
 const RaffleContent: FC<RaffleContentProps> = ({ raffle }) => {
+  const { showModal: handleShare } = useModal({
+    component: RaffleShareContent,
+    closable: true,
+    className: '',
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    id: raffle.id,
+  });
+
   return (
     <Content>
       <Card>
         <CardContent>
           <div>
+            <Share onClick={handleShare}>
+              Get sharable link <FiLink />
+            </Share>
             <Title>Prize{raffle.prizes.length > 1 && `s`}</Title>
             <div>
               {raffle.prizes.map((prize) => (

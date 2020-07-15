@@ -167,7 +167,8 @@ class TextEditorImageView(APIView):
         if image_serializer.is_valid():
             image_serializer.save()
             # TODO - Review HTTP Scheme
-            response_data = ({"location": "https://" + request.META['HTTP_HOST'] + image_serializer.data.get("file")})
+            host = request.META.get('HTTP_HOST', 'api.localhost')
+            response_data = ({"location": "https://" + host + image_serializer.data.get("file")})
             return Response(response_data, status=status.HTTP_201_CREATED)
         else:
             return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

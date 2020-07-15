@@ -14,7 +14,6 @@ class RaffleTestCase(TestCase):
         self.draw_datetime = datetime.now()
         self.end_datetime = datetime.now()
         self.one_address_one_vote = True
-        self.registration_deadline = datetime.now()
         self.raffle = Raffle.objects.create(
             name=self.name,
             description=self.description,
@@ -22,7 +21,6 @@ class RaffleTestCase(TestCase):
             draw_datetime=self.draw_datetime,
             end_datetime=self.end_datetime,
             one_address_one_vote=self.one_address_one_vote,
-            registration_deadline=self.registration_deadline
         )
         self.token = self.raffle._token
 

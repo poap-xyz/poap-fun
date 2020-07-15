@@ -87,6 +87,12 @@ log-celeryw:
 log-celeryb:
 	docker-compose logs celerybeat
 
+log-celeryw-live:
+	docker-compose logs --tail 50 --follow --timestamps celeryworker
+
+log-celeryb-live:
+	docker-compose logs --tail 50 --follow --timestamps celerybeat
+
 #######
 #Tests#
 #######

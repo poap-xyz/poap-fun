@@ -1,7 +1,8 @@
+import collections
+
 import pytest
 from model_bakery import baker
 from rest_framework.test import APIClient
-from rest_framework_jwt.settings import api_settings
 
 
 @pytest.fixture
@@ -22,7 +23,6 @@ def raffle_data():
         "description": "this is a test raffle used as an example",
         "contact": "info@xivis.com",
         "draw_datetime": "2020-06-14T04:12:36",
-        "registration_deadline": "2020-06-14T04:12:36",
         "one_address_one_vote": True,
         "prizes": [
             {
@@ -46,3 +46,26 @@ def raffle_data():
         ]
     }
     return raffle_data
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def raffle_with_participants():
+    RaffleWithParticipants = collections.namedtuple('RaffleWithParticipants', 'raffle remaining_participants')
+    raffle = baker.make('core.Raffle')
+    participants = baker.make('core.Participant', raffle=raffle, _quantity=6)
+    results_table = baker.make('core.ResultsTable', raffle=raffle)
+
+    fixed_participants = participants[:3]
+    remaining_participants = participants[3:]
+    order = len(participants)
+    for participant in fixed_participants:
+        table_entry = baker.make(
+            'core.ResultsTableEntry',
+            participant=participant,
+            results_table=results_table,
+            order=order
+        )
+        order -= 1
+
+    return RaffleWithParticipants(raffle, remaining_participants)

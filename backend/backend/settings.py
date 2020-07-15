@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'solo',
     'celery',
     'drf_yasg',
-
+    'django_celery_beat',
 ]
 
 if DEBUG:
@@ -176,7 +176,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -207,8 +207,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = True
 
-from .celery_beat_schedule import beat_schedule
-CELERY_BEAT_SCHEDULE = beat_schedule
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # Logging
 from django.utils.log import DEFAULT_LOGGING

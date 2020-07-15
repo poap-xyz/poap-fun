@@ -115,13 +115,14 @@ services:
     container_name: poap-fun-celerybeat
     volumes:
       - ./backend:/usr/src/app
+      - mediadata:/usr/src/app/media
     env_file: .env
     environment:
       C_FORCE_ROOT: 'yes'
     depends_on:
       - postgres
       - redis
-    command: celery beat --app=backend -s /tmp/celerybeat-schedule --pid=/tmp/celery.pid --loglevel=DEBUG
+    command: celery beat --app=backend -s /tmp/celerybeat-schedule --pidfile=/tmp/celery.pid --loglevel=DEBUG
     networks:
       - back-tier
 
