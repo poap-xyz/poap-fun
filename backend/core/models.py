@@ -180,7 +180,8 @@ class Participant(TimeStampedModel):
 
     address = models.CharField(_("address"), max_length=50)
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
-    poap_id = models.BigIntegerField(_("poap id"))
+    poap_id = models.CharField(_("poap id"), max_length=100)
+    signature = models.CharField(_("signature"), max_length=255)
 
     def __str__(self):
         return self.address
