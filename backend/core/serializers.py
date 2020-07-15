@@ -5,8 +5,8 @@ from django.utils.translation import ugettext as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent
-from core.utils import valid_poap_event
+from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent, Participant
+from core.services import poap_validation_service
 
 UserModel = get_user_model()
 
@@ -91,7 +91,7 @@ class EventSerializer(serializers.ModelSerializer):
         fields = ["id", "event_id", "name"]
 
     def validate(self, data):
-        if not valid_poap_event(data):
+        if not poap_validation_service.valid_poap_event(data):
             return ValidationError("The poap event is invalid")
         return data
 
@@ -134,6 +134,23 @@ class RaffleSerializer(serializers.ModelSerializer):
         if events_data:
             raise ValidationError("cannot modify events through a raffle, use the event resource")
         return super(RaffleSerializer, self).update(instance, validated_data)
+
+
+class ParticipantSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Participant
+        fields = "__all__"
+
+    def validate(self, attrs):
+        # validate that the participant is who he claims to be
+        authenticated = poap_validation_service.valid_participant_address(attrs["address"], attrs["signature"])
+        if not authenticated:
+            return ValidationError("the address does not correspond with the signature")
+
+        has_claimed_poap = poap_validation_service.address_has_poap(attrs["poap_id"])
+        if not has_claimed_poap:
+            return ValidationError({"poap_id": "address does not have possession this poap"})
 
 
 class TextEditorImageSerializer(serializers.ModelSerializer):

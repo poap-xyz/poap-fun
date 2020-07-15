@@ -17,12 +17,12 @@ from rest_framework import status, viewsets
 from django_filters import rest_framework as filters
 
 from backend import settings
-from core.filters import UserFilter, RaffleFilter
-from core.models import User, Raffle, Event, Prize
+from core.filters import UserFilter, ParticipantFilter
+from core.models import User, Raffle, Event, Prize, Participant
 from .permissions import RaffleTokenPermission, PrizeRaffleTokenPermission
 
 from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer, EventSerializer, \
-    PrizeSerializer
+    PrizeSerializer, ParticipantSerializer
 
 
 class CustomObtainJSONWebToken(JSONWebTokenAPIView):
@@ -155,6 +155,13 @@ class RaffleViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
+
+class ParticipantViewSet(viewsets.ModelViewSet):
+    queryset = Participant.objects.all()
+    serializer_class = ParticipantSerializer
+    filter_backends = filters.DjangoFilterBackend
+    filter_class = ParticipantFilter
 
 
 class TextEditorImageView(APIView):

@@ -1,6 +1,5 @@
-from django.db import models as django_models
-from django_filters import rest_framework as filters, DateFilter, IsoDateTimeFilter
-from core.models import User, Raffle
+from django_filters import rest_framework as filters
+from core.models import User
 
 
 class UserFilter(filters.FilterSet):
@@ -11,6 +10,16 @@ class UserFilter(filters.FilterSet):
             'first_name': ['exact', 'icontains'],
             'last_name': ['exact', 'icontains'],
             'email': ['exact', 'icontains']
+        }
+
+
+class ParticipantFilter(filters.FilterSet):
+    class Meta:
+        model = Participant
+        fields = {
+            'raffle': ['exact'],
+            'address': ['exact'],
+            'poap_id': ['exact'],
         }
 
 
