@@ -218,6 +218,23 @@ class TestPrizeAPIView:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+class TestParticipantAPIView:
+
+    def test_get_all_participants_for_raffle(self):
+        pass
+
+    def test_sign_up_valid_user(self):
+        pass
+
+    def test_sign_up_invalid_address(self):
+        pass
+
+    def test_sign_up_invalid_poaps(self):
+        pass
+
+    
+
+
 class TestTextEditorImageAPIView:
 
     @pytest.mark.urls("core.urls")
