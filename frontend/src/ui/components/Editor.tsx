@@ -13,6 +13,7 @@ import { Item } from 'ui/styled/antd/Form';
 type EditorProps = {
   title: string;
   onChange: (content: string, editor: any) => void;
+  initialValue?: string;
 };
 
 const Wrapper = styled.div`
@@ -24,11 +25,11 @@ const Wrapper = styled.div`
   }
 `;
 
-const Editor: FC<EditorProps> = ({ title, onChange }) => (
+const Editor: FC<EditorProps> = ({ title, onChange, initialValue = '<p>Be creative :)</p>' }) => (
   <Item label={title}>
     <Wrapper>
       <BaseEditor
-        initialValue="<p>Be creative :)</p>"
+        initialValue={initialValue}
         apiKey={process.env.REACT_APP_TINY_CLOUD_API_KEY}
         init={{
           height: 500,

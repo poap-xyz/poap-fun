@@ -7,7 +7,7 @@ import MainLayout from 'ui/layouts/MainLayout';
 import RaffleDetail from 'modules/raffles/components/RaffleDetail';
 
 const RafflePage: FC = () => (
-  <MainLayout paddedContent={false}>
+  <MainLayout padded={false}>
     <RaffleDetail />
   </MainLayout>
 );

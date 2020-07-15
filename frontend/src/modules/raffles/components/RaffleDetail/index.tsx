@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
+import { generatePath } from 'react-router';
 
 // Components
 import { Container } from 'ui/styled/Container';
@@ -10,10 +11,16 @@ import Countdown from 'ui/components/Countdown';
 import RaffleContent from 'ui/components/RaffleContent';
 import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
+import StatusTag from 'ui/components/StatusTag';
+import RaffleEditModal from 'ui/components/RaffleEditModal';
+
+// Components
+import { ROUTES } from 'lib/routes';
 
 // Hooks
 import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffle } from 'lib/hooks/useRaffle';
+import { useModal } from 'lib/hooks/useModal';
 
 // Helpers
 import { isRaffleActive } from 'lib/helpers/raffles';
@@ -21,15 +28,28 @@ import { mergeRaffleEvent } from 'lib/helpers/api';
 
 // Types
 import { CompleteRaffle } from 'lib/types';
-import StatusTag from '../../../../ui/components/StatusTag';
 
 const RaffleCreated: FC = () => {
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
 
   const { id } = useParams();
+  const { push } = useHistory();
   // Lib hooks
   const { data: raffle } = useRaffle({ id: parseInt(id, 10) });
   const { data: events } = useEvents();
+  const { showModal: handleEdit } = useModal({
+    component: RaffleEditModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    id: parseInt(id, 10),
+    onSuccess: (data: any) => {
+      if (data?.id) push(generatePath(ROUTES.raffleEdit, { id: data.id }));
+    },
+  });
 
   useEffect(() => {
     if (!events || !raffle) return;
@@ -56,7 +76,7 @@ const RaffleCreated: FC = () => {
         <>
           {isActive && (
             <>
-              <TitlePrimary title={title} goBack editAction={() => {}} />
+              <TitlePrimary title={title} goBack editAction={handleEdit} />
               <Countdown datetime={completeRaffle.draw_datetime} />
             </>
           )}

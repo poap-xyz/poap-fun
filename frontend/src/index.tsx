@@ -22,6 +22,7 @@ import { StateProvider } from 'lib/hooks/useCustomState';
 // Module Components
 import Home from 'modules/raffles/pages/Home';
 import RaffleCreate from 'modules/raffles/pages/RaffleCreate';
+import RaffleEdit from 'modules/raffles/pages/RaffleEdit';
 import RaffleCreated from 'modules/raffles/pages/RaffleCreated';
 import RafflePage from 'modules/raffles/pages/RafflePage';
 
@@ -31,6 +32,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const publicRoutes = [
   { Component: RaffleCreate, path: ROUTES.raffleCreation },
   { Component: RaffleCreated, path: ROUTES.raffleCreated },
+  { Component: RaffleEdit, path: ROUTES.raffleEdit },
   { Component: RafflePage, path: ROUTES.raffleDetail },
   { Component: Home, path: ROUTES.home },
 ];

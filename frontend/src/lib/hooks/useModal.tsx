@@ -1,4 +1,4 @@
-import React, { ElementType, useRef } from 'react';
+import React, { ElementType, ReactNode } from 'react';
 import { useModal as useModalHook } from 'react-modal-hook';
 
 // Components
@@ -9,45 +9,51 @@ import { Button } from 'ui/styled/antd/Button';
 type Props = {
   component: ElementType;
   closable?: boolean;
+  footerButton?: boolean;
   title?: string;
   id?: number;
   className?: string;
   width?: number;
   okButtonWidth?: number;
   okButtonText?: string;
+  onSuccess?: (data: object) => void;
 };
 
 export const useModal = ({
   component,
   closable = true,
+  footerButton = true,
   title = undefined,
   id = undefined,
   className = '',
   width = 400,
   okButtonWidth = 100,
   okButtonText = 'Ok',
+  onSuccess = (data: any) => {},
 }: Props) => {
-  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
-
-  const ModalWrapper = () => (
-    <Modal
-      cancelButtonProps={{ ghost: true }}
-      className={className}
-      closable={closable}
-      footer={[
-        <Button onClick={hideModal} type="primary" width={okButtonWidth}>
-          {okButtonText}
-        </Button>,
-      ]}
-      onCancel={hideModal}
-      onOk={hideModal}
-      title={title}
-      visible
-      width={`${width}px`}
-    >
-      {React.createElement(component, { hideModal, id, submitButtonRef })}
-    </Modal>
-  );
+  const ModalWrapper = () => {
+    let footer: ReactNode[] | null = [
+      <Button onClick={hideModal} type="primary" width={okButtonWidth}>
+        {okButtonText}
+      </Button>,
+    ];
+    if (!footerButton) footer = null;
+    return (
+      <Modal
+        cancelButtonProps={{ ghost: true }}
+        className={className}
+        closable={closable}
+        footer={footer}
+        onCancel={hideModal}
+        onOk={hideModal}
+        title={title}
+        visible
+        width={`${width}px`}
+      >
+        {React.createElement(component, { hideModal, id, onSuccess })}
+      </Modal>
+    );
+  };
 
   const [showModal, hideModal] = useModalHook(ModalWrapper);
 
