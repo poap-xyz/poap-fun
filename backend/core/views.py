@@ -1,26 +1,22 @@
 import json
-import os
 from datetime import datetime
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import Group
+from django_filters import rest_framework as filters
+from rest_framework import status, viewsets
+from rest_framework.filters import OrderingFilter
 from rest_framework.parsers import FileUploadParser
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.serializers import JSONWebTokenSerializer
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.views import JSONWebTokenAPIView, APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.filters import OrderingFilter
-from rest_framework import status, viewsets
-from django_filters import rest_framework as filters
 
-from backend import settings
-from core.filters import UserFilter, ParticipantFilter
+from core.filters import UserFilter, ParticipantFilter, RaffleFilter
 from core.models import User, Raffle, Event, Prize, Participant
 from .permissions import RaffleTokenPermission, PrizeRaffleTokenPermission
-
 from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer, EventSerializer, \
     PrizeSerializer, ParticipantSerializer
 

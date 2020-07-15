@@ -1,8 +1,6 @@
-import functools
 import math
-import random
 from datetime import datetime
-from typing import List, Tuple, Optional
+from typing import List, Optional
 
 from django.db import transaction
 from web3.auto.infura import w3
@@ -196,9 +194,6 @@ class RaffleResultsService:
         Args:
             raffle:
                 the raffle for which the result table is being generated
-            slicing_percentage:
-                the lower bound percentage of participants that
-                are saved as result entries for this iteration
 
         Returns:
 

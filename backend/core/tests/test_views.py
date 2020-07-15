@@ -2,13 +2,10 @@ import json
 import tempfile
 from datetime import datetime, timedelta
 
-import pytest
-import requests
 from PIL import Image
 from django.urls import reverse
-from model_bakery import baker
-
 from rest_framework import status
+
 from core.tests.test_fixtures import *
 
 
