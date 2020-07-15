@@ -75,19 +75,19 @@ class TestRaffleResultsService:
         raffle = baker.make('core.Raffle')
         baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
-            'core.Participant', raffle=raffle, address="0x1", poap_id=109  # poap_id = 109
+            'core.Participant', raffle=raffle, address="0x1", poap_id=109
         )
         participant_2 = baker.make(
-            'core.Participant', raffle=raffle, address="0x2", poap_id=1109  # poap_id = 1109
+            'core.Participant', raffle=raffle, address="0x2", poap_id=1109
         )
         participant_3 = baker.make(
-            'core.Participant', raffle=raffle, address="0x3", poap_id=11239  # poap_id = 11239
+            'core.Participant', raffle=raffle, address="0x3", poap_id=11239
         )
         participant_4 = baker.make(
-            'core.Participant', raffle=raffle, address="0x4", poap_id=124  # poap_id = 124
+            'core.Participant', raffle=raffle, address="0x4", poap_id=124
         )
         participant_5 = baker.make(
-            'core.Participant', raffle=raffle, address="0x5", poap_id=154  # poap_id = 154
+            'core.Participant', raffle=raffle, address="0x5", poap_id=154
         )
 
         participants = [participant_1, participant_2, participant_3, participant_4, participant_5]
@@ -112,10 +112,10 @@ class TestRaffleResultsService:
         raffle = baker.make('core.Raffle')
         baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
-            'core.Participant', raffle=raffle, address="0x1", poap_id=124  # poap_id = 124
+            'core.Participant', raffle=raffle, address="0x1", poap_id=124
         )
         participant_2 = baker.make(
-            'core.Participant', raffle=raffle, address="0x2", poap_id=154  # poap_id = 154
+            'core.Participant', raffle=raffle, address="0x2", poap_id=154
         )
 
         participants = [participant_1, participant_2]
@@ -129,7 +129,7 @@ class TestRaffleResultsService:
 
     @pytest.mark.django_db
     def test_raffle_finalization(self):
-        raffle = baker.make('core.Raffle')
+        raffle = baker.make('core.Raffle', one_address_one_vote=False)
         baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
             'core.Participant', raffle=raffle, address="0x1", poap_id=124

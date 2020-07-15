@@ -61,7 +61,7 @@ class Raffle(TimeStampedModel):
     class Meta:
         verbose_name = _("raffle")
         verbose_name_plural = _("raffles")
-        ordering = ['-draw_datetime']
+        ordering = ['finalized', 'draw_datetime']
 
     name = models.CharField(_("name"), max_length=256)
     description = models.TextField(_("description"))

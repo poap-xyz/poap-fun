@@ -3,7 +3,7 @@ import os
 from django.utils.deconstruct import deconstructible
 
 
-# TODO implement check with poap API (check name and id
+# TODO implement check with poap API (check name and id)
 def valid_poap_event(poap_event):
     return True
 
@@ -28,4 +28,3 @@ class GenerateUniqueFilename(object):
 
 
 generate_unique_filename = GenerateUniqueFilename('text_editor_images/')
-

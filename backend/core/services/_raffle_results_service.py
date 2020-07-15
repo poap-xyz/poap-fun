@@ -211,6 +211,9 @@ class RaffleResultsService:
         prev_block = BlockData.objects.filter(raffle=raffle).order_by("-order").first()
         block_data = cls._get_block_data(raffle, prev_block)
 
+        if not block_data:
+            return False
+
         results_table, _ = ResultsTable.objects.get_or_create(raffle=raffle)
 
         remaining_participants = cls._get_remaining_participants(raffle)
