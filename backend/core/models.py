@@ -79,15 +79,9 @@ class Raffle(TimeStampedModel):
 
     @staticmethod
     def get_valid_raffles_for_event_set(event_ids):
-        event_ids_set = set(event_ids)
         raffles = Raffle.objects.filter(draw_datetime__gte=datetime.utcnow(), events__event_id__in=event_ids)
         raffles = raffles.prefetch_related('events')
         raffles = raffles.distinct().all()
-        valid_raffles = []
-        for raffle in raffles:
-            raffle_events = {event.event_id for event in raffle.events.all()}
-            if raffle_events.issubset(event_ids_set):
-                valid_raffles.append(raffle)
         return raffles
 
     @property
