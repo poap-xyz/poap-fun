@@ -1,6 +1,6 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import { useHistory, generatePath } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
 import moment from 'moment-timezone';
 
@@ -17,93 +17,104 @@ import TitlePrimary from 'ui/components/TitlePrimary';
 import PrizeRowForm from 'ui/components/PrizeRowForm';
 import DatePicker from 'ui/components/DatePicker';
 import TimePicker from 'ui/components/TimePicker';
-import SelectEvent from 'ui/components/SelectEvent';
 import Editor from 'ui/components/Editor';
+import InputTitle from 'ui/styled/InputTitle';
+import EventDisplay from 'ui/components/EventDisplay';
 
 // Helpers
-import { injectErrorsFromBackend } from 'lib/helpers/formik';
-import { mergeRaffleDatetime } from 'lib/helpers/api';
+import { mergeRaffleEvent, mergeRaffleDatetime } from 'lib/helpers/api';
+import { createRaffleLink } from 'lib/helpers/raffles';
 
 // Constants
-import { ROUTES } from 'lib/routes';
 
 // Hooks
 import { useEvents } from 'lib/hooks/useEvents';
-import { useCreateRaffle } from 'lib/hooks/useCreateRaffle';
+import { useEditRaffle } from 'lib/hooks/useEditRaffle';
+import { useDeletePrize } from 'lib/hooks/usePrizes';
+import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Schema
-import RaffleCreateFormSchema from './schema';
+import RaffleEditFormSchema from './schema';
 
 // Types
-import { Prize, CreatePrize, CreateEvent, CreateRaffleValues } from 'lib/types';
-export type RaffleCreateFormValue = {
+import { Prize, CompleteRaffle, CreatePrize } from 'lib/types';
+export type RaffleEditFormValue = {
   name: string;
   contact: string;
   weightedVote: boolean;
-  eligibleEvents: number[];
   raffleDate: moment.Moment | undefined;
   raffleTime: moment.Moment | undefined;
 };
 
-const initialValues: RaffleCreateFormValue = {
-  name: '',
-  contact: '',
-  eligibleEvents: [],
-  weightedVote: false,
-  raffleDate: undefined,
-  raffleTime: undefined,
-};
-
-const RaffleCreateForm: FC = () => {
-  const [prizes, setPrizes] = useState<Prize[]>([]);
-  const [description, setDescription] = useState<string>('');
+const RaffleEditForm: FC = () => {
+  const { push } = useHistory();
+  const { id } = useParams();
+  const { rafflesInfo } = useStateContext();
+  const raffle = rafflesInfo[id];
 
   const { data: events } = useEvents();
-  const { push } = useHistory();
 
-  const handleOnSubmit = async ({
-    name,
-    contact,
-    weightedVote,
-    raffleDate,
-    raffleTime,
-    eligibleEvents,
-  }: RaffleCreateFormValue) => {
-    let submitPrizes: CreatePrize[] = prizes.map((prize) => ({ name: prize.name, order: prize.order }));
-    let submitEvents: CreateEvent[] = eligibleEvents.map((event) => {
-      let fullEvent = events ? events.find((each) => each.id === event) : null;
-      let name = fullEvent ? fullEvent.name : 'POAP Name fetch failed';
-      return { event_id: `${event}`, name };
+  let sortedPrizes: Prize[] = raffle.prizes
+    .sort((a, b) => a.id - b.id)
+    .map((prize, i) => {
+      let each: Prize = { id: i + 1, name: prize.name, order: i + 1 };
+      return each;
     });
+  const [prizes, setPrizes] = useState<Prize[]>(sortedPrizes);
+  const [description, setDescription] = useState<string>(raffle.description);
+  const [completeRaffle, setCompleteRaffle] = useState<CompleteRaffle | null>(null);
 
-    // Combine dates and get timezone
-    if (!raffleDate || !raffleTime) return;
-    let raffleDatetime = mergeRaffleDatetime(raffleDate, raffleTime);
+  const handleOnSubmit = async ({ name, contact, weightedVote, raffleDate, raffleTime }: RaffleEditFormValue) => {
+    if (raffle.token) {
+      // Combine dates and get timezone
+      if (!raffleDate || !raffleTime) return;
+      let raffleDatetime = mergeRaffleDatetime(raffleDate, raffleTime);
 
-    let newRaffle: CreateRaffleValues = {
-      name,
-      description,
-      contact,
-      draw_datetime: raffleDatetime,
-      one_address_one_vote: !weightedVote,
-      prizes: submitPrizes,
-      events: submitEvents,
-    };
+      // Delete all prizes
+      if (raffle.prizes.length > 0) {
+        await Promise.all(raffle.prizes.map((prize) => deletePrize({ id: prize.id, token: raffle.token })));
+      }
+      let submitPrizes: CreatePrize[] = prizes.map((prize) => ({ name: prize.name, order: prize.order }));
 
-    // Submit raffle
-    let raffle = await createRaffle(newRaffle);
-    if (raffle) push(generatePath(ROUTES.raffleCreated, { id: raffle.id }));
+      let patchedRaffle = await patchRaffle({
+        id: raffle.id,
+        token: raffle.token,
+        name,
+        description,
+        contact,
+        one_address_one_vote: !weightedVote,
+        draw_datetime: raffleDatetime,
+        prizes: submitPrizes,
+      });
+      if (patchedRaffle) push(createRaffleLink(patchedRaffle, true));
+    }
   };
 
   // Hooks
-  const [createRaffle, { isLoading }] = useCreateRaffle();
+  const [patchRaffle, { isLoading }] = useEditRaffle();
+  const [deletePrize] = useDeletePrize();
+  const localDrawDateTime = moment.utc(raffle.draw_datetime).local();
+
+  const initialValues: RaffleEditFormValue = {
+    name: raffle.name,
+    contact: raffle.contact,
+    weightedVote: !raffle.one_address_one_vote,
+    raffleDate: localDrawDateTime,
+    raffleTime: moment(new Date()).hours(localDrawDateTime.hours()).minutes(localDrawDateTime.minutes()),
+  };
 
   // Lib hooks
   const { values, errors, touched, handleChange, submitForm, setFieldValue } = useFormik({
     initialValues,
-    validationSchema: RaffleCreateFormSchema,
-    onSubmit: injectErrorsFromBackend<RaffleCreateFormValue>(handleOnSubmit),
+    validationSchema: RaffleEditFormSchema,
+    onSubmit: handleOnSubmit,
   });
+
+  useEffect(() => {
+    if (!events || !raffle) return;
+    let completeRaffles = mergeRaffleEvent([raffle], events);
+    if (completeRaffles.length > 0) setCompleteRaffle(completeRaffles[0]);
+  }, [events]); //eslint-disable-line
 
   const removePrize = (order: number) => {
     let newPrizes = prizes
@@ -137,7 +148,7 @@ const RaffleCreateForm: FC = () => {
 
   return (
     <Container sidePadding thinWidth>
-      <TitlePrimary title={'Create New Raffle'} />
+      <TitlePrimary title={'Edit Raffle'} />
       <Card>
         <Form>
           <Row gutter={24}>
@@ -153,16 +164,8 @@ const RaffleCreateForm: FC = () => {
               />
             </Col>
             <Col span={24}>
-              <SelectEvent
-                errors={errors}
-                label="POAP Selection"
-                name="eligibleEvents"
-                options={events}
-                placeholder="Select eligible events"
-                setFieldValue={setFieldValue}
-                touched={touched}
-                values={values}
-              />
+              <InputTitle>POAP{raffle.prizes.length > 1 && `s`}</InputTitle>
+              {completeRaffle && <EventDisplay events={completeRaffle.events} />}
             </Col>
             <Col span={24}>
               <Checkbox
@@ -197,7 +200,7 @@ const RaffleCreateForm: FC = () => {
               />
             </Col>
             <Col span={24}>
-              <Editor title={'Raffle description'} onChange={handleEditorChange} />
+              <Editor title={'Raffle description'} onChange={handleEditorChange} initialValue={description} />
             </Col>
             <Col span={24}>
               <InputSearch
@@ -249,4 +252,4 @@ const RaffleCreateForm: FC = () => {
   );
 };
 
-export default RaffleCreateForm;
+export default RaffleEditForm;

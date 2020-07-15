@@ -28,6 +28,7 @@ export const DatePicker = styled(AntdDatePicker)<DatePickerProps>`
 
     & > input {
       color: var(--picker-color) !important;
+      font-size: 16px !important;
       &::placeholder {
         color: var(--system-placeholder) !important;
         opacity: 1;

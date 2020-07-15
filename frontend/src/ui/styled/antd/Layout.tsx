@@ -3,7 +3,7 @@ import { Layout as AntdLayout } from 'antd';
 
 type LayoutProps = {
   gray?: boolean;
-  paddedContent?: boolean;
+  padded?: boolean;
 };
 
 export const Layout = styled(AntdLayout)<LayoutProps>`
@@ -27,7 +27,7 @@ export const Layout = styled(AntdLayout)<LayoutProps>`
     }
 
     &-content {
-      padding: ${({ paddedContent }) => (paddedContent ? '100px 0 24px' : '100px 0 0')};
+      padding: ${({ padded }) => (padded ? '100px 0 24px' : '100px 0 0')};
     }
   }
 `;

@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import moment from 'moment';
 import styled from '@emotion/styled';
 import { Tooltip } from 'antd';
 import { Card } from 'ui/styled/antd/Card';
@@ -7,8 +8,11 @@ import { NavLink } from 'react-router-dom';
 // Components
 import StatusTag from 'ui/components/StatusTag';
 
+// Constants
+import { DATETIMEFORMAT } from 'lib/constants/theme';
+
 // Helpers
-import { createRaffleLink } from 'lib/helpers/raffles';
+import { createRaffleLink, isRaffleActive } from 'lib/helpers/raffles';
 
 // Types
 import { CompleteRaffle } from 'lib/types';
@@ -114,7 +118,7 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
           <div className={'card-top-row'}>
             <div className={'card-top-row-title'}>
               <h4>{raffle.name}</h4>
-              <StatusTag active={true} />
+              <StatusTag active={isRaffleActive(raffle)} />
             </div>
             {raffle.prizes.length > 0 && <h5>{raffle.prizes[0].name}</h5>}
           </div>
@@ -122,7 +126,7 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
             <div>
               <div className={'bottom-title'}>Inscription deadline</div>
               <div className={'bottom-data'}>
-                <div className={'deadline'}>{raffle.registration_deadline}</div>
+                <div className={'deadline'}>{moment.utc(raffle.draw_datetime).local().format(DATETIMEFORMAT)}</div>
               </div>
             </div>
             <div>

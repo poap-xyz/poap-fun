@@ -37,7 +37,6 @@ export const Select = styled(SelectAntd)`
 
   .ant-select-selection-placeholder {
     color: var(--system-placeholder);
-    font-size: 14px;
     opacity: 1;
   }
 

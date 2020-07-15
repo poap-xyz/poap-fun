@@ -6,9 +6,8 @@ import moment from 'moment';
 import CardWithBadges from 'ui/components/CardWithBadges';
 import CountdownBox from 'ui/components/CountdownBox';
 
-// Helpers
-
-// Assets
+// Constants
+import { DATETIMEFORMAT } from 'lib/constants/theme';
 
 // Types
 type CountdownProps = {
@@ -49,7 +48,7 @@ const Countdown: FC<CountdownProps> = ({ datetime }) => {
     return timeLeft;
   };
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft());
-  const timeLeftString = moment.utc(datetime).local().format('DD-MMM-YYYY HH:mm');
+  const timeLeftString = moment.utc(datetime).local().format(DATETIMEFORMAT);
 
   useEffect(() => {
     setTimeout(() => {

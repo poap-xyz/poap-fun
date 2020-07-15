@@ -1,9 +1,5 @@
 import { message } from 'antd';
-import { useHistory } from 'react-router-dom';
 import wretch, { WretcherError } from 'wretch';
-
-// Lib
-import { ROUTES } from 'lib/routes';
 
 // env
 const { REACT_APP_API_FUN, REACT_APP_API_POAP } = process.env;
@@ -18,6 +14,10 @@ export const endpoints = {
       all: `${REACT_APP_API_FUN}/api/v1/raffles/`,
       detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/raffles/${id}/`,
       images: `${REACT_APP_API_FUN}/api/v1/raffles/text-editor-image/`,
+    },
+    prizes: {
+      all: `${REACT_APP_API_FUN}/api/v1/prizes/`,
+      detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/prizes/${id}/`,
     },
   },
 };
@@ -52,19 +52,14 @@ const handleGenericError = () => (error: WretcherError) => {
   throw error;
 };
 
-const handleExpiredToken = () => (error: WretcherError) => {
-  message.error('Forbidden access');
-  const history = useHistory();
-
-  history.push(ROUTES.home);
-
-  throw error;
+const handleWrongToken = () => (error: WretcherError) => {
+  message.error('Invalid token');
 };
 
 // Custom fetch
 export const api = () => {
   return wretch()
-    .catcher(401, handleExpiredToken())
+    .catcher(401, handleWrongToken())
     .catcher(404, handleGenericError())
     .catcher(405, handleHttpError(405))
     .catcher(400, handleHttpError(400));

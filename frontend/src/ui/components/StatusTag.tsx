@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 // Types
 type StatusTagProps = {
   active: boolean;
+  className?: string;
 };
 
 // Styled component
@@ -20,8 +21,12 @@ const Tag = styled.div<StatusTagProps>`
   border-radius: 100px;
 `;
 
-const StatusTag: FC<StatusTagProps> = ({ active }) => {
-  return <Tag active={active}>{active ? 'Active' : 'Finished'}</Tag>;
+const StatusTag: FC<StatusTagProps> = ({ active, className }) => {
+  return (
+    <Tag active={active} className={className ? className : ''}>
+      {active ? 'Active' : 'Finished'}
+    </Tag>
+  );
 };
 
 export default StatusTag;

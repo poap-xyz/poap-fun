@@ -94,6 +94,7 @@ const SelectEvent: FC<SelectProps> = ({
         mode={'multiple'}
         filterOption={filterOption}
         value={values[name] ? values[name] : undefined}
+        listHeight={550}
       >
         {options &&
           options.map((option: any) => {
