@@ -1,5 +1,7 @@
 import logging
 import random
+from datetime import datetime
+
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
@@ -59,7 +61,7 @@ class Raffle(TimeStampedModel):
     class Meta:
         verbose_name = _("raffle")
         verbose_name_plural = _("raffles")
-        ordering = ['-draw_datetime']
+        ordering = ['finalized', 'draw_datetime']
 
     name = models.CharField(_("name"), max_length=256)
     description = models.TextField(_("description"))
@@ -68,11 +70,12 @@ class Raffle(TimeStampedModel):
     # all raffle dates MUST be in UTC TODO find a way to enforce this invariant
     draw_datetime = models.DateTimeField(_("raffle's draw date and time"))
     end_datetime = models.DateTimeField(_("raffle's end date and time"), null=True, blank=True)
-    registration_deadline = models.DateTimeField(_("raffle's registration deadline"))
     # if true, no matter how many poaps the address has, it counts as one vote.
     # if false, each of the address's poaps counts as a vote
     one_address_one_vote = models.BooleanField(_("one address one vote"))
     events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
+    # marked as true when all results have been generated for the raffle
+    finalized = models.BooleanField(_("finalized"), default=False)
     # used to store raw token to return after creation
     _token = ''
 
@@ -166,7 +169,7 @@ class Participant(TimeStampedModel):
 
     address = models.CharField(_("address"), max_length=50)
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
-    poap_id = models.CharField(_("poap id"), max_length=100)
+    poap_id = models.BigIntegerField(_("poap id"))
 
     def __str__(self):
         return self.address
@@ -185,7 +188,7 @@ class ResultsTable(TimeStampedModel):
         verbose_name_plural = _("results tables")
 
     raffle = models.OneToOneField(
-        Raffle, verbose_name=_("raffle"), related_name="result_table", on_delete=models.PROTECT, unique=True
+        Raffle, verbose_name=_("raffle"), related_name="results_table", on_delete=models.PROTECT, unique=True
     )
 
     def __str__(self):
@@ -205,10 +208,10 @@ class ResultsTableEntry(TimeStampedModel):
         verbose_name_plural = _("results table entries")
 
     participant = models.ForeignKey(
-        Participant, verbose_name=_("participant"), related_name="results_table_entries", on_delete=models.PROTECT
-    )
+        Participant, verbose_name=_("participant"), related_name="entries", on_delete=models.PROTECT
+)
     results_table = models.ForeignKey(
-        ResultsTable, verbose_name=_('results_table'), related_name="results_table_entries", on_delete=models.PROTECT
+        ResultsTable, verbose_name=_('results_table'), related_name="entries", on_delete=models.PROTECT
     )
     # The order for the table entry in which it was selected for
     # the raffle. eg, 1 for first place, 2 for 2nd place etc...
@@ -242,10 +245,7 @@ class BlockData(TimeStampedModel):
     block_number = models.BigIntegerField(_("block number"))
 
     # The block nonce may not fit in the DB, save the 64 least significant bits
-    nonce = models.BigIntegerField(_("block nonce"))
-
-    # the seed that was derived from the nonce (nonces often do not fit in integers)
-    seed = models.IntegerField(_("seed"), null=True, blank=True)
+    gas_limit = models.BigIntegerField(_("gas limit"))
 
     def __str__(self):
         return f"Block data N°{self.order} for {self.raffle}"
@@ -260,3 +260,4 @@ class TextEditorImage(TimeStampedModel):
     """
 
     file = models.ImageField(upload_to=generate_unique_filename, validators=[validate_image_size])
+

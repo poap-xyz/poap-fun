@@ -105,7 +105,7 @@ class RaffleSerializer(serializers.ModelSerializer):
         model = Raffle
         fields = [
             "id", "name", "description", "contact", "draw_datetime", "end_datetime",
-            "registration_deadline", "one_address_one_vote", "prizes", "events", "token"
+            "one_address_one_vote", "prizes", "events", "token"
         ]
 
     def create(self, validated_data):
