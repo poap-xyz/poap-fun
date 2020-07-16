@@ -105,7 +105,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -127,7 +127,7 @@ class PrizeViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
-class RaffleViewSet(viewsets.ReadOnlyModelViewSet):
+class RaffleViewSet(viewsets.ModelViewSet):
     queryset = Raffle.objects.all()
     serializer_class = RaffleSerializer
     lookup_field = 'id'
