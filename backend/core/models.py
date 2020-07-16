@@ -9,8 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from core.services import poap_integration_service
-from core.utils import generate_unique_filename
+from core.utils import generate_unique_filename, get_poaps_for_address
 from core.validators import validate_image_size
 
 
@@ -175,7 +174,7 @@ class RaffleEvent(TimeStampedModel):
 class ParticipantManager(models.Manager):
 
     def create_from_address(self, address, signature, raffle_id):
-        event_and_poap_ids = poap_integration_service.get_poaps_for_address(address)
+        event_and_poap_ids = get_poaps_for_address(address)
         if not event_and_poap_ids:
             return ValidationError("could not get poaps for address")
         event_ids, poap_ids = event_and_poap_ids
