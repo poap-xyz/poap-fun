@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 
 // Components
 import Logo from 'ui/components/Logo';
+import PoapUser from 'ui/components/PoapUser';
 import { Button } from 'ui/styled/antd/Button';
 import { Container } from 'ui/styled/Container';
 
@@ -62,7 +63,7 @@ type HeaderProps = {
   isAvatar?: boolean;
 };
 
-const Header: FC<HeaderProps> = ({ isLoggedIn, isAvatar }) => (
+const Header: FC<HeaderProps> = ({ isLoggedIn = true, isAvatar }) => (
   <HeaderWrap>
     <Container className={'container'}>
       <BrandNav>
@@ -71,7 +72,8 @@ const Header: FC<HeaderProps> = ({ isLoggedIn, isAvatar }) => (
         </NavLink>
       </BrandNav>
       <Nav>
-        <Button type="default">Connect Wallet</Button>
+        {!isLoggedIn && <Button type="default">Connect Wallet</Button>}
+        {isLoggedIn && <PoapUser />}
         <NavLink to={ROUTES.raffleCreation} className={'call-to-action'}>
           <Button type="primary">Create Raffle</Button>
         </NavLink>

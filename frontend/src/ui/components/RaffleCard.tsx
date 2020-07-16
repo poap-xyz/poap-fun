@@ -116,7 +116,6 @@ const RaffleCardWrapper = styled.div`
 `;
 
 const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
-  // TODO - Review useMemo
   let mainEvents: PoapEvent[] = raffle.events.length <= 3 ? raffle.events : raffle.events.slice(0, 2);
   let otherEvents: PoapEvent[] = raffle.events.length <= 3 ? [] : raffle.events.slice(2);
   let otherEventsTooltip: ReactNode = useMemo(() => {

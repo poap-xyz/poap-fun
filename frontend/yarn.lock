@@ -1743,6 +1743,13 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
 
+"@types/react-blockies@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@types/react-blockies/-/react-blockies-1.4.0.tgz#2fbb4eadac49a69ac19aeb727e17b81443070343"
+  integrity sha512-Bw0CraHz5XE61yu64KqfyQ6D9XaPlZo96E2+D2mCE2ZiCeaj5rCRhalHeQ2R684qIInkHACTyAw2BZNWd73PeQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-dom@^16.9.8":
   version "16.9.8"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.8.tgz#fe4c1e11dfc67155733dfa6aa65108b4971cb423"
