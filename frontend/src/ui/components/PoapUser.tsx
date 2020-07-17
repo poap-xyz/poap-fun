@@ -2,9 +2,8 @@ import React, { FC } from 'react';
 import styled from '@emotion/styled';
 import Blockies from 'react-blockies';
 
-// Components
-
-// Constants
+// Hooks
+import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Styled Components
 const UserWrapper = styled.div`
@@ -69,34 +68,27 @@ const UserWrapper = styled.div`
   }
 `;
 
-const PoapUser: FC = () => (
-  <UserWrapper>
-    <div className={'blockie'}>
-      <Blockies seed={'poap.eth'} size={6} />
-    </div>
-    <div className={'address'}>0x1234...</div>
-    <div className={'poaps'}>
-      <div className={'badge'}>
-        <img
-          src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-          alt={'Poap'}
-        />
+const PoapUser: FC = () => {
+  const { account, poaps } = useStateContext();
+  return (
+    <UserWrapper>
+      <div className={'blockie'}>
+        <Blockies seed={account} size={6} />
       </div>
-      <div className={'badge'}>
-        <img
-          src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-          alt={'Poap'}
-        />
+      <div className={'address'}>{account.slice(0, 6)}...</div>
+      <div className={'poaps'}>
+        {poaps &&
+          poaps.slice(0, 3).map((poap) => {
+            return (
+              <div className={'badge'}>
+                <img src={poap.event.image_url} alt={poap.event.name} />
+              </div>
+            );
+          })}
+        {poaps && poaps.length > 3 && <div className={'extra-badges'}>+ {poaps.slice(3).length}</div>}
       </div>
-      <div className={'badge'}>
-        <img
-          src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-          alt={'Poap'}
-        />
-      </div>
-      <div className={'extra-badges'}>+ 3</div>
-    </div>
-  </UserWrapper>
-);
+    </UserWrapper>
+  );
+};
 
 export default PoapUser;

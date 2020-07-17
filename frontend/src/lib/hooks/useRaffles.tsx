@@ -19,6 +19,5 @@ export const useRaffles = ({ page, query }: FetchRafflesValues) => {
       .get()
       .json();
 
-  // react query
   return useQuery(['raffles', page, query], fetchRaffles);
 };

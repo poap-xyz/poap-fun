@@ -10,7 +10,14 @@ export type PoapEvent = {
   year: number;
   start_date: string;
   end_date: string;
-  virtual_event: boolean;
+  virtual_event?: boolean;
+  supply?: number;
+};
+
+export type UserPoap = {
+  event: PoapEvent;
+  tokenId: string;
+  owner: string;
 };
 
 export type PoapEventDictionary = {

@@ -6,6 +6,7 @@
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
     "@tinymce/tinymce-react": "^3.6.0",
+    "@walletconnect/web3-provider": "^1.0.16",
     "antd": "^4.4.0",
     "clean-deep": "^3.3.0",
     "constate": "^2.0.0",
@@ -25,6 +26,7 @@
     "react-query-devtools": "^2.1.1",
     "react-router-dom": "^5.2.0",
     "slugify": "^1.4.4",
+    "web3": "^1.2.10",
     "web3modal": "^1.8.0",
     "wretch": "^1.7.2",
     "yup": "^0.29.1"

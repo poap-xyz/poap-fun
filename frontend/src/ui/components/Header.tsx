@@ -3,6 +3,9 @@ import styled from '@emotion/styled';
 import { Popover } from 'antd';
 import { NavLink } from 'react-router-dom';
 
+// Hooks
+import { useStateContext } from 'lib/hooks/useCustomState';
+
 // Components
 import Logo from 'ui/components/Logo';
 import PoapUser from 'ui/components/PoapUser';
@@ -13,6 +16,7 @@ import { Container } from 'ui/styled/Container';
 import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
+// Styled components
 const HeaderWrap = styled.div`
   height: 100px;
   display: flex;
@@ -31,7 +35,6 @@ const HeaderWrap = styled.div`
     justify-content: space-between;
   }
 `;
-
 const BrandNav = styled.div`
   height: 100%;
   img {
@@ -43,7 +46,6 @@ const BrandNav = styled.div`
     }
   }
 `;
-
 const Nav = styled.nav`
   display: flex;
   align-items: center;
@@ -58,7 +60,6 @@ const Nav = styled.nav`
     }
   }
 `;
-
 const PoapDisplay = styled.div`
   .scroller {
     max-height: 250px;
@@ -83,76 +84,21 @@ const PoapDisplay = styled.div`
   }
 `;
 
-type HeaderProps = {
-  isLoggedIn?: boolean;
-};
-
-const Header: FC<HeaderProps> = ({ isLoggedIn = true }) => {
+const Header: FC = () => {
+  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps } = useStateContext();
   let content = (
     <PoapDisplay>
       <div className={'scroller'}>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
-        <div className={'badge'}>
-          <img
-            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
-            alt={'Poap'}
-          />
-        </div>
+        {poaps &&
+          poaps.map((poap) => (
+            <div className={'badge'}>
+              <img src={poap.event.image_url} alt={poap.event.name} />
+            </div>
+          ))}
       </div>
-      <Button type={'primary'}>Disconnect Wallet</Button>
+      <Button type={'primary'} onClick={disconnectWallet}>
+        Disconnect Wallet
+      </Button>
     </PoapDisplay>
   );
   return (
@@ -164,12 +110,18 @@ const Header: FC<HeaderProps> = ({ isLoggedIn = true }) => {
           </NavLink>
         </BrandNav>
         <Nav>
-          {!isLoggedIn && <Button type="default">Connect Wallet</Button>}
-          <Popover placement={'bottom'} title={'My POAPs'} content={content}>
-            <div>
-              <PoapUser />
-            </div>
-          </Popover>
+          {!isConnected && (
+            <Button type="default" onClick={connectWallet}>
+              Connect Wallet
+            </Button>
+          )}
+          {isConnected && !isFetchingPoaps && (
+            <Popover placement={'bottom'} title={'My POAPs'} content={content}>
+              <div>
+                <PoapUser />
+              </div>
+            </Popover>
+          )}
           <NavLink to={ROUTES.raffleCreation} className={'call-to-action'}>
             <Button type="primary">Create Raffle</Button>
           </NavLink>
