@@ -25,7 +25,7 @@ const UserWrapper = styled.div`
     color: var(--secondary-color);
     font-family: var(--alt-font);
     font-size: 16px;
-    padding: 0 5px;
+    padding: 0 10px 0 5px;
   }
   .poaps {
     background: var(--system-gray);
@@ -36,7 +36,7 @@ const UserWrapper = styled.div`
     display: flex;
     align-items: center;
     position: relative;
-    width: 85px;
+    width: 90px;
     flex-direction: row;
     .badge {
       background: white;
@@ -57,6 +57,7 @@ const UserWrapper = styled.div`
       img {
         width: 100%;
         vertical-align: top;
+        border-radius: 50%;
       }
     }
     .extra-badges {
@@ -76,17 +77,18 @@ const PoapUser: FC = () => {
         <Blockies seed={account} size={6} />
       </div>
       <div className={'address'}>{account.slice(0, 6)}...</div>
-      <div className={'poaps'}>
-        {poaps &&
-          poaps.slice(0, 3).map((poap) => {
+      {poaps && poaps.length > 0 && (
+        <div className={'poaps'}>
+          {poaps.slice(0, 3).map((poap) => {
             return (
               <div className={'badge'}>
                 <img src={poap.event.image_url} alt={poap.event.name} />
               </div>
             );
           })}
-        {poaps && poaps.length > 3 && <div className={'extra-badges'}>+ {poaps.slice(3).length}</div>}
-      </div>
+          {poaps.length > 3 && <div className={'extra-badges'}>+ {poaps.slice(3).length}</div>}
+        </div>
+      )}
     </UserWrapper>
   );
 };
