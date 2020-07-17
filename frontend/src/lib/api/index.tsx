@@ -8,6 +8,7 @@ const { REACT_APP_API_FUN, REACT_APP_API_POAP } = process.env;
 export const endpoints = {
   poap: {
     events: `${REACT_APP_API_POAP}/events`,
+    scan: (address: string) => `${REACT_APP_API_POAP}/actions/scan/${address}`,
   },
   fun: {
     raffles: {

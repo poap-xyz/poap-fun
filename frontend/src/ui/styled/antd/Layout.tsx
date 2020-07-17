@@ -18,7 +18,7 @@ export const Layout = styled(AntdLayout)<LayoutProps>`
       position: fixed;
       width: 100%;
       background: var(--system-white);
-      z-index: 10;
+      z-index: 2;
     }
 
     &-footer {

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useQuery } from 'react-query';
+import cleanDeep from 'clean-deep';
 
 // Lib
 import { api, endpoints } from 'lib/api';
@@ -12,8 +13,11 @@ type FetchRafflesValues = {
 
 export const useRaffles = ({ page, query }: FetchRafflesValues) => {
   const fetchRaffles = (key: string, page: number, query: string): Promise<FetchResponseRaffle> =>
-    api().url(endpoints.fun.raffles.all).query({ page, name: query }).get().json();
+    api()
+      .url(endpoints.fun.raffles.all)
+      .query(cleanDeep({ page, name__icontains: query }))
+      .get()
+      .json();
 
-  // react query
   return useQuery(['raffles', page, query], fetchRaffles);
 };

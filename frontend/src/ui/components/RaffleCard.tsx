@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo, ReactNode } from 'react';
 import moment from 'moment';
 import styled from '@emotion/styled';
 import { Tooltip } from 'antd';
@@ -15,7 +15,7 @@ import { DATETIMEFORMAT } from 'lib/constants/theme';
 import { createRaffleLink, isRaffleActive } from 'lib/helpers/raffles';
 
 // Types
-import { CompleteRaffle } from 'lib/types';
+import { CompleteRaffle, PoapEvent } from 'lib/types';
 type RaffleCardProps = {
   raffle: CompleteRaffle;
 };
@@ -84,7 +84,6 @@ const RaffleCardWrapper = styled.div`
         div {
           width: 28px;
           height: 28px;
-          padding: 1px;
           border-radius: 28px;
           border: 2px solid white;
           background: var(--system-gray);
@@ -105,12 +104,30 @@ const RaffleCardWrapper = styled.div`
             border-radius: 20px;
           }
         }
+        .more {
+          padding-top: 0.5px;
+          span {
+            font-family: var(--alt-family);
+          }
+        }
       }
     }
   }
 `;
 
 const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
+  let mainEvents: PoapEvent[] = raffle.events.length <= 3 ? raffle.events : raffle.events.slice(0, 2);
+  let otherEvents: PoapEvent[] = raffle.events.length <= 3 ? [] : raffle.events.slice(2);
+  let otherEventsTooltip: ReactNode = useMemo(() => {
+    return (
+      <div>
+        {otherEvents.slice(0, 10).map((event) => (
+          <div>&bull; {event.name}</div>
+        ))}
+        {otherEvents.length > 10 && <div>& more!!!</div>}
+      </div>
+    );
+  }, [otherEvents]);
   return (
     <NavLink to={createRaffleLink(raffle, true)}>
       <Card height={170}>
@@ -133,15 +150,22 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
               <div className={'bottom-title'}>Elegible POAPs</div>
               <div className={'bottom-data'}>
                 <div className={'badge'}>
-                  {raffle.events.slice(0, 3).map((badge) => {
+                  {mainEvents.map((badge) => {
                     return (
-                      <div key={badge.id}>
+                      <div key={badge.id} className={'badge-event'}>
                         <Tooltip title={badge.name}>
                           <img src={badge.image_url} alt={badge.name} />
                         </Tooltip>
                       </div>
                     );
                   })}
+                  {otherEvents.length > 0 && (
+                    <div className={'more'}>
+                      <Tooltip title={otherEventsTooltip}>
+                        <span className={'badge-more'}>{`+${otherEvents.length}`}</span>
+                      </Tooltip>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -60,7 +60,7 @@ const RaffleGrid: FC = () => {
 
   // Effects
   useEffect(() => {
-    if (values.query) setQuery(values.query);
+    setQuery(values.query);
   }, [values]); //eslint-disable-line
 
   useEffect(() => {
@@ -78,9 +78,9 @@ const RaffleGrid: FC = () => {
 
   return (
     <Container sidePadding>
-      <TitleSecondary title={'Last raffle'} />
+      <TitleSecondary title={'POAP raffles'} />
       <SearchForm>
-        <Form>
+        <Form onSubmit={() => {}}>
           <Input
             errors={errors}
             handleChange={handleChange}
