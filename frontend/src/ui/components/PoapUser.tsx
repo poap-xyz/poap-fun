@@ -5,7 +5,6 @@ import Blockies from 'react-blockies';
 // Components
 
 // Constants
-import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Styled Components
 const UserWrapper = styled.div`

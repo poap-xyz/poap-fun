@@ -25,6 +25,7 @@
     "react-query-devtools": "^2.1.1",
     "react-router-dom": "^5.2.0",
     "slugify": "^1.4.4",
+    "web3modal": "^1.8.0",
     "wretch": "^1.7.2",
     "yup": "^0.29.1"
   },

@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
+import { Popover } from 'antd';
 import { NavLink } from 'react-router-dom';
 
 // Components
@@ -58,28 +59,124 @@ const Nav = styled.nav`
   }
 `;
 
+const PoapDisplay = styled.div`
+  .scroller {
+    max-height: 250px;
+    width: 300px;
+    padding: 10px;
+    margin-bottom: 20px;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    overscroll-behavior: none;
+    .badge {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 10px;
+      border-radius: 6px;
+      box-shadow: 0px 4px 4px rgba(187, 196, 239, 0.34);
+      padding: 10px;
+      img {
+        width: 100%;
+      }
+    }
+  }
+`;
+
 type HeaderProps = {
   isLoggedIn?: boolean;
-  isAvatar?: boolean;
 };
 
-const Header: FC<HeaderProps> = ({ isLoggedIn = true, isAvatar }) => (
-  <HeaderWrap>
-    <Container className={'container'}>
-      <BrandNav>
-        <NavLink to={ROUTES.home}>
-          <Logo />
-        </NavLink>
-      </BrandNav>
-      <Nav>
-        {!isLoggedIn && <Button type="default">Connect Wallet</Button>}
-        {isLoggedIn && <PoapUser />}
-        <NavLink to={ROUTES.raffleCreation} className={'call-to-action'}>
-          <Button type="primary">Create Raffle</Button>
-        </NavLink>
-      </Nav>
-    </Container>
-  </HeaderWrap>
-);
+const Header: FC<HeaderProps> = ({ isLoggedIn = true }) => {
+  let content = (
+    <PoapDisplay>
+      <div className={'scroller'}>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+        <div className={'badge'}>
+          <img
+            src={'https://storage.googleapis.com/poapmedia/fridai-brunch-1-2020-logo-1590754673900.png'}
+            alt={'Poap'}
+          />
+        </div>
+      </div>
+      <Button type={'primary'}>Disconnect Wallet</Button>
+    </PoapDisplay>
+  );
+  return (
+    <HeaderWrap>
+      <Container className={'container'}>
+        <BrandNav>
+          <NavLink to={ROUTES.home}>
+            <Logo />
+          </NavLink>
+        </BrandNav>
+        <Nav>
+          {!isLoggedIn && <Button type="default">Connect Wallet</Button>}
+          <Popover placement={'bottom'} title={'My POAPs'} content={content}>
+            <div>
+              <PoapUser />
+            </div>
+          </Popover>
+          <NavLink to={ROUTES.raffleCreation} className={'call-to-action'}>
+            <Button type="primary">Create Raffle</Button>
+          </NavLink>
+        </Nav>
+      </Container>
+    </HeaderWrap>
+  );
+};
 
 export default Header;

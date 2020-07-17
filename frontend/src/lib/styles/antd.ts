@@ -461,4 +461,16 @@ export const antdStyles = css`
       }
     }
   }
+
+  /* Popover */
+  .ant-popover-inner {
+    border-radius: 10px;
+    .ant-popover-title {
+      font-size: 16px;
+      line-height: 22px;
+      color: var(--primary-color);
+      font-family: var(--alt-font);
+      border-bottom: 0;
+    }
+  }
 `;
