@@ -16,6 +16,10 @@ import { Container } from 'ui/styled/Container';
 import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
+// Helpers
+import { isMobileOrTablet } from 'lib/helpers/utils';
+import { endpoints } from 'lib/api';
+
 // Types
 type ScrollerProps = {
   grid: boolean;
@@ -98,7 +102,9 @@ const PoapDisplay = styled.div<ScrollerProps>`
 `;
 
 const Header: FC = () => {
-  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps } = useStateContext();
+  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps, account } = useStateContext();
+  const isMobile = isMobileOrTablet();
+
   let content = (
     <PoapDisplay grid={!!(poaps && poaps.length > 0)}>
       <div className={'scroller'}>
@@ -133,11 +139,20 @@ const Header: FC = () => {
             </Button>
           )}
           {isConnected && !isFetchingPoaps && (
-            <Popover placement={'bottom'} title={'My POAPs'} content={content}>
-              <div>
-                <PoapUser />
-              </div>
-            </Popover>
+            <>
+              {isMobile && account && (
+                <a href={endpoints.poap.webScan(account)} target={'_blank'}>
+                  <PoapUser />
+                </a>
+              )}
+              {!isMobile && (
+                <Popover placement={'bottom'} title={'My POAPs'} content={content}>
+                  <div>
+                    <PoapUser />
+                  </div>
+                </Popover>
+              )}
+            </>
           )}
           <NavLink to={ROUTES.raffleCreation} className={'call-to-action'}>
             <Button type="primary">Create Raffle</Button>

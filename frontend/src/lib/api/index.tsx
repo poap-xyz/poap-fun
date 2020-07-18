@@ -2,13 +2,14 @@ import { message } from 'antd';
 import wretch, { WretcherError } from 'wretch';
 
 // env
-const { REACT_APP_API_FUN, REACT_APP_API_POAP } = process.env;
+const { REACT_APP_API_FUN, REACT_APP_API_POAP, REACT_APP_POAP_APP } = process.env;
 
 // Endpoints
 export const endpoints = {
   poap: {
     events: `${REACT_APP_API_POAP}/events`,
     scan: (address: string) => `${REACT_APP_API_POAP}/actions/scan/${address}`,
+    webScan: (address: string) => `${REACT_APP_POAP_APP}/scan/${address}`,
   },
   fun: {
     raffles: {
