@@ -107,7 +107,7 @@ const RaffleCardWrapper = styled.div`
         .more {
           padding-top: 0.5px;
           span {
-            font-family: var(--alt-family);
+            font-family: var(--alt-font);
           }
         }
       }
@@ -162,7 +162,7 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
                   {otherEvents.length > 0 && (
                     <div className={'more'}>
                       <Tooltip title={otherEventsTooltip}>
-                        <span className={'badge-more'}>{`+${otherEvents.length}`}</span>
+                        <span className={'badge-more'}>{`+${otherEvents.length > 100 ? 99 : otherEvents.length}`}</span>
                       </Tooltip>
                     </div>
                   )}

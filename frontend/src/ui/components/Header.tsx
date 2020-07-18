@@ -16,6 +16,15 @@ import { Container } from 'ui/styled/Container';
 import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
+// Helpers
+import { isMobileOrTablet } from 'lib/helpers/utils';
+import { endpoints } from 'lib/api';
+
+// Types
+type ScrollerProps = {
+  grid: boolean;
+};
+
 // Styled components
 const HeaderWrap = styled.div`
   height: 100px;
@@ -60,7 +69,7 @@ const Nav = styled.nav`
     }
   }
 `;
-const PoapDisplay = styled.div`
+const PoapDisplay = styled.div<ScrollerProps>`
   .scroller {
     max-height: 250px;
     width: 300px;
@@ -68,7 +77,7 @@ const PoapDisplay = styled.div`
     margin-bottom: 20px;
     overflow: auto;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: ${({ grid }) => (grid ? '1fr 1fr 1fr' : '1fr')};
     overscroll-behavior: none;
     .badge {
       width: 80px;
@@ -81,20 +90,34 @@ const PoapDisplay = styled.div`
         width: 100%;
       }
     }
+    .empty {
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+      color: var(--secondary-color);
+      font-family: var(--alt-font);
+      padding: 10px 0;
+    }
   }
 `;
 
 const Header: FC = () => {
-  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps } = useStateContext();
+  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps, account } = useStateContext();
+  const isMobile = isMobileOrTablet();
+
   let content = (
-    <PoapDisplay>
+    <PoapDisplay grid={!!(poaps && poaps.length > 0)}>
       <div className={'scroller'}>
-        {poaps &&
-          poaps.map((poap) => (
-            <div className={'badge'}>
-              <img src={poap.event.image_url} alt={poap.event.name} />
-            </div>
-          ))}
+        {poaps && (
+          <>
+            {poaps.map((poap) => (
+              <div className={'badge'}>
+                <img src={poap.event.image_url} alt={poap.event.name} />
+              </div>
+            ))}
+            {poaps.length === 0 && <div className={'empty'}>No POAPs found</div>}
+          </>
+        )}
       </div>
       <Button type={'primary'} onClick={disconnectWallet}>
         Disconnect Wallet
@@ -116,11 +139,20 @@ const Header: FC = () => {
             </Button>
           )}
           {isConnected && !isFetchingPoaps && (
-            <Popover placement={'bottom'} title={'My POAPs'} content={content}>
-              <div>
-                <PoapUser />
-              </div>
-            </Popover>
+            <>
+              {isMobile && account && (
+                <a href={endpoints.poap.webScan(account)} target={'_blank'}>
+                  <PoapUser />
+                </a>
+              )}
+              {!isMobile && (
+                <Popover placement={'bottom'} title={'My POAPs'} content={content}>
+                  <div>
+                    <PoapUser />
+                  </div>
+                </Popover>
+              )}
+            </>
           )}
           <NavLink to={ROUTES.raffleCreation} className={'call-to-action'}>
             <Button type="primary">Create Raffle</Button>
