@@ -255,7 +255,7 @@ class ResultsTableEntry(TimeStampedModel):
 
     participant = models.ForeignKey(
         Participant, verbose_name=_("participant"), related_name="entries", on_delete=models.PROTECT
-)
+    )
     results_table = models.ForeignKey(
         ResultsTable, verbose_name=_('results_table'), related_name="entries", on_delete=models.PROTECT
     )

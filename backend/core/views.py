@@ -15,11 +15,11 @@ from rest_framework_jwt.serializers import JSONWebTokenSerializer
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.views import JSONWebTokenAPIView, APIView
 
-from core.filters import UserFilter, ParticipantFilter, RaffleFilter
-from core.models import User, Raffle, Event, Prize, Participant
+from core.filters import UserFilter, ParticipantFilter, RaffleFilter, ResultsTableFilter
+from core.models import User, Raffle, Event, Prize, Participant, ResultsTable
 from .permissions import RaffleTokenPermission, PrizeRaffleTokenPermission
 from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer, EventSerializer, \
-    PrizeSerializer, ParticipantSerializer, MultiParticipantSerializer
+    PrizeSerializer, ParticipantSerializer, MultiParticipantSerializer, ResultsTableSerializer
 
 
 class CustomObtainJSONWebToken(JSONWebTokenAPIView):
@@ -107,6 +107,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 class EventViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
+    http_method_names = ['get', ]
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     lookup_field = 'id'
@@ -116,6 +117,7 @@ class PrizeViewSet(viewsets.ModelViewSet):
     queryset = Prize.objects.all()
     serializer_class = PrizeSerializer
     lookup_field = 'id'
+    http_method_names = ['get', ]
 
     def get_permissions(self):
         restricted_actions = ['update', 'partial_update', 'destroy']
@@ -133,6 +135,7 @@ class RaffleViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     ordering_fields = ['name', 'description', 'contact', 'draw_datetime', 'end_datetime']
+    http_method_names = ['get', 'post', 'patch', 'put']
     filter_class = RaffleFilter
 
     def list(self, request, **kwargs):
@@ -158,8 +161,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Participant.objects.all()
     serializer_class = ParticipantSerializer
-    filter_backends = filters.DjangoFilterBackend
+    filter_backends = (filters.DjangoFilterBackend, )
     filter_class = ParticipantFilter
+    http_method_names = ['get', 'post', ]
 
     @action(detail=False, methods=['Post'])
     def signup_address(self, request):
@@ -190,6 +194,21 @@ class ParticipantViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(status=status.HTTP_201_CREATED)
+
+    def create(self, request):
+            return Response(
+                ("Method not implemented"),
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ResultsViewSet(viewsets.ModelViewSet):
+    queryset = ResultsTable.objects.all()
+    serializer_class = ResultsTableSerializer
+    lookup_field = 'id'
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
+    filter_class = ResultsTableFilter
+    http_method_names = ['get', ]
 
 
 class TextEditorImageView(APIView):
