@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent, Participant
+from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent, Participant, ResultsTable, ResultsTableEntry
 from core.services import poap_integration_service
 
 UserModel = get_user_model()
@@ -111,8 +111,12 @@ class RaffleSerializer(serializers.ModelSerializer):
         model = Raffle
         fields = [
             "id", "name", "description", "contact", "draw_datetime", "end_datetime",
-            "one_address_one_vote", "prizes", "events", "token"
+            "one_address_one_vote", "prizes", "events", "token", "results_table"
         ]
+
+        extra_kwargs = {
+            'results_table': {'read_only': True},
+        }
 
     def create(self, validated_data):
         prizes_data = validated_data.pop("prizes")
@@ -146,7 +150,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Participant
-        fields = "__all__"
+        fields = ["id", "address", "poap_id", "event_id"]
 
 
 class MultiParticipantSerializer(serializers.Serializer):
@@ -193,3 +197,19 @@ class TextEditorImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = TextEditorImage
         fields = "__all__"
+
+
+class ResultsTableEntrySerializer(serializers.ModelSerializer):
+    participant = ParticipantSerializer(many=False)
+
+    class Meta:
+        model = ResultsTableEntry
+        fields = ["id", "order", "participant"]
+
+
+class ResultsTableSerializer(serializers.ModelSerializer):
+    entries = ResultsTableEntrySerializer(many=True)
+
+    class Meta:
+        model = ResultsTable
+        fields = ["id", "raffle_id", "entries"]
