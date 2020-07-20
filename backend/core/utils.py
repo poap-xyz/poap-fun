@@ -1,11 +1,11 @@
-import datetime
 import os
+import json
+import logging
+import datetime
+import requests
+
+from web3.auto import w3
 from django.utils.deconstruct import deconstructible
-
-
-# TODO implement check with poap API (check name and id)
-def valid_poap_event(poap_event):
-    return True
 
 
 @deconstructible
@@ -28,3 +28,49 @@ class GenerateUniqueFilename(object):
 
 
 generate_unique_filename = GenerateUniqueFilename('text_editor_images/')
+
+
+def verify_and_recover_message(message, signature):
+    # TODO implement
+    return message
+
+
+def get_poaps_for_address(address):
+    """
+    Returns a deque containing all the poap_ids held by the address
+
+    Args:
+        address:
+            an ethereum address against which tokens will be looked up
+
+    Returns:
+        poap_ids
+            a deque containing all the poap_ids of the poaps held by the address
+
+    """
+    logger = logging.getLogger("app")
+
+    if not address:
+        return None
+
+    request_url = f"https://api.poap.xyz/actions/scan/{address}"
+    response = requests.get(request_url)
+
+    if not response.ok:
+        logger.warning(f"failed to find poaps for address {address}, request to poap api was not successful")
+        return None
+
+    tokens = json.loads(response.content)
+
+    user_poaps = []
+    for each in tokens:
+        try:
+            user_poaps.append({
+                "poap": each["tokenId"],
+                "event": each["event"]["id"]
+            })
+        except KeyError:
+            logger.error("Unexpected response format from poap API")
+            return None
+
+    return user_poaps

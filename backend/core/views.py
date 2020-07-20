@@ -1,28 +1,25 @@
 import json
-import os
 from datetime import datetime
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import Group
+from django_filters import rest_framework as filters
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 from rest_framework.parsers import FileUploadParser
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.serializers import JSONWebTokenSerializer
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.views import JSONWebTokenAPIView, APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.filters import OrderingFilter
-from rest_framework import status, viewsets
-from django_filters import rest_framework as filters
 
-from backend import settings
-from core.filters import UserFilter, RaffleFilter
-from core.models import User, Raffle, Event, Prize
+from core.filters import UserFilter, ParticipantFilter, RaffleFilter
+from core.models import User, Raffle, Event, Prize, Participant
 from .permissions import RaffleTokenPermission, PrizeRaffleTokenPermission
-
 from .serializers import UserSerializer, GroupSerializer, RaffleSerializer, TextEditorImageSerializer, EventSerializer, \
-    PrizeSerializer
+    PrizeSerializer, ParticipantSerializer, MultiParticipantSerializer
 
 
 class CustomObtainJSONWebToken(JSONWebTokenAPIView):
@@ -108,7 +105,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -155,6 +152,44 @@ class RaffleViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
+
+class ParticipantViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Participant.objects.all()
+    serializer_class = ParticipantSerializer
+    filter_backends = filters.DjangoFilterBackend
+    filter_class = ParticipantFilter
+
+    @action(detail=False, methods=['Post'])
+    def signup_address(self, request):
+        signature = request.data.get("signature", None)
+        message = request.data.get("message", None)
+
+        if not message and not signature:
+            return Response(
+                ("you must provide a message containing the raffle id and"
+                 " the address, along with a signature for the message"),
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not message:
+            return Response(
+                "you must provide a message containing the raffle id and address",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not signature:
+            return Response(
+                "Missing signature for message",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = MultiParticipantSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class TextEditorImageView(APIView):

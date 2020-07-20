@@ -1,13 +1,15 @@
 import logging
 import random
+from collections import deque
 from datetime import datetime
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from core.utils import generate_unique_filename
+from core.utils import generate_unique_filename, get_poaps_for_address
 from core.validators import validate_image_size
 
 
@@ -79,15 +81,9 @@ class Raffle(TimeStampedModel):
 
     @staticmethod
     def get_valid_raffles_for_event_set(event_ids):
-        event_ids_set = set(event_ids)
         raffles = Raffle.objects.filter(draw_datetime__gte=datetime.utcnow(), events__event_id__in=event_ids)
         raffles = raffles.prefetch_related('events')
         raffles = raffles.distinct().all()
-        valid_raffles = []
-        for raffle in raffles:
-            raffle_events = {event.event_id for event in raffle.events.all()}
-            if raffle_events.issubset(event_ids_set):
-                valid_raffles.append(raffle)
         return raffles
 
     @property
@@ -120,6 +116,15 @@ class Raffle(TimeStampedModel):
 
     def __repr__(self):
         return f"Raffle(id: {self.id}, name: {self.name})"
+
+    @classmethod
+    def get_valid_poaps_for_raffle(cls, user_poaps, raffle):
+        valid_events = set([int(event.event_id) for event in raffle.events.all()])
+        valid_poaps = []
+        for each in user_poaps:
+            if int(each['event']) in valid_events:
+                valid_poaps.append(each)
+        return valid_poaps
 
 
 class Prize(TimeStampedModel):
@@ -168,6 +173,32 @@ class RaffleEvent(TimeStampedModel):
         return self.__str__()
 
 
+class ParticipantManager(models.Manager):
+
+    def create_from_address(self, address, signature, raffle):
+        user_poaps = get_poaps_for_address(address)
+        if not len(user_poaps) > 0:
+            return ValidationError("could not get poaps for address")
+
+        valid_poaps_for_raffle = Raffle.get_valid_poaps_for_raffle(user_poaps, raffle)
+        if not len(valid_poaps_for_raffle) > 0:
+            return ValidationError("the participant does not have any required poap")
+
+        participants = deque()
+        for each in valid_poaps_for_raffle:
+            participant = Participant(
+                address=address,
+                signature=signature,
+                poap_id=each['poap'],
+                event_id=each['event'],
+                raffle=raffle
+            )
+            participants.append(participant)
+
+        Participant.objects.bulk_create(participants)
+        return participants
+
+
 class Participant(TimeStampedModel):
     """
     Represents the participant in a raffle
@@ -180,7 +211,11 @@ class Participant(TimeStampedModel):
 
     address = models.CharField(_("address"), max_length=50)
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
-    poap_id = models.BigIntegerField(_("poap id"))
+    poap_id = models.CharField(_("poap id"), max_length=100)
+    event_id = models.CharField(_("event id"), max_length=100)
+    signature = models.CharField(_("signature"), max_length=255)
+
+    objects = ParticipantManager()
 
     def __str__(self):
         return self.address

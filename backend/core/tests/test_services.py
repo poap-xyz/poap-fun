@@ -1,7 +1,3 @@
-import random
-import random
-import sys
-
 from core.models import ResultsTableEntry, Raffle
 from core.services import raffle_results_service
 from core.tests.test_fixtures import *

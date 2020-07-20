@@ -10,6 +10,7 @@ router.register(r'groups', views.GroupViewSet, basename='groups')
 router.register(r'raffles', views.RaffleViewSet, basename='raffles')
 router.register(r'events', views.EventViewSet, basename='events')
 router.register(r'prizes', views.PrizeViewSet, basename='prizes')
+router.register(r'participants', views.ParticipantViewSet, basename='participants')
 
 urlpatterns = [
     url(r'^login/refresh/$', refresh_jwt_token),

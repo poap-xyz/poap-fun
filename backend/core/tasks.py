@@ -1,7 +1,6 @@
 import json
 import logging
 from datetime import datetime
-from time import sleep
 
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 

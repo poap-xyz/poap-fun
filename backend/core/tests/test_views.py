@@ -2,13 +2,10 @@ import json
 import tempfile
 from datetime import datetime, timedelta
 
-import pytest
-import requests
 from PIL import Image
 from django.urls import reverse
-from model_bakery import baker
-
 from rest_framework import status
+
 from core.tests.test_fixtures import *
 
 
@@ -216,6 +213,34 @@ class TestPrizeAPIView:
         )
         response_content = json.loads(response.content)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+class TestParticipantAPIView:
+
+    def test_get_all_participants_for_raffle(self, api_client):
+        raffle_1 = baker.make("core.Raffle", name="raffle 1")
+        raffle_2 = baker.make("core.Raffle", name="raffle 2")
+        baker.make("core.Participant", raffle=raffle_1)
+        baker.make("core.Participant", raffle=raffle_1)
+        baker.make("core.Participant", raffle=raffle_2)
+        participants_for_raffle_url = f"{reverse('participants-list')}?raffle=1"
+
+        response = api_client.get(participants_for_raffle_url)
+
+        assert response.status_code == status.HTTP_200_OK
+        content = json.loads(response.content)
+
+
+        pass
+
+    def test_sign_up_valid_user(self):
+        pass
+
+    def test_sign_up_invalid_address(self):
+        pass
+
+    def test_sign_up_invalid_poaps(self):
+        pass
 
 
 class TestTextEditorImageAPIView:
