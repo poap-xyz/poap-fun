@@ -14,6 +14,7 @@ class PoapIntegrationService:
 
     @staticmethod
     def address_has_poap(address, poap_id):
+        # TODO - FIXME - Not used
         address_held_poap_ids = get_poaps_for_address(address)
         if not address_held_poap_ids:
             return False

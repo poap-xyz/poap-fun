@@ -155,6 +155,7 @@ class RaffleViewSet(viewsets.ModelViewSet):
 
 
 class ParticipantViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = Participant.objects.all()
     serializer_class = ParticipantSerializer
     filter_backends = filters.DjangoFilterBackend
@@ -184,7 +185,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        serializer = MultiParticipantSerializer(request.data)
+        serializer = MultiParticipantSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()

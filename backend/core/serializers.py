@@ -181,13 +181,13 @@ class MultiParticipantSerializer(serializers.Serializer):
     def create(self, validated_data):
         address = validated_data.get("address")
         signature = validated_data.get("signature")
-        raffle_id = validated_data.get("raffle_id")
+        raffle = Raffle.objects.filter(id=validated_data.get("raffle_id")).first()
         Participant.objects.create_from_address(
             address=address,
             signature=signature,
-            raffle_id=raffle_id
+            raffle=raffle
         )
-
+        return raffle
 
 
 class TextEditorImageSerializer(serializers.ModelSerializer):

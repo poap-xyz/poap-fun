@@ -118,11 +118,13 @@ class Raffle(TimeStampedModel):
         return f"Raffle(id: {self.id}, name: {self.name})"
 
     @classmethod
-    def can_participate_in_raffle(cls, event_ids, raffle):
-        valid_events = set([event.event_id for event in raffle.events])
-        attended_events = set(event_ids)
-        attended_events_in_valid_events = attended_events.intersection(valid_events)
-        return len(attended_events_in_valid_events) > 0
+    def get_valid_poaps_for_raffle(cls, user_poaps, raffle):
+        valid_events = set([int(event.event_id) for event in raffle.events.all()])
+        valid_poaps = []
+        for each in user_poaps:
+            if int(each['event']) in valid_events:
+                valid_poaps.append(each)
+        return valid_poaps
 
 
 class Prize(TimeStampedModel):
@@ -173,29 +175,23 @@ class RaffleEvent(TimeStampedModel):
 
 class ParticipantManager(models.Manager):
 
-    def create_from_address(self, address, signature, raffle_id):
-        event_and_poap_ids = get_poaps_for_address(address)
-        if not event_and_poap_ids:
+    def create_from_address(self, address, signature, raffle):
+        user_poaps = get_poaps_for_address(address)
+        if not len(user_poaps) > 0:
             return ValidationError("could not get poaps for address")
-        event_ids, poap_ids = event_and_poap_ids
 
-        raffle = Raffle.objects.filter(id=raffle_id).first()
-        if not raffle:
-            logger.error(
-                f"Cannot find raffle {raffle_id} when trying to create participants from address {address}"
-            )
-            return ValidationError("raffle does not exist")
-
-        if not Raffle.can_participate_in_raffle(event_ids, raffle):
-            return ValidationError("the participant does not have all required poaps")
+        valid_poaps_for_raffle = Raffle.get_valid_poaps_for_raffle(user_poaps, raffle)
+        if not len(valid_poaps_for_raffle) > 0:
+            return ValidationError("the participant does not have any required poap")
 
         participants = deque()
-        for poap_id in poap_ids:
+        for each in valid_poaps_for_raffle:
             participant = Participant(
                 address=address,
                 signature=signature,
-                poap_id=poap_id,
-                raffle=raffle_id
+                poap_id=each['poap'],
+                event_id=each['event'],
+                raffle=raffle
             )
             participants.append(participant)
 
@@ -216,6 +212,7 @@ class Participant(TimeStampedModel):
     address = models.CharField(_("address"), max_length=50)
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
     poap_id = models.CharField(_("poap id"), max_length=100)
+    event_id = models.CharField(_("event id"), max_length=100)
     signature = models.CharField(_("signature"), max_length=255)
 
     objects = ParticipantManager()

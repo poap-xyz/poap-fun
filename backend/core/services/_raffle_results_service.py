@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from django.db import transaction
-from web3.auto.infura import w3
+from web3.auto import w3
 from web3.exceptions import BlockNotFound
 
 from core.models import Raffle, Participant, ResultsTable, BlockData, ResultsTableEntry

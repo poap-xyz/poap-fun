@@ -22,14 +22,14 @@ class CustomUserAdmin(UserAdmin):
                 )
             }
         ),
-        # (
-        #     _('Tool Info'),
-        #     {
-        #         'fields': (
-        #             'password', 'contractor', 'phone'
-        #         )
-        #     }
-        # ),
+        (
+            _('Tool Info'),
+            {
+                'fields': (
+                    'password',
+                )
+            }
+        ),
         (
             _('Group and Permissions Info'),
             {
@@ -49,7 +49,8 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Raffle)
 class RaffleAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'id', 'draw_datetime', 'end_datetime', 'finalized')
+    list_filter = ('finalized',)
 
 
 @admin.register(Prize)
@@ -64,7 +65,7 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('address', 'id', 'raffle', 'poap_id', 'event_id')
 
 
 @admin.register(ResultsTable)

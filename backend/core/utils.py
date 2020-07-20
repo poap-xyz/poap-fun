@@ -1,11 +1,10 @@
-import datetime
+import os
 import json
 import logging
-import os
-from collections import deque
-
+import datetime
 import requests
-from web3.auto.infura import w3
+
+from web3.auto import w3
 from django.utils.deconstruct import deconstructible
 
 
@@ -61,18 +60,17 @@ def get_poaps_for_address(address):
         logger.warning(f"failed to find poaps for address {address}, request to poap api was not successful")
         return None
 
-    events = json.loads(response.content)
+    tokens = json.loads(response.content)
 
-    event_ids = deque()
-    poap_ids = deque()
-    for event in events:
+    user_poaps = []
+    for each in tokens:
         try:
-            event_id = event["tokenId"]
-            poap_id = event["event"]["id"]
+            user_poaps.append({
+                "poap": each["tokenId"],
+                "event": each["event"]["id"]
+            })
         except KeyError:
             logger.error("Unexpected response format from poap API")
             return None
-        event_ids.append(event_id)
-        poap_ids.append(poap_id)
 
-    return event_ids, poap_ids
+    return user_poaps
