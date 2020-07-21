@@ -5,6 +5,9 @@ import { Spin } from 'antd';
 // Constants
 import { BREAKPOINTS } from 'lib/constants/theme';
 
+// Hooks
+import { useStateContext } from 'lib/hooks/useCustomState';
+
 // Types
 import { Participant } from 'lib/types';
 
@@ -24,21 +27,31 @@ const Content = styled.div`
     background: var(--system-gray);
     border-radius: 12px;
     padding: 25px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    margin: auto;
-    max-width: 500px;
 
-    @media (max-width: ${BREAKPOINTS.xs}) {
-      grid-template-columns: 1fr 1fr 1fr;
+    .box-title {
+      font-family: var(--alt-font);
+      font-size: 16px;
+      &.upper {
+        padding-top: 20px;
+      }
     }
+    .ticket-holder {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      margin: auto;
+      max-width: 500px;
 
-    div {
-      text-align: center;
-      color: var(--primary-color);
-      font-size: 14px;
-      line-height: 24px;
-      padding: 3px 0;
+      @media (max-width: ${BREAKPOINTS.xs}) {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      div {
+        text-align: center;
+        color: var(--primary-color);
+        font-size: 14px;
+        line-height: 24px;
+        padding: 3px 0;
+      }
     }
   }
 `;
@@ -53,14 +66,51 @@ const Title = styled.h3`
 `;
 
 const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoading }) => {
+  const { isConnected, account } = useStateContext();
+
+  if (!participants) return <div />;
+
+  let accountTickets: Participant[] = [];
+  let otherTickets: Participant[] = participants;
+  if (isConnected && account) {
+    accountTickets = participants.filter((each) => each.address.toLowerCase() === account.toLowerCase());
+    otherTickets = participants.filter((each) => each.address.toLowerCase() !== account.toLowerCase());
+  }
+
+  // Empty State
+  if (participants.length === 0) {
+    return (
+      <Content>
+        <Title>No registered participants yet. Be the first to join!</Title>
+      </Content>
+    );
+  }
+
   return (
     <Spin spinning={isLoading} tip="Loading participants">
       <Content>
-        <Title>This POAPs are already participating</Title>
+        <Title>Participating POAPs</Title>
         <div className={'participant-box'}>
-          {participants?.map(({ id, poap_id: poapId }) => {
-            return <div key={id}>#{poapId.padStart(5, '0')}</div>;
-          })}
+          {accountTickets.length > 0 && (
+            <div>
+              <div className={'box-title'}>Your numbers:</div>
+              <div className={'ticket-holder'}>
+                {accountTickets.map((each) => {
+                  return (
+                    <div key={each.id}>
+                      <b>#{each.poap_id.toString().padStart(5, '0')}</b>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {accountTickets.length > 0 && <div className={'box-title upper'}>Other numbers:</div>}
+          <div className={'ticket-holder'}>
+            {otherTickets.map((each) => {
+              return <div key={each.id}>#{each.poap_id.toString().padStart(5, '0')}</div>;
+            })}
+          </div>
         </div>
       </Content>
     </Spin>

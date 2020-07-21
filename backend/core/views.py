@@ -163,6 +163,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     serializer_class = ParticipantSerializer
     filter_backends = (filters.DjangoFilterBackend, )
     filter_class = ParticipantFilter
+    pagination_class = None
     http_method_names = ['get', 'post', ]
 
     @action(detail=False, methods=['Post'])
