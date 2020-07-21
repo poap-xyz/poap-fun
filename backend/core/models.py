@@ -1,13 +1,17 @@
-import logging
+import json
 import random
+import logging
 from collections import deque
 from datetime import datetime
 
-from django.contrib.auth.hashers import make_password, check_password
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import ugettext as _
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from django.db import models
-from django.utils.translation import ugettext as _
+from django.contrib.auth.hashers import make_password, check_password
+
+from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
 from core.utils import generate_unique_filename, get_poaps_for_address
 from core.validators import validate_image_size
@@ -110,6 +114,28 @@ class Raffle(TimeStampedModel):
             self._token = raw_token
             self.token = token
         super().save(**kwargs)
+
+        task_name = f'generating_results_for_raffle_{self.id}'
+        task = PeriodicTask.objects.filter(name=task_name).first()
+        if not self.finalized:
+            schedule, _ = IntervalSchedule.objects.get_or_create(every=15, period=IntervalSchedule.SECONDS)
+            if not task:
+                task = PeriodicTask(
+                    name=task_name,
+                    interval=schedule,
+                    task="core.tasks.generate_raffle_results_task",
+                    args=json.dumps([self.id]),
+                )
+
+            if self.draw_datetime > timezone.now():
+                task.start_time = self.draw_datetime
+            else:
+                task.start_time = None
+
+            task.save()
+        elif task:
+            task.enabled = False
+            task.save()
 
     def __str__(self):
         return self.name

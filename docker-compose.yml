@@ -93,7 +93,7 @@ services:
     build: ./backend
     image: webworkerimage
     working_dir: /usr/src/app
-    command: celery worker --app=backend --maxtasksperchild 10 -E --loglevel=DEBUG
+    command: celery worker --app=backend --maxtasksperchild 10 -E --loglevel=INFO
     container_name: poap-fun-celeryworker
     volumes:
       - mediadata:/usr/src/app/media
@@ -122,7 +122,7 @@ services:
     depends_on:
       - postgres
       - redis
-    command: celery beat --app=backend -s /tmp/celerybeat-schedule --pidfile=/tmp/celery.pid --loglevel=DEBUG
+    command: celery beat --app=backend -s /tmp/celerybeat-schedule --pidfile=/tmp/celery.pid --loglevel=INFO
     networks:
       - back-tier
 
