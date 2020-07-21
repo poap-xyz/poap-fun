@@ -7,7 +7,9 @@ type ButtonProps = {
   margin?: boolean;
 };
 
-export const Button = styled(AntdButton)<ButtonProps>`
+export const Button = styled(AntdButton, {
+  shouldForwardProp: (prop) => !['margin'].includes(prop),
+})<ButtonProps>`
   background: var(--system-white);
   border: 1px solid var(--separator-color) !important;
   border-radius: 4px !important;
