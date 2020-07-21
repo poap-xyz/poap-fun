@@ -40,10 +40,9 @@ const Editor: FC<EditorProps> = ({ title, onChange, initialValue = '<p>Be creati
             'searchreplace visualblocks code fullscreen',
             'media table paste help wordcount',
           ],
-          toolbar:
-            'undo redo | formatselect | bold italic forecolor backcolor | image | \
-            alignleft aligncenter alignright alignjustify | link | \
-            bullist numlist outdent indent | emoticons | removeformat | help',
+          toolbar: `undo redo | formatselect | bold italic forecolor backcolor | image |
+            alignleft aligncenter alignright alignjustify | link |
+            bullist numlist outdent indent | emoticons | removeformat | help`,
         }}
         onEditorChange={onChange}
       />

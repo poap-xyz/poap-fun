@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import constate from 'constate';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';

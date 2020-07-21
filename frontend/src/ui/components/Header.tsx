@@ -17,10 +17,12 @@ import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Helpers
-import { isMobileOrTablet } from 'lib/helpers/utils';
 import { endpoints } from 'lib/api';
+import { isMobileOrTablet } from 'lib/helpers/utils';
 
 // Types
+import { UserPoap } from 'lib/types';
+
 type ScrollerProps = {
   grid: boolean;
 };
@@ -110,7 +112,7 @@ const Header: FC = () => {
       <div className={'scroller'}>
         {poaps && (
           <>
-            {poaps.map((poap) => (
+            {poaps.map((poap: UserPoap) => (
               <div className={'badge'}>
                 <img src={poap.event.image_url} alt={poap.event.name} />
               </div>
@@ -141,7 +143,7 @@ const Header: FC = () => {
           {isConnected && !isFetchingPoaps && (
             <>
               {isMobile && account && (
-                <a href={endpoints.poap.webScan(account)} target={'_blank'}>
+                <a href={endpoints.poap.webScan(account)} target={'_blank'} rel="noopener noreferrer">
                   <PoapUser />
                 </a>
               )}
