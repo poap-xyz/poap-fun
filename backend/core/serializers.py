@@ -92,7 +92,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if not poap_integration_service.valid_poap_event(data):
-            return ValidationError("The poap event is invalid")
+            raise ValidationError("The poap event is invalid")
         return data
 
 
@@ -163,8 +163,9 @@ class MultiParticipantSerializer(serializers.Serializer):
     raffle_id = serializers.IntegerField()
 
     def validate_raffle_id(self, value):
-        if not Raffle.objects.filter(id=value).exists():
-            return ValidationError("raffle id must belong to a valid raffle")
+        raffle = Raffle.objects.filter(id=value)
+        if not raffle.exists():
+            raise ValidationError("raffle id must belong to a valid raffle")
         return value
 
     def validate(self, attrs):
@@ -173,8 +174,14 @@ class MultiParticipantSerializer(serializers.Serializer):
             attrs["address"], attrs["signature"], attrs["raffle_id"]
         )
         if not authenticated:
-            return ValidationError(
+            raise ValidationError(
                 "the address does not correspond with the signature"
+            )
+
+        raffle = Raffle.objects.filter(id=attrs["raffle_id"]).first()
+        if raffle.has_participant(attrs["address"]):
+            raise ValidationError(
+                "The address is already participating"
             )
         return attrs
 
@@ -190,7 +197,7 @@ class MultiParticipantSerializer(serializers.Serializer):
             signature=signature,
             raffle=raffle
         )
-        return raffle
+        return Participant.objects.filter(raffle=raffle, address=address.lower())
 
 
 class TextEditorImageSerializer(serializers.ModelSerializer):

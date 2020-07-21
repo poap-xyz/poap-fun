@@ -126,6 +126,9 @@ class Raffle(TimeStampedModel):
                 valid_poaps.append(each)
         return valid_poaps
 
+    def has_participant(self, address):
+        return self.participants.filter(address=address.lower()).exists()
+
 
 class Prize(TimeStampedModel):
     """
@@ -187,7 +190,7 @@ class ParticipantManager(models.Manager):
         participants = deque()
         for each in valid_poaps_for_raffle:
             participant = Participant(
-                address=address,
+                address=address.lower(),
                 signature=signature,
                 poap_id=each['poap'],
                 event_id=each['event'],
