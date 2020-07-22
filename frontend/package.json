@@ -17,6 +17,7 @@
     "lodash.last": "^3.0.0",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
+    "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-blockies": "^1.4.1",
     "react-dom": "^16.13.1",

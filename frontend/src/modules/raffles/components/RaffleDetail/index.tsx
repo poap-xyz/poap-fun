@@ -11,6 +11,7 @@ import TitlePrimary from 'ui/components/TitlePrimary';
 import Loading from 'ui/components/Loading';
 import Countdown from 'ui/components/Countdown';
 import RaffleContent from 'ui/components/RaffleContent';
+import RaffleWinners from 'ui/components/RaffleWinners';
 import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
 import StatusTag from 'ui/components/StatusTag';
@@ -23,6 +24,8 @@ import { ROUTES } from 'lib/routes';
 import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffle } from 'lib/hooks/useRaffle';
 import { useModal } from 'lib/hooks/useModal';
+import { useResults } from 'lib/hooks/useResults';
+import { useParticipants } from 'lib/hooks/useParticipants';
 
 // Helpers
 import { isRaffleActive } from 'lib/helpers/raffles';
@@ -30,7 +33,6 @@ import { mergeRaffleEvent } from 'lib/helpers/api';
 
 // Types
 import { CompleteRaffle } from 'lib/types';
-import { clearInterval } from 'timers';
 
 const TimeSandIcon = (props: any) => {
   return (
@@ -163,6 +165,7 @@ const GasLimitValue = styled.p`
   margin-bottom: 0;
 `;
 
+// Utils
 const lastBlockTimeClass = (time: number) => {
   if (time >= 0 && time < 15) return 'text-success';
   if (time < 20) return 'text-warning';
@@ -269,10 +272,14 @@ const RaffleCreated: FC = () => {
   const { id } = useParams();
   const { push } = useHistory();
 
-  // Lib hooks
-  const { data: raffle } = useRaffle({ id: parseInt(id, 10) });
+  // Query hooks
   const { data: events } = useEvents();
+  const { data: raffle } = useRaffle({ id: parseInt(id, 10) });
 
+  const { data: results, isLoading: isLoadingResults } = useResults({ id: raffle?.results_table });
+  const { data: participantsData, isLoading: isLoadingParticipants } = useParticipants({ raffle: id });
+
+  // Lib hooks
   const { showModal: handleEdit } = useModal({
     component: RaffleEditModal,
     closable: true,
@@ -305,8 +312,10 @@ const RaffleCreated: FC = () => {
       ''
     );
 
-  // TODO - fix
-  let participants: number[] = Array.from({ length: 20 }, () => Math.floor(Math.random() * 10000));
+  const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.address) ?? [];
+  const activeParticipants = participantsData?.results?.filter(
+    (participant: any) => !resultParticipantsAddress.includes(participant.address),
+  );
 
   return (
     <Container sidePadding thinWidth>
@@ -323,7 +332,10 @@ const RaffleCreated: FC = () => {
 
           <RaffleContent raffle={completeRaffle} />
           {isActive && <Button type={'primary'}>Join Raffle</Button>}
-          <RaffleParticipants participants={participants} />
+
+          <RaffleParticipants participants={activeParticipants} isLoading={isLoadingParticipants} />
+          <RaffleWinners winners={results} isLoading={isLoadingResults} />
+
           <BadgeParty />
         </>
       )}

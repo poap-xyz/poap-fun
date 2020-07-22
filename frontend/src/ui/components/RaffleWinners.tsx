@@ -6,11 +6,11 @@ import { Spin } from 'antd';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Types
-import { Participant } from 'lib/types';
+import { ResultsTable } from 'lib/types';
 
-type RaffleParticipantsProps = {
-  participants?: Participant[];
+type RaffleWinnersProps = {
   isLoading: boolean;
+  winners?: ResultsTable;
 };
 
 const Content = styled.div`
@@ -25,7 +25,7 @@ const Content = styled.div`
     border-radius: 12px;
     padding: 25px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr;
     margin: auto;
     max-width: 500px;
 
@@ -52,19 +52,30 @@ const Title = styled.h3`
   padding: 20px 0;
 `;
 
-const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoading }) => {
+// Utils
+const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+
+const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading }) => {
   return (
-    <Spin spinning={isLoading} tip="Loading participants">
+    <Spin spinning={isLoading} tip="Loading winners">
       <Content>
-        <Title>This POAPs are already participating</Title>
+        <Title>These are the winners of the raffle</Title>
         <div className={'participant-box'}>
-          {participants?.map(({ id, poap_id: poapId }) => {
-            return <div key={id}>#{poapId.padStart(5, '0')}</div>;
-          })}
+          {winners?.entries
+            ?.sort((b: any, a: any) => b.order - a.order)
+            ?.map(({ id, order, participant }: any) => {
+              return (
+                <div key={id}>
+                  <span>
+                    {order + 1}º - #{participant.poap_id.padStart(5, '0')} - {shortAddress(participant.address)}
+                  </span>
+                </div>
+              );
+            })}
         </div>
       </Content>
     </Spin>
   );
 };
 
-export default RaffleParticipants;
+export default RaffleWinners;

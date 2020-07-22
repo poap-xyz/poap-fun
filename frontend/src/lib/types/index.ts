@@ -47,6 +47,7 @@ export type Raffle = {
   token?: string;
   prizes: Prize[];
   events: SimpleEvent[];
+  results_table: number | null;
 };
 
 export type CompleteRaffle = {
@@ -85,3 +86,32 @@ export type CreateRaffleValues = {
   prizes: CreatePrize[];
   events: CreateEvent[];
 };
+
+export type Participant = {
+  id: number;
+  address: string;
+  poap_id: string;
+  event_id: string;
+};
+
+export type ResultsTableEntry = {
+  id: number;
+  order: number;
+  participant: Participant;
+};
+
+export type ResultsTable = {
+  id: number;
+  raffle_id: number;
+  entries: ResultsTableEntry[];
+};
+
+export interface DjangoResponse<Result> {
+  count: number;
+  next?: string;
+  previous?: string;
+  results: Result[];
+}
+
+export type ResultsResponse = DjangoResponse<ResultsTable>;
+export type ParticipantsResponse = DjangoResponse<Participant>;

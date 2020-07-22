@@ -1,8 +1,13 @@
 import { message } from 'antd';
+import queryString from 'query-string';
 import wretch, { WretcherError } from 'wretch';
 
 // env
 const { REACT_APP_API_FUN, REACT_APP_API_POAP, REACT_APP_POAP_APP } = process.env;
+
+type Params = {
+  [key: string]: string | number | boolean | undefined;
+};
 
 // Endpoints
 export const endpoints = {
@@ -13,13 +18,21 @@ export const endpoints = {
   },
   fun: {
     raffles: {
-      all: `${REACT_APP_API_FUN}/api/v1/raffles/`,
+      all: `${REACT_APP_API_FUN}a/api/v1/raffles/`,
       detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/raffles/${id}/`,
       images: `${REACT_APP_API_FUN}/api/v1/raffles/text-editor-image/`,
     },
     prizes: {
       all: `${REACT_APP_API_FUN}/api/v1/prizes/`,
       detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/prizes/${id}/`,
+    },
+    results: {
+      all: `${REACT_APP_API_FUN}/api/v1/results/`,
+      detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/results/${id}/`,
+    },
+    participants: {
+      all: (params: Params) => `${REACT_APP_API_FUN}/api/v1/participants/?${queryString.stringify(params)}`,
+      detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/participants/${id}/`,
     },
   },
 };
