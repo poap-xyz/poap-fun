@@ -90,11 +90,6 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ["id", "event_id", "name"]
 
-    def validate(self, data):
-        if not poap_integration_service.valid_poap_event(data):
-            raise ValidationError("The poap event is invalid")
-        return data
-
 
 class RaffleSerializer(serializers.ModelSerializer):
     prizes = PrizeSerializer(many=True)
@@ -160,6 +155,7 @@ class MultiParticipantSerializer(serializers.Serializer):
     """
     address = serializers.CharField(max_length=50)
     signature = serializers.CharField(max_length=255)
+    message = serializers.CharField()
     raffle_id = serializers.IntegerField()
 
     def validate_raffle_id(self, value):
@@ -191,10 +187,12 @@ class MultiParticipantSerializer(serializers.Serializer):
     def create(self, validated_data):
         address = validated_data.get("address")
         signature = validated_data.get("signature")
+        message = validated_data.get("message")
         raffle = Raffle.objects.filter(id=validated_data.get("raffle_id")).first()
         Participant.objects.create_from_address(
             address=address,
             signature=signature,
+            message=message,
             raffle=raffle
         )
         return Participant.objects.filter(raffle=raffle, address=address.lower())

@@ -4,7 +4,6 @@ import logging
 import datetime
 import requests
 
-from web3.auto import w3
 from django.utils.deconstruct import deconstructible
 
 
@@ -28,11 +27,6 @@ class GenerateUniqueFilename(object):
 
 
 generate_unique_filename = GenerateUniqueFilename('text_editor_images/')
-
-
-def verify_and_recover_message(message, signature):
-    # TODO implement
-    return message
 
 
 def get_poaps_for_address(address):

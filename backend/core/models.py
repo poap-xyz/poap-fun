@@ -146,9 +146,10 @@ class Raffle(TimeStampedModel):
     @classmethod
     def get_valid_poaps_for_raffle(cls, user_poaps, raffle):
         valid_events = set([int(event.event_id) for event in raffle.events.all()])
+        registered_poaps = Participant.objects.filter(raffle=raffle).values_list('poap_id', flat=True)
         valid_poaps = []
         for each in user_poaps:
-            if int(each['event']) in valid_events:
+            if int(each['event']) in valid_events and each['poap'] not in registered_poaps:
                 valid_poaps.append(each)
         return valid_poaps
 
@@ -204,7 +205,7 @@ class RaffleEvent(TimeStampedModel):
 
 class ParticipantManager(models.Manager):
 
-    def create_from_address(self, address, signature, raffle):
+    def create_from_address(self, address, signature, raffle, message):
         user_poaps = get_poaps_for_address(address)
         if not len(user_poaps) > 0:
             return ValidationError("could not get poaps for address")
@@ -220,6 +221,7 @@ class ParticipantManager(models.Manager):
                 signature=signature,
                 poap_id=each['poap'],
                 event_id=each['event'],
+                message=message,
                 raffle=raffle
             )
             participants.append(participant)
@@ -243,6 +245,7 @@ class Participant(TimeStampedModel):
     poap_id = models.CharField(_("poap id"), max_length=100)
     event_id = models.CharField(_("event id"), max_length=100)
     signature = models.CharField(_("signature"), max_length=255)
+    message = models.TextField(_("message"), null=True, blank=True)
 
     objects = ParticipantManager()
 
@@ -281,6 +284,7 @@ class ResultsTableEntry(TimeStampedModel):
     class Meta:
         verbose_name = _("results table entry")
         verbose_name_plural = _("results table entries")
+        ordering = ['results_table', 'order']
 
     participant = models.ForeignKey(
         Participant, verbose_name=_("participant"), related_name="entries", on_delete=models.PROTECT
