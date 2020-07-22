@@ -181,7 +181,7 @@ class MultiParticipantSerializer(serializers.Serializer):
         raffle = Raffle.objects.filter(id=attrs["raffle_id"]).first()
         if raffle.has_participant(attrs["address"]):
             raise ValidationError(
-                "The address is already participating"
+                "This address is already participating"
             )
         return attrs
 

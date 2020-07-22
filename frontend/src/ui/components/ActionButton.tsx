@@ -8,6 +8,7 @@ import { Button } from 'ui/styled/antd/Button';
 type ActionButtonProps = {
   action: () => void;
   disabled: boolean;
+  loading: boolean;
   helpText: string;
 };
 
@@ -22,9 +23,9 @@ const HelpText = styled.div`
   color: var(--secondary-color);
 `;
 
-const ActionButton: FC<ActionButtonProps> = ({ action, disabled, helpText }) => (
+const ActionButton: FC<ActionButtonProps> = ({ action, disabled, helpText, loading }) => (
   <Wrapper>
-    <Button type={'primary'} onClick={action} disabled={disabled}>
+    <Button type={'primary'} onClick={action} disabled={disabled} loading={loading}>
       Join Raffle
     </Button>
     {helpText && <HelpText>{helpText}</HelpText>}

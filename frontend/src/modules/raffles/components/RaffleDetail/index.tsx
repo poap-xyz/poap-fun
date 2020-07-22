@@ -25,6 +25,7 @@ import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffle } from 'lib/hooks/useRaffle';
 import { useModal } from 'lib/hooks/useModal';
 import { useResults } from 'lib/hooks/useResults';
+import { useJoinRaffle } from 'lib/hooks/useJoinRaffle';
 import { useParticipants } from 'lib/hooks/useParticipants';
 import { useStateContext } from 'lib/hooks/useCustomState';
 
@@ -33,7 +34,7 @@ import { isRaffleActive } from 'lib/helpers/raffles';
 import { mergeRaffleEvent } from 'lib/helpers/api';
 
 // Types
-import { CompleteRaffle, Participant } from 'lib/types';
+import { CompleteRaffle, Participant, JoinRaffleValues } from 'lib/types';
 
 const TimeSandIcon = (props: any) => {
   return (
@@ -269,8 +270,9 @@ const EthStats: FC = () => {
 const RaffleCreated: FC = () => {
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
+  const [isSigning, setIsSigning] = useState<boolean>(false);
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
-  const { isConnected, connectWallet, account, poaps, isFetchingPoaps } = useStateContext();
+  const { isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
 
   // Router hooks
   const { id } = useParams();
@@ -281,7 +283,9 @@ const RaffleCreated: FC = () => {
   const { data: raffle } = useRaffle({ id: parseInt(id, 10) });
 
   const { data: results, isLoading: isLoadingResults } = useResults({ id: raffle?.results_table });
-  const { data: participantsData, isLoading: isLoadingParticipants } = useParticipants({ raffle: id });
+  const { data: participantsData, isLoading: isLoadingParticipants, refetch: refetchParticipants } = useParticipants({
+    raffle: id,
+  });
 
   // Lib hooks
   const { showModal: handleEdit } = useModal({
@@ -297,6 +301,7 @@ const RaffleCreated: FC = () => {
       if (data?.id) push(generatePath(ROUTES.raffleEdit, { id: data.id }));
     },
   });
+  const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
 
   // Effects
   useEffect(() => {
@@ -313,14 +318,14 @@ const RaffleCreated: FC = () => {
   }, [account, participantsData]); //eslint-disable-line
 
   useEffect(() => {
-    if (isConnected && !isFetchingPoaps && !canAccountParticipate()) {
+    if (raffle && isConnected && !isFetchingPoaps && !canAccountParticipate()) {
       setJoinDisabledReason("You don't have any required POAP");
       setCanJoinRaffle(false);
     }
-  }, [poaps]); //eslint-disable-line
+  }, [poaps, raffle]); //eslint-disable-line
 
   const isAccountParticipating = () => {
-    if (account && participantsData) {
+    if (account && participantsData && participantsData.length > 0) {
       return !!participantsData.find((each) => each.address.toLowerCase() === account.toLowerCase());
     }
     return false;
@@ -334,14 +339,30 @@ const RaffleCreated: FC = () => {
     return false;
   };
 
-  const joinRaffle = async () => {
+  const join = async () => {
     if (!isConnected) {
       await connectWallet();
       return;
     }
 
-    if (!isAccountParticipating() && canAccountParticipate()) {
-      alert('Sign!');
+    if (raffle && account && !isAccountParticipating() && canAccountParticipate()) {
+      setIsSigning(true);
+      let typedSignedMessage = await signMessage(raffle);
+      setIsSigning(false);
+      if (typedSignedMessage.length > 1) {
+        if (typedSignedMessage[0] === '') return;
+
+        let participant: JoinRaffleValues = {
+          signature: typedSignedMessage[0],
+          message: typedSignedMessage[1],
+          address: account,
+          raffle_id: raffle.id,
+        };
+        try {
+          await joinRaffle(participant);
+        } catch (e) {}
+        await refetchParticipants();
+      }
     }
   };
 
@@ -377,8 +398,19 @@ const RaffleCreated: FC = () => {
           )}
           {!isActive && <TitlePrimary title={completeRaffle.name} goBack />}
           <RaffleContent raffle={completeRaffle} />
-          {isActive && <ActionButton action={joinRaffle} disabled={!canJoinRaffle} helpText={joinDisabledReason} />}
-          <RaffleParticipants participants={activeParticipants} isLoading={isLoadingParticipants} />
+          {isActive && (
+            <ActionButton
+              action={join}
+              disabled={!canJoinRaffle}
+              helpText={joinDisabledReason}
+              loading={isJoiningRaffle || isSigning}
+            />
+          )}
+          <RaffleParticipants
+            participants={activeParticipants}
+            isLoading={isLoadingParticipants}
+            canJoin={canJoinRaffle}
+          />
           <RaffleWinners winners={results} isLoading={isLoadingResults} />
           <BadgeParty />
         </>

@@ -21,6 +21,7 @@ export const endpoints = {
       all: `${REACT_APP_API_FUN}/api/v1/raffles/`,
       detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/raffles/${id}/`,
       images: `${REACT_APP_API_FUN}/api/v1/raffles/text-editor-image/`,
+      join: `${REACT_APP_API_FUN}/api/v1/participants/signup_address/`,
     },
     prizes: {
       all: `${REACT_APP_API_FUN}/api/v1/prizes/`,

@@ -14,6 +14,7 @@ import { Participant } from 'lib/types';
 type RaffleParticipantsProps = {
   participants?: Participant[];
   isLoading: boolean;
+  canJoin: boolean;
 };
 
 const Content = styled.div`
@@ -65,7 +66,7 @@ const Title = styled.h3`
   padding: 20px 0;
 `;
 
-const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoading }) => {
+const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoading, canJoin }) => {
   const { isConnected, account } = useStateContext();
 
   if (!participants) return <div />;
@@ -81,7 +82,7 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
   if (participants.length === 0) {
     return (
       <Content>
-        <Title>No registered participants yet. Be the first to join!</Title>
+        <Title>No registered participants yet.{canJoin && ` Be the first to join!`}</Title>
       </Content>
     );
   }
@@ -106,6 +107,14 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
             </div>
           )}
           {accountTickets.length > 0 && <div className={'box-title upper'}>Other numbers:</div>}
+          <div className={'ticket-holder'}>
+            {otherTickets.map((each) => {
+              return <div key={each.id}>#{each.poap_id.toString().padStart(5, '0')}</div>;
+            })}
+          </div>
+          {accountTickets.length > 0 && otherTickets.length > 0 && (
+            <div className={'box-title upper'}>Other numbers:</div>
+          )}
           <div className={'ticket-holder'}>
             {otherTickets.map((each) => {
               return <div key={each.id}>#{each.poap_id.toString().padStart(5, '0')}</div>;

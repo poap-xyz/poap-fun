@@ -115,3 +115,10 @@ export interface DjangoResponse<Result> {
 
 export type ResultsResponse = DjangoResponse<ResultsTable>;
 export type ParticipantsResponse = DjangoResponse<Participant>;
+
+export type JoinRaffleValues = {
+  signature: string;
+  message: string;
+  address: string;
+  raffle_id: number;
+};
