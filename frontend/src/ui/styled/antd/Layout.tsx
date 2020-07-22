@@ -6,7 +6,9 @@ type LayoutProps = {
   padded?: boolean;
 };
 
-export const Layout = styled(AntdLayout)<LayoutProps>`
+export const Layout = styled(AntdLayout, {
+  shouldForwardProp: (prop) => !['padded'].includes(prop),
+})<LayoutProps>`
   background: var(--system-white);
   min-height: 100vh;
   background-color: ${({ gray }) => (gray ? 'var(--btn-disabled)' : 'transparent')};

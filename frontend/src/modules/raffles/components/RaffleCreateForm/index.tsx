@@ -68,30 +68,34 @@ const RaffleCreateForm: FC = () => {
     raffleTime,
     eligibleEvents,
   }: RaffleCreateFormValue) => {
-    let submitPrizes: CreatePrize[] = prizes.map((prize) => ({ name: prize.name, order: prize.order }));
-    let submitEvents: CreateEvent[] = eligibleEvents.map((event) => {
-      let fullEvent = events ? events.find((each) => each.id === event) : null;
-      let name = fullEvent ? fullEvent.name : 'POAP Name fetch failed';
-      return { event_id: `${event}`, name };
-    });
+    try {
+      let submitPrizes: CreatePrize[] = prizes.map((prize) => ({ name: prize.name, order: prize.order }));
+      let submitEvents: CreateEvent[] = eligibleEvents.map((event) => {
+        let fullEvent = events ? events.find((each) => each.id === event) : null;
+        let name = fullEvent ? fullEvent.name : 'POAP Name fetch failed';
+        return { event_id: `${event}`, name };
+      });
 
-    // Combine dates and get timezone
-    if (!raffleDate || !raffleTime) return;
-    let raffleDatetime = mergeRaffleDatetime(raffleDate, raffleTime);
+      // Combine dates and get timezone
+      if (!raffleDate || !raffleTime) return;
+      let raffleDatetime = mergeRaffleDatetime(raffleDate, raffleTime);
 
-    let newRaffle: CreateRaffleValues = {
-      name,
-      description,
-      contact,
-      draw_datetime: raffleDatetime,
-      one_address_one_vote: !weightedVote,
-      prizes: submitPrizes,
-      events: submitEvents,
-    };
+      let newRaffle: CreateRaffleValues = {
+        name,
+        description,
+        contact,
+        draw_datetime: raffleDatetime,
+        one_address_one_vote: !weightedVote,
+        prizes: submitPrizes,
+        events: submitEvents,
+      };
 
-    // Submit raffle
-    let raffle = await createRaffle(newRaffle);
-    if (raffle) push(generatePath(ROUTES.raffleCreated, { id: raffle.id }));
+      // Submit raffle
+      let raffle = await createRaffle(newRaffle);
+      if (raffle) push(generatePath(ROUTES.raffleCreated, { id: raffle.id }));
+    } catch (error) {
+      console.log('RaffleCreateForm:FC -> error', error);
+    }
   };
 
   // Hooks

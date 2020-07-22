@@ -94,7 +94,7 @@ const RaffleGrid: FC = () => {
         </Form>
       </SearchForm>
       <Row gutter={16}>
-        {raffles.map((raffle) => {
+        {raffles.map((raffle: CompleteRaffle) => {
           return (
             <Col xs={24} sm={12} md={12} lg={8} key={raffle.id}>
               <RaffleCard raffle={raffle} />
