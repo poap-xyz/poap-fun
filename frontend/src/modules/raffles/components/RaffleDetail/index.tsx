@@ -317,6 +317,8 @@ const RaffleCreated: FC = () => {
     (participant: any) => !resultParticipantsAddress.includes(participant.address),
   );
 
+  /* TODO: Review in based on new layout what components should be displayed or not */
+
   return (
     <Container sidePadding thinWidth>
       {completeRaffle && (
