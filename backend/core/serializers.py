@@ -106,11 +106,12 @@ class RaffleSerializer(serializers.ModelSerializer):
         model = Raffle
         fields = [
             "id", "name", "description", "contact", "draw_datetime", "end_datetime",
-            "one_address_one_vote", "prizes", "events", "token", "results_table"
+            "one_address_one_vote", "prizes", "events", "token", "results_table", "finalized"
         ]
 
         extra_kwargs = {
             'results_table': {'read_only': True},
+            'finalized': {'read_only': True},
         }
 
     def create(self, validated_data):
