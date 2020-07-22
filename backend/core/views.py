@@ -203,6 +203,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 
 class ResultsViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = ResultsTable.objects.all()
     serializer_class = ResultsTableSerializer
     lookup_field = 'id'
