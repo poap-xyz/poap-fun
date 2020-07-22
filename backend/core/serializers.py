@@ -90,11 +90,6 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ["id", "event_id", "name"]
 
-    def validate(self, data):
-        if not poap_integration_service.valid_poap_event(data):
-            return ValidationError("The poap event is invalid")
-        return data
-
 
 class RaffleSerializer(serializers.ModelSerializer):
     prizes = PrizeSerializer(many=True)
@@ -160,11 +155,13 @@ class MultiParticipantSerializer(serializers.Serializer):
     """
     address = serializers.CharField(max_length=50)
     signature = serializers.CharField(max_length=255)
+    message = serializers.CharField()
     raffle_id = serializers.IntegerField()
 
     def validate_raffle_id(self, value):
-        if not Raffle.objects.filter(id=value).exists():
-            return ValidationError("raffle id must belong to a valid raffle")
+        raffle = Raffle.objects.filter(id=value)
+        if not raffle.exists():
+            raise ValidationError("raffle id must belong to a valid raffle")
         return value
 
     def validate(self, attrs):
@@ -173,8 +170,14 @@ class MultiParticipantSerializer(serializers.Serializer):
             attrs["address"], attrs["signature"], attrs["raffle_id"]
         )
         if not authenticated:
-            return ValidationError(
+            raise ValidationError(
                 "the address does not correspond with the signature"
+            )
+
+        raffle = Raffle.objects.filter(id=attrs["raffle_id"]).first()
+        if raffle.has_participant(attrs["address"]):
+            raise ValidationError(
+                "This address is already participating"
             )
         return attrs
 
@@ -184,13 +187,15 @@ class MultiParticipantSerializer(serializers.Serializer):
     def create(self, validated_data):
         address = validated_data.get("address")
         signature = validated_data.get("signature")
+        message = validated_data.get("message")
         raffle = Raffle.objects.filter(id=validated_data.get("raffle_id")).first()
         Participant.objects.create_from_address(
             address=address,
             signature=signature,
+            message=message,
             raffle=raffle
         )
-        return raffle
+        return Participant.objects.filter(raffle=raffle, address=address.lower())
 
 
 class TextEditorImageSerializer(serializers.ModelSerializer):

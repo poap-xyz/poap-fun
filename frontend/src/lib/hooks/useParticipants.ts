@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 
 // Lib
 import { api, endpoints } from 'lib/api';
-import { ParticipantsResponse } from 'lib/types';
+import { Participant } from 'lib/types';
 
 type ParticipantParams = {
   raffle?: number | null;
@@ -11,7 +11,7 @@ type ParticipantParams = {
 
 export const isParamsEnabled = (params: Params) => Object.values(params).every(Boolean);
 
-const fetchParticipants = (key: string, params: ParticipantParams): Promise<ParticipantsResponse> =>
+const fetchParticipants = (key: string, params: ParticipantParams): Promise<Participant[]> =>
   api().url(endpoints.fun.participants.all(params)).get().json();
 
 export const useParticipants = (params: ParticipantParams) => {

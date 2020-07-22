@@ -1,13 +1,17 @@
-import logging
+import json
 import random
+import logging
 from collections import deque
 from datetime import datetime
 
-from django.contrib.auth.hashers import make_password, check_password
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import ugettext as _
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from django.db import models
-from django.utils.translation import ugettext as _
+from django.contrib.auth.hashers import make_password, check_password
+
+from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
 from core.utils import generate_unique_filename, get_poaps_for_address
 from core.validators import validate_image_size
@@ -111,6 +115,28 @@ class Raffle(TimeStampedModel):
             self.token = token
         super().save(**kwargs)
 
+        task_name = f'generating_results_for_raffle_{self.id}'
+        task = PeriodicTask.objects.filter(name=task_name).first()
+        if not self.finalized:
+            schedule, _ = IntervalSchedule.objects.get_or_create(every=15, period=IntervalSchedule.SECONDS)
+            if not task:
+                task = PeriodicTask(
+                    name=task_name,
+                    interval=schedule,
+                    task="core.tasks.generate_raffle_results_task",
+                    args=json.dumps([self.id]),
+                )
+
+            if self.draw_datetime > timezone.now():
+                task.start_time = self.draw_datetime
+            else:
+                task.start_time = None
+
+            task.save()
+        elif task:
+            task.enabled = False
+            task.save()
+
     def __str__(self):
         return self.name
 
@@ -120,11 +146,15 @@ class Raffle(TimeStampedModel):
     @classmethod
     def get_valid_poaps_for_raffle(cls, user_poaps, raffle):
         valid_events = set([int(event.event_id) for event in raffle.events.all()])
+        registered_poaps = Participant.objects.filter(raffle=raffle).values_list('poap_id', flat=True)
         valid_poaps = []
         for each in user_poaps:
-            if int(each['event']) in valid_events:
+            if int(each['event']) in valid_events and each['poap'] not in registered_poaps:
                 valid_poaps.append(each)
         return valid_poaps
+
+    def has_participant(self, address):
+        return self.participants.filter(address=address.lower()).exists()
 
 
 class Prize(TimeStampedModel):
@@ -175,7 +205,7 @@ class RaffleEvent(TimeStampedModel):
 
 class ParticipantManager(models.Manager):
 
-    def create_from_address(self, address, signature, raffle):
+    def create_from_address(self, address, signature, raffle, message):
         user_poaps = get_poaps_for_address(address)
         if not len(user_poaps) > 0:
             return ValidationError("could not get poaps for address")
@@ -187,10 +217,11 @@ class ParticipantManager(models.Manager):
         participants = deque()
         for each in valid_poaps_for_raffle:
             participant = Participant(
-                address=address,
+                address=address.lower(),
                 signature=signature,
                 poap_id=each['poap'],
                 event_id=each['event'],
+                message=message,
                 raffle=raffle
             )
             participants.append(participant)
@@ -214,6 +245,7 @@ class Participant(TimeStampedModel):
     poap_id = models.CharField(_("poap id"), max_length=100)
     event_id = models.CharField(_("event id"), max_length=100)
     signature = models.CharField(_("signature"), max_length=255)
+    message = models.TextField(_("message"), null=True, blank=True)
 
     objects = ParticipantManager()
 
@@ -252,6 +284,7 @@ class ResultsTableEntry(TimeStampedModel):
     class Meta:
         verbose_name = _("results table entry")
         verbose_name_plural = _("results table entries")
+        ordering = ['results_table', 'order']
 
     participant = models.ForeignKey(
         Participant, verbose_name=_("participant"), related_name="entries", on_delete=models.PROTECT

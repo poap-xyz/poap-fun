@@ -163,6 +163,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     serializer_class = ParticipantSerializer
     filter_backends = (filters.DjangoFilterBackend, )
     filter_class = ParticipantFilter
+    pagination_class = None
     http_method_names = ['get', 'post', ]
 
     @action(detail=False, methods=['Post'])
@@ -192,14 +193,15 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         serializer = MultiParticipantSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
-        return Response(status=status.HTTP_201_CREATED)
+        participants_queryset = serializer.save()
+        participants = ParticipantSerializer(participants_queryset, many=True)
+        return Response(participants.data, status=status.HTTP_201_CREATED)
 
     def create(self, request):
-            return Response(
-                ("Method not implemented"),
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        return Response(
+            "Method not implemented",
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class ResultsViewSet(viewsets.ModelViewSet):

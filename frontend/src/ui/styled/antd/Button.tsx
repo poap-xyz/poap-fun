@@ -74,7 +74,7 @@ export const Button = styled(AntdButton, {
     }
 
     &:disabled {
-      color: var(--font-color) !important;
+      color: var(--secondary-color) !important;
       background-color: var(--btn-disabled) !important;
       border-color: var(--btn-disabled) !important;
     }
