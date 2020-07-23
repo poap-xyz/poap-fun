@@ -39,23 +39,27 @@ const initialValues: RaffleSearchFormValue = {
 };
 
 const RaffleGrid: FC = () => {
+  // React hooks
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
+
   const [query, setQuery] = useState<string>('');
   const [raffles, setRaffles] = useState<CompleteRaffle[]>([]);
+
   const debouncedSearchTerm: string = useDebounce(query, 500);
 
+  // Query hooks
   const { data: events } = useEvents();
   const { data: apiRaffles, isLoading } = useRaffles({ page, query: debouncedSearchTerm });
 
-  // Component methods
+  // Methods
   const changePage = () => setPage(page + 1);
 
   // Lib hooks
   const { values, errors, touched, handleChange } = useFormik({
     initialValues,
-    validationSchema: RaffleSearchSchema,
     onSubmit: () => {},
+    validationSchema: RaffleSearchSchema,
   });
 
   // Effects
@@ -72,6 +76,7 @@ const RaffleGrid: FC = () => {
 
   useEffect(() => {
     if (!events || !apiRaffles) return;
+
     setRaffles([...raffles, ...mergeRaffleEvent(apiRaffles.results, events)]);
     setTotalPages(Math.ceil(apiRaffles.count / API_PAGE_SIZE));
   }, [apiRaffles, events]); //eslint-disable-line
