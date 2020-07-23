@@ -211,7 +211,7 @@ const RaffleCreateForm: FC = () => {
                 values={values}
               />
             </Col>
-            <Col offset={4} span={8}>
+            <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }} lg={{ offset: 4, span: 8 }}>
               <DatePicker
                 setFieldValue={setFieldValue}
                 name="raffleDate"
@@ -223,7 +223,7 @@ const RaffleCreateForm: FC = () => {
                 values={values}
               />
             </Col>
-            <Col span={8}>
+            <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }} lg={{ offset: 0, span: 8 }}>
               <TimePicker
                 setFieldValue={setFieldValue}
                 name="raffleTime"

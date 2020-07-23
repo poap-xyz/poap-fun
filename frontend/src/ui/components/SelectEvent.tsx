@@ -32,6 +32,8 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  white-space: pre-wrap;
+
   .content {
     img {
       width: 40px;
