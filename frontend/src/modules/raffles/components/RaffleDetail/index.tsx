@@ -36,7 +36,7 @@ import { mergeRaffleEvent } from 'lib/helpers/api';
 import { isRaffleActive, isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
 
 // Types
-import { CompleteRaffle, JoinRaffleValues } from 'lib/types';
+import { ResultsTable, CompleteRaffle, JoinRaffleValues } from 'lib/types';
 
 const TimeSandIcon = (props: any) => {
   return (
@@ -182,7 +182,18 @@ const lastBlockTimeClass = (time: number) => {
   return 'text-danger';
 };
 
-const EthStats: FC = () => {
+type EthStatsProps = {
+  refetchResults: (
+    throwOnError?:
+      | {
+          throwOnError?: boolean | undefined;
+        }
+      | undefined,
+  ) => Promise<ResultsTable>;
+  shouldRefetchResults: boolean;
+};
+
+const EthStats = ({ refetchResults, shouldRefetchResults }: EthStatsProps) => {
   const [gasLimit, setGasLimit] = useState<any>(undefined);
   const [bestBlock, setBestBlock] = useState<any>(undefined);
   const [lastBlockTime, setLastBlockTime] = useState<number>(0);
@@ -223,6 +234,9 @@ const EthStats: FC = () => {
 
             if (bestBlock !== lastBlock) {
               setLastBlockTime(0);
+              if (shouldRefetchResults) refetchResults();
+
+              lastBlock = Number(bestBlock);
             }
 
             setGasLimit(gasLimit);
@@ -241,7 +255,7 @@ const EthStats: FC = () => {
       clearInterval(intervalId);
       clearInterval(gasLimitIntervalId);
     };
-  }, []);
+  }, []); //eslint-disable-line
 
   return (
     <EthStatsContainer>
@@ -296,7 +310,9 @@ const RaffleDetail: FC = () => {
   const { data: events } = useEvents();
   const { data: raffle } = useRaffle({ id: parseInt(id, 10) });
 
-  const { data: results, isLoading: isLoadingResults } = useResults({ id: raffle?.results_table });
+  const { data: results, isLoading: isLoadingResults, refetch: refetchResults } = useResults({
+    id: raffle?.results_table,
+  });
   const { data: participantsData, isLoading: isLoadingParticipants, refetch: refetchParticipants } = useParticipants({
     raffle: id,
   });
@@ -433,14 +449,13 @@ const RaffleDetail: FC = () => {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary title={completeRaffle.name} goBack />
-        <EthStats />
+        <EthStats refetchResults={refetchResults} shouldRefetchResults={Boolean(raffle?.results_table)} />
 
         <RaffleParticipants
           participants={activeParticipants}
           isLoading={isLoadingParticipants}
           canJoin={canJoinRaffle}
         />
-        <Confetti run={shouldTriggerConfetti} width={width} height={height} />
 
         <RaffleWinners winners={results} isLoading={isLoadingResults} />
         <BadgeParty />
@@ -456,6 +471,8 @@ const RaffleDetail: FC = () => {
 
         <RaffleWinners winners={results} isLoading={isLoadingResults} />
         <BadgeParty />
+
+        <Confetti run={shouldTriggerConfetti} width={width} height={height} />
       </Container>
     );
   }

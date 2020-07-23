@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { useHistory, generatePath } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
@@ -22,6 +22,7 @@ import Editor from 'ui/components/Editor';
 
 // Helpers
 import { mergeRaffleDatetime } from 'lib/helpers/api';
+import { safeGetItem } from 'lib/helpers/localStorage';
 
 // Constants
 import { ROUTES } from 'lib/routes';
@@ -44,22 +45,47 @@ export type RaffleCreateFormValue = {
   raffleTime: moment.Moment | undefined;
 };
 
-const initialValues: RaffleCreateFormValue = {
-  name: '',
-  contact: '',
-  eligibleEvents: [],
-  weightedVote: false,
-  raffleDate: undefined,
-  raffleTime: undefined,
+const TimeLabel = () => {
+  const offset = moment().utcOffset() / 60;
+
+  return (
+    <Tooltip title={`Browser timezone: ${moment.tz.guess()}`}>
+      <span>Raffle Time (UTC {offset > 0 ? `+${offset}` : offset})</span>
+    </Tooltip>
+  );
 };
 
 const RaffleCreateForm: FC = () => {
-  const [prizes, setPrizes] = useState<Prize[]>([]);
-  const [description, setDescription] = useState<string>('');
+  // Constants
+  const initialValuesFromLocalStorage = safeGetItem('create-raffle-form-values', 'null');
+  const initialValuesParsed = initialValuesFromLocalStorage
+    ? {
+        ...initialValuesFromLocalStorage,
+        raffleDate: moment(initialValuesFromLocalStorage.raffleDate),
+        raffleTime: moment(initialValuesFromLocalStorage.raffleTime),
+      }
+    : null;
 
+  const initialValues: RaffleCreateFormValue = initialValuesParsed || {
+    name: '',
+    contact: '',
+    eligibleEvents: [],
+    weightedVote: false,
+    raffleDate: undefined,
+    raffleTime: undefined,
+  };
+
+  // React hooks
+  const [prizes, setPrizes] = useState<Prize[]>(safeGetItem('prizes-form-values', '[]'));
+  const [description, setDescription] = useState<string>(safeGetItem('description-form-values', '""'));
+
+  // Query hooks
   const { data: events } = useEvents();
+
+  // Router hooks
   const { push } = useHistory();
 
+  // Handlers
   const handleOnSubmit = async ({
     name,
     contact,
@@ -104,10 +130,24 @@ const RaffleCreateForm: FC = () => {
   // Lib hooks
   const { values, errors, touched, handleChange, submitForm, setFieldValue } = useFormik({
     initialValues,
-    validationSchema: RaffleCreateFormSchema,
     onSubmit: handleOnSubmit,
+    validationSchema: RaffleCreateFormSchema,
   });
 
+  // Effects
+  useEffect(() => {
+    localStorage.setItem('create-raffle-form-values', JSON.stringify(values));
+  }, [values]);
+
+  useEffect(() => {
+    localStorage.setItem('description-form-values', JSON.stringify(description));
+  }, [description]);
+
+  useEffect(() => {
+    localStorage.setItem('prizes-form-values', JSON.stringify(prizes));
+  }, [prizes]);
+
+  // Methods
   const removePrize = (order: number) => {
     let newPrizes = prizes
       .filter((prize) => prize.order !== order)
@@ -115,28 +155,23 @@ const RaffleCreateForm: FC = () => {
         let newOrder = index + 1;
         return { ...prize, id: newOrder, order: newOrder };
       });
+
     setPrizes(newPrizes);
   };
 
   const addPrize = (value: string) => {
     if (!value || value.trim() === '') return;
+
     const position = prizes.length + 1;
     let newPrize: Prize = { id: position, order: position, name: value };
+
     setPrizes([...prizes, newPrize]);
   };
 
+  // Handlers
   const handleEditorChange = (content: string, editor: any) => setDescription(content);
 
   const handleSubmitClick = () => submitForm();
-
-  const offset = moment().utcOffset() / 60;
-  const timeLabel = (
-    <>
-      <Tooltip title={`Browser timezone: ${moment.tz.guess()}`}>
-        <span>Raffle Time (UTC {offset > 0 ? `+${offset}` : offset})</span>
-      </Tooltip>
-    </>
-  );
 
   return (
     <Container sidePadding thinWidth>
@@ -176,7 +211,7 @@ const RaffleCreateForm: FC = () => {
                 values={values}
               />
             </Col>
-            <Col offset={4} span={8}>
+            <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }} lg={{ offset: 4, span: 8 }}>
               <DatePicker
                 setFieldValue={setFieldValue}
                 name="raffleDate"
@@ -188,11 +223,11 @@ const RaffleCreateForm: FC = () => {
                 values={values}
               />
             </Col>
-            <Col span={8}>
+            <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }} lg={{ offset: 0, span: 8 }}>
               <TimePicker
                 setFieldValue={setFieldValue}
                 name="raffleTime"
-                label={timeLabel}
+                label={<TimeLabel />}
                 placeholder="Pick a time"
                 touched={touched}
                 errors={errors}
@@ -200,7 +235,7 @@ const RaffleCreateForm: FC = () => {
               />
             </Col>
             <Col span={24}>
-              <Editor title={'Raffle description'} onChange={handleEditorChange} />
+              <Editor title={'Raffle description'} initialValue={description} onChange={handleEditorChange} />
             </Col>
             <Col span={24}>
               <InputSearch

@@ -41,6 +41,7 @@ const TimePicker: FC<TimePickerProps> = ({
   values,
 }) => {
   const handleTimeChange = (time: moment.Moment | null) => setFieldValue(name, time);
+
   return (
     <Item
       className={className}

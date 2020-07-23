@@ -15,18 +15,22 @@ const UserWrapper = styled.div`
   height: 40px;
   padding: 8px 0 8px 8px;
   align-items: center;
+
   .blockie {
     padding-top: 16px;
+
     canvas {
       border-radius: 24px;
     }
   }
+
   .address {
     color: var(--secondary-color);
     font-family: var(--alt-font);
     font-size: 16px;
     padding: 0 10px 0 5px;
   }
+
   .poaps {
     background: var(--system-gray);
     border-radius: 40px;
@@ -38,28 +42,34 @@ const UserWrapper = styled.div`
     position: relative;
     width: 90px;
     flex-direction: row;
+
     .badge {
       background: white;
-      height: 22px;
-      width: 22px;
-      padding: 2px;
+      height: 26px;
+      width: 26px;
+      padding: 1px;
       border-radius: 20px;
       position: absolute;
+
       &:first-of-type {
         left: 10px;
       }
+
       &:nth-of-type(2) {
         left: 20px;
       }
+
       &:nth-of-type(3) {
         left: 30px;
       }
+
       img {
         width: 100%;
         vertical-align: top;
         border-radius: 50%;
       }
     }
+
     .extra-badges {
       position: absolute;
       right: 10px;
@@ -69,6 +79,9 @@ const UserWrapper = styled.div`
   }
 `;
 
+// Utils
+const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+
 const PoapUser: FC = () => {
   const { account, poaps } = useStateContext();
   return (
@@ -76,7 +89,7 @@ const PoapUser: FC = () => {
       <div className={'blockie'}>
         <Blockies seed={account} size={6} />
       </div>
-      <div className={'address'}>{account.slice(0, 6)}...</div>
+      <div className={'address'}>{shortAddress(account)}</div>
       {poaps && poaps.length > 0 && (
         <div className={'poaps'}>
           {poaps.slice(0, 3).map((poap) => {

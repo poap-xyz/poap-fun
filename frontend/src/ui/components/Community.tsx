@@ -6,6 +6,7 @@ import twitter from 'assets/img/twitter.svg';
 import github from 'assets/img/github.svg';
 import telegram from 'assets/img/telegram.svg';
 import reddit from 'assets/img/reddit.svg';
+import discord from 'assets/img/discord.svg';
 
 const CommunityWrapper = styled.div`
   display: flex;
@@ -47,6 +48,11 @@ const Community: FC = () => (
       <div className={'network'}>
         <a href={'https://t.me/poapxyz'} target={'_blank'} rel="noopener noreferrer">
           <img src={telegram} alt={'Telegram'} />
+        </a>
+      </div>
+      <div className={'network'}>
+        <a href={'https://discord.com/invite/9s8U8Bn'} target={'_blank'} rel="noopener noreferrer">
+          <img src={discord} alt={'Discord'} />
         </a>
       </div>
       <div className={'network'}>

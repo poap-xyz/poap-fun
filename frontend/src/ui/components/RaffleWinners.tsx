@@ -75,7 +75,7 @@ const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading }) => {
               return (
                 <div key={id}>
                   <span>
-                    {order + 1}º - #{participant.poap_id.padStart(5, '0')} - {shortAddress(participant.address)}
+                    {order + 1}º - POAP #{participant.poap_id.padStart(5, '0')} - {shortAddress(participant.address)}
                   </span>
                 </div>
               );
