@@ -65,7 +65,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "start:server": "yarn build && node server"
+    "start:server": "NODE_ENV=production yarn build && node server"
   },
   "husky": {
     "hooks": {
