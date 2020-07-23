@@ -3,6 +3,8 @@ import { useParams, useHistory } from 'react-router-dom';
 import { generatePath } from 'react-router';
 import styled from '@emotion/styled';
 import last from 'lodash.last';
+import { useWindowSize } from 'react-use';
+import Confetti from 'react-confetti';
 
 // Components
 import { Container } from 'ui/styled/Container';
@@ -30,11 +32,11 @@ import { useParticipants } from 'lib/hooks/useParticipants';
 import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Helpers
-import { isRaffleActive } from 'lib/helpers/raffles';
 import { mergeRaffleEvent } from 'lib/helpers/api';
+import { isRaffleActive, isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
 
 // Types
-import { CompleteRaffle, Participant, JoinRaffleValues } from 'lib/types';
+import { CompleteRaffle, JoinRaffleValues } from 'lib/types';
 
 const TimeSandIcon = (props: any) => {
   return (
@@ -268,11 +270,18 @@ const EthStats: FC = () => {
 };
 
 const RaffleCreated: FC = () => {
+  // React hooks
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
+
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
+
+  const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
   const { isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
+
+  // Lib hooks
+  const { width, height } = useWindowSize();
 
   // Router hooks
   const { id } = useParams();
@@ -368,6 +377,9 @@ const RaffleCreated: FC = () => {
 
   // Constants
   const isActive: boolean = completeRaffle ? isRaffleActive(completeRaffle) : false;
+  const isOngoing: boolean = completeRaffle ? isRaffleOnGoing(completeRaffle) : false;
+  const isFinished: boolean = completeRaffle ? isRaffleFinished(completeRaffle) : false;
+
   const title =
     isActive && completeRaffle ? (
       <div className={'active-raffle'}>
@@ -383,41 +395,76 @@ const RaffleCreated: FC = () => {
       ? participantsData.filter((participant: any) => !resultParticipantsAddress.includes(participant.address))
       : [];
 
-  /* TODO: Review in based on new layout what components should be displayed or not */
+  // Effects
+  useEffect(() => {
+    if (!isOngoing || !results || !participantsData) return;
+    setShouldTriggerConfetti(results?.entries?.length === participantsData.length);
+  }, [isOngoing, participantsData, results]);
 
-  return (
-    <Container sidePadding thinWidth>
-      {completeRaffle && (
-        <>
-          {isActive && (
-            <>
-              <TitlePrimary title={title} goBack editAction={handleEdit} />
-              <EthStats />
-              <Countdown datetime={completeRaffle.draw_datetime} />
-            </>
-          )}
-          {!isActive && <TitlePrimary title={completeRaffle.name} goBack />}
-          <RaffleContent raffle={completeRaffle} />
-          {isActive && (
-            <ActionButton
-              action={join}
-              disabled={!canJoinRaffle}
-              helpText={joinDisabledReason}
-              loading={isJoiningRaffle || isSigning}
-            />
-          )}
-          <RaffleParticipants
-            participants={activeParticipants}
-            isLoading={isLoadingParticipants}
-            canJoin={canJoinRaffle}
-          />
-          <RaffleWinners winners={results} isLoading={isLoadingResults} />
-          <BadgeParty />
-        </>
-      )}
-      {!completeRaffle && <Loading />}
-    </Container>
-  );
+  if (!completeRaffle) {
+    return (
+      <Container sidePadding thinWidth>
+        <Loading />
+      </Container>
+    );
+  }
+
+  if (isActive) {
+    return (
+      <Container sidePadding thinWidth>
+        <TitlePrimary title={title} goBack editAction={handleEdit} />
+        <Countdown datetime={completeRaffle.draw_datetime} />
+
+        <RaffleContent raffle={completeRaffle} />
+        <ActionButton
+          action={join}
+          disabled={!canJoinRaffle}
+          helpText={joinDisabledReason}
+          loading={isJoiningRaffle || isSigning}
+        />
+
+        <RaffleParticipants
+          participants={activeParticipants}
+          isLoading={isLoadingParticipants}
+          canJoin={canJoinRaffle}
+        />
+        <BadgeParty />
+      </Container>
+    );
+  }
+
+  if (isOngoing) {
+    return (
+      <Container sidePadding thinWidth>
+        <TitlePrimary title={completeRaffle.name} goBack />
+        <EthStats />
+
+        <RaffleParticipants
+          participants={activeParticipants}
+          isLoading={isLoadingParticipants}
+          canJoin={canJoinRaffle}
+        />
+        <Confetti run={shouldTriggerConfetti} width={width} height={height} />
+
+        <RaffleWinners winners={results} isLoading={isLoadingResults} />
+        <BadgeParty />
+      </Container>
+    );
+  }
+
+  if (isFinished) {
+    return (
+      <Container sidePadding thinWidth>
+        <TitlePrimary title={completeRaffle.name} goBack />
+        <RaffleContent raffle={completeRaffle} />
+
+        <RaffleWinners winners={results} isLoading={isLoadingResults} />
+        <BadgeParty />
+      </Container>
+    );
+  }
+
+  return null;
 };
 
 export default RaffleCreated;
