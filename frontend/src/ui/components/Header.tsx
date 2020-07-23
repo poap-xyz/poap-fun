@@ -113,9 +113,16 @@ const Header: FC = () => {
         {poaps && (
           <>
             {poaps.map((poap: UserPoap) => (
-              <div className={'badge'}>
-                <img src={poap.event.image_url} alt={poap.event.name} />
-              </div>
+              <a
+                href={endpoints.poap.token(poap.tokenId)}
+                target={'_blank'}
+                key={poap.tokenId}
+                rel="noopener noreferrer"
+              >
+                <div className={'badge'}>
+                  <img src={poap.event.image_url} alt={poap.event.name} />
+                </div>
+              </a>
             ))}
             {poaps.length === 0 && <div className={'empty'}>No POAPs found</div>}
           </>
