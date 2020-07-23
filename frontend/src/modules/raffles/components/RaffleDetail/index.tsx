@@ -456,7 +456,6 @@ const RaffleDetail: FC = () => {
           isLoading={isLoadingParticipants}
           canJoin={canJoinRaffle}
         />
-        <Confetti run={shouldTriggerConfetti} width={width} height={height} />
 
         <RaffleWinners winners={results} isLoading={isLoadingResults} />
         <BadgeParty />
@@ -472,6 +471,8 @@ const RaffleDetail: FC = () => {
 
         <RaffleWinners winners={results} isLoading={isLoadingResults} />
         <BadgeParty />
+
+        <Confetti run={shouldTriggerConfetti} width={width} height={height} />
       </Container>
     );
   }
