@@ -77,9 +77,7 @@ const RaffleCreateForm: FC = () => {
 
   // React hooks
   const [prizes, setPrizes] = useState<Prize[]>(safeGetItem('prizes-form-values', '[]'));
-  console.log('RaffleCreateForm:FC -> prizes', prizes);
   const [description, setDescription] = useState<string>(safeGetItem('description-form-values', '""'));
-  console.log('RaffleCreateForm:FC -> description', description);
 
   // Query hooks
   const { data: events } = useEvents();
