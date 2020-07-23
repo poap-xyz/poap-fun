@@ -6,16 +6,14 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY package.json /usr/src/app/
+RUN npm install -g yarn
 RUN yarn install
 
 # Bundle app source
 COPY . /usr/src/app
 
-# Build and optimize react app
-RUN yarn build
-
 # Expose Port
-EXPOSE 80
+EXPOSE 3000
 
 # Run command defined in package.json
-CMD [ "yarn", "run", "start:server" ]
+CMD [ "yarn", "start:server" ]
