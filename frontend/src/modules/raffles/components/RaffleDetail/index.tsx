@@ -222,6 +222,7 @@ const EthStats: FC = () => {
             const bestBlock = last(parsedEvent?.data?.height);
 
             if (bestBlock !== lastBlock) {
+              lastBlock = Number(bestBlock);
               setLastBlockTime(0);
             }
 
@@ -409,6 +410,7 @@ const RaffleDetail: FC = () => {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary title={completeRaffle.name} activeTag={true} goBack editAction={handleEdit} />
+        <EthStats />
         <Countdown datetime={completeRaffle.draw_datetime} />
 
         <RaffleContent raffle={completeRaffle} />
