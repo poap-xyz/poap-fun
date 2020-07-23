@@ -94,7 +94,7 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
         <div className={'participant-box'}>
           {accountTickets.length > 0 && (
             <div>
-              <div className={'box-title'}>Your numbers:</div>
+              <div className={'box-title'}>Your number{accountTickets.length > 1 ? 's' : ''}:</div>
               <div className={'ticket-holder'}>
                 {accountTickets.map((each) => {
                   return (
