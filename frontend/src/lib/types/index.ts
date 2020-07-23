@@ -48,6 +48,7 @@ export type Raffle = {
   prizes: Prize[];
   events: SimpleEvent[];
   results_table: number | null;
+  finalized: boolean;
 };
 
 export type CompleteRaffle = {
@@ -58,6 +59,7 @@ export type CompleteRaffle = {
   draw_datetime: string;
   end_datetime: string | null;
   one_address_one_vote: boolean;
+  finalized: boolean;
   prizes: Prize[];
   events: PoapEvent[];
 };

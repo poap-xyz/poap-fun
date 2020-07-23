@@ -17,3 +17,11 @@ export const createRaffleLink = (raffle: Raffle | CompleteRaffle, relative: bool
 export const isRaffleActive = (raffle: CompleteRaffle): boolean => {
   return moment(raffle.draw_datetime).isAfter(moment());
 };
+
+export const isRaffleOnGoing = (raffle: CompleteRaffle): boolean => {
+  return moment(raffle.draw_datetime).isBefore(moment());
+};
+
+export const isRaffleFinished = (raffle: CompleteRaffle): boolean => {
+  return raffle.finalized === true;
+};

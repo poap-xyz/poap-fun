@@ -56,6 +56,14 @@ const Title = styled.h3`
 const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
 const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading }) => {
+  if (winners && winners?.entries?.length === 0) {
+    return (
+      <Content>
+        <Title>No registered winners yet.</Title>
+      </Content>
+    );
+  }
+
   return (
     <Spin spinning={isLoading} tip="Loading winners">
       <Content>
