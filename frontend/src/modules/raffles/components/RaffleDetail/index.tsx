@@ -15,12 +15,12 @@ import RaffleContent from 'ui/components/RaffleContent';
 import RaffleWinners from 'ui/components/RaffleWinners';
 import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
-import StatusTag from 'ui/components/StatusTag';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
 import ActionButton from 'ui/components/ActionButton';
 
 // Constants
 import { ROUTES } from 'lib/routes';
+import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Hooks
 import { useEvents } from 'lib/hooks/useEvents';
@@ -78,6 +78,11 @@ const EthStatsContainer = styled.div`
   display: grid;
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr 1fr;
+
+  @media (max-width: ${BREAKPOINTS.sm}) {
+    display: flex;
+    flex-direction: column;
+  }
 
   background-color: #090909;
   border-radius: 20px;
@@ -269,7 +274,7 @@ const EthStats: FC = () => {
   );
 };
 
-const RaffleCreated: FC = () => {
+const RaffleDetail: FC = () => {
   // React hooks
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
@@ -380,15 +385,6 @@ const RaffleCreated: FC = () => {
   const isOngoing: boolean = completeRaffle ? isRaffleOnGoing(completeRaffle) : false;
   const isFinished: boolean = completeRaffle ? isRaffleFinished(completeRaffle) : false;
 
-  const title =
-    isActive && completeRaffle ? (
-      <div className={'active-raffle'}>
-        <div className={'title'}>{completeRaffle?.name}</div> <StatusTag active={true} className={'status'} />
-      </div>
-    ) : (
-      ''
-    );
-
   const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.address) ?? [];
   const activeParticipants =
     participantsData && participantsData.length > 0
@@ -412,7 +408,7 @@ const RaffleCreated: FC = () => {
   if (isActive) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={title} goBack editAction={handleEdit} />
+        <TitlePrimary title={completeRaffle.name} activeTag={true} goBack editAction={handleEdit} />
         <Countdown datetime={completeRaffle.draw_datetime} />
 
         <RaffleContent raffle={completeRaffle} />
@@ -467,4 +463,4 @@ const RaffleCreated: FC = () => {
   return null;
 };
 
-export default RaffleCreated;
+export default RaffleDetail;

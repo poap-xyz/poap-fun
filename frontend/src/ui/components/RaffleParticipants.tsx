@@ -106,12 +106,6 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
               </div>
             </div>
           )}
-          {accountTickets.length > 0 && <div className={'box-title upper'}>Other numbers:</div>}
-          <div className={'ticket-holder'}>
-            {otherTickets.map((each) => {
-              return <div key={each.id}>#{each.poap_id.toString().padStart(5, '0')}</div>;
-            })}
-          </div>
           {accountTickets.length > 0 && otherTickets.length > 0 && (
             <div className={'box-title upper'}>Other numbers:</div>
           )}

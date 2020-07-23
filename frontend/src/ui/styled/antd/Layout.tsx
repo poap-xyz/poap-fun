@@ -30,6 +30,7 @@ export const Layout = styled(AntdLayout, {
 
     &-content {
       padding: ${({ padded }) => (padded ? '100px 0 24px' : '100px 0 0')};
+      overflow-x: hidden;
     }
   }
 `;
