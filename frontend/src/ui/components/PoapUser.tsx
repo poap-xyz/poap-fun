@@ -69,6 +69,9 @@ const UserWrapper = styled.div`
   }
 `;
 
+// Utils
+const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+
 const PoapUser: FC = () => {
   const { account, poaps } = useStateContext();
   return (
@@ -76,7 +79,7 @@ const PoapUser: FC = () => {
       <div className={'blockie'}>
         <Blockies seed={account} size={6} />
       </div>
-      <div className={'address'}>{account.slice(0, 6)}...</div>
+      <div className={'address'}>{shortAddress(account)}</div>
       {poaps && poaps.length > 0 && (
         <div className={'poaps'}>
           {poaps.slice(0, 3).map((poap) => {
