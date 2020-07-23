@@ -62,6 +62,7 @@ export type CompleteRaffle = {
   finalized: boolean;
   prizes: Prize[];
   events: PoapEvent[];
+  finalized: boolean;
 };
 
 export type FetchResponseRaffle = {

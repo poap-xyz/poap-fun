@@ -12,7 +12,7 @@ import StatusTag from 'ui/components/StatusTag';
 import { DATETIMEFORMAT } from 'lib/constants/theme';
 
 // Helpers
-import { createRaffleLink, isRaffleActive } from 'lib/helpers/raffles';
+import { createRaffleLink } from 'lib/helpers/raffles';
 
 // Types
 import { CompleteRaffle, PoapEvent } from 'lib/types';
@@ -135,7 +135,7 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
           <div className={'card-top-row'}>
             <div className={'card-top-row-title'}>
               <h4>{raffle.name}</h4>
-              <StatusTag active={isRaffleActive(raffle)} />
+              <StatusTag raffle={raffle} />
             </div>
             {raffle.prizes.length > 0 && <h5>{raffle.prizes[0].name}</h5>}
           </div>

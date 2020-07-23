@@ -14,7 +14,7 @@ export const createRaffleLink = (raffle: Raffle | CompleteRaffle, relative: bool
   return `${process.env.REACT_APP_PAGE_URL}${path}`;
 };
 
-export const isRaffleActive = (raffle: CompleteRaffle): boolean => {
+export const isRaffleActive = (raffle: CompleteRaffle | Raffle): boolean => {
   return moment(raffle.draw_datetime).isAfter(moment());
 };
 
