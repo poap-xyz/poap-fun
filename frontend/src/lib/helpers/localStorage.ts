@@ -1,1 +1,1 @@
-export const safeGetItem = (key: string) => JSON.parse(localStorage.getItem(key) || '{}');
+export const safeGetItem = (key: string, defaultValue = '{}') => JSON.parse(localStorage.getItem(key) || defaultValue);
