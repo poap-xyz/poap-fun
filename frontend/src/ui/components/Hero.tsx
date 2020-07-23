@@ -38,7 +38,7 @@ const Hero: FC = () => (
   <HeroWrap>
     <div className={'title'}>
       <h1>What is POAP Fun all about?</h1>
-      <h2>Create raflle por event participants!</h2>
+      <h2>Create raflle for event participants!</h2>
       <NavLink to={ROUTES.raffleCreation}>
         <Button type="primary">Create Raffle</Button>
       </NavLink>
