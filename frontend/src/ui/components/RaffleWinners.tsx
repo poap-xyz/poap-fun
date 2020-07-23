@@ -56,10 +56,10 @@ const Title = styled.h3`
 const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
 const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading }) => {
-  if (winners && winners?.entries?.length === 0) {
+  if (!winners || winners?.entries?.length === 0) {
     return (
       <Content>
-        <Title>No registered winners yet.</Title>
+        <Title>No registered winners</Title>
       </Content>
     );
   }
@@ -67,7 +67,7 @@ const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading }) => {
   return (
     <Spin spinning={isLoading} tip="Loading winners">
       <Content>
-        <Title>These are the winners of the raffle</Title>
+        <Title>Winners result's table</Title>
         <div className={'participant-box'}>
           {winners?.entries
             ?.sort((b: any, a: any) => b.order - a.order)

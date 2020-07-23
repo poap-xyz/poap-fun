@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import styled from '@emotion/styled';
 
 // Helpers
-import { isRaffleActive } from 'lib/helpers/raffles';
+import { isRaffleActive, isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
 
 // Types
 import { Raffle, CompleteRaffle } from 'lib/types';
@@ -35,10 +35,10 @@ const Tag = styled.div`
 `;
 
 const StatusTag: FC<StatusTagProps> = ({ raffle, className = '', text = '' }) => {
-  if (raffle && !raffle.finalized) {
-    text = isRaffleActive(raffle) ? 'Active' : 'On Going';
-  } else if (raffle && raffle.finalized) {
-    text = 'Finished';
+  if (raffle) {
+    if (isRaffleActive(raffle)) text = 'Active';
+    if (isRaffleOnGoing(raffle)) text = 'On Going';
+    if (isRaffleFinished(raffle)) text = 'Finished';
   }
   return <Tag className={`${text.toLowerCase()} ${className}`}>{text}</Tag>;
 };

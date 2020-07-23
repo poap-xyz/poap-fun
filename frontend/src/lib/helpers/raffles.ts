@@ -18,10 +18,10 @@ export const isRaffleActive = (raffle: CompleteRaffle | Raffle): boolean => {
   return moment(raffle.draw_datetime).isAfter(moment());
 };
 
-export const isRaffleOnGoing = (raffle: CompleteRaffle): boolean => {
-  return moment(raffle.draw_datetime).isBefore(moment());
+export const isRaffleOnGoing = (raffle: CompleteRaffle | Raffle): boolean => {
+  return !raffle.finalized && moment(raffle.draw_datetime).isBefore(moment());
 };
 
-export const isRaffleFinished = (raffle: CompleteRaffle): boolean => {
+export const isRaffleFinished = (raffle: CompleteRaffle | Raffle): boolean => {
   return raffle.finalized === true;
 };

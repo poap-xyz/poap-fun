@@ -20,6 +20,7 @@ import ActionButton from 'ui/components/ActionButton';
 
 // Constants
 import { ROUTES } from 'lib/routes';
+import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Hooks
 import { useEvents } from 'lib/hooks/useEvents';
@@ -77,6 +78,11 @@ const EthStatsContainer = styled.div`
   display: grid;
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr 1fr;
+
+  @media (max-width: ${BREAKPOINTS.sm}) {
+    display: flex;
+    flex-direction: column;
+  }
 
   background-color: #090909;
   border-radius: 20px;
