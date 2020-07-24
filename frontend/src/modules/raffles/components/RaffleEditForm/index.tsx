@@ -81,11 +81,19 @@ const RaffleEditForm: FC = () => {
       let each: Prize = { id: i + 1, name: prize.name, order: i + 1 };
       return each;
     });
+
   const [prizes, setPrizes] = useState<Prize[]>(sortedPrizes);
   const [description, setDescription] = useState<string>(raffle.description);
   const [completeRaffle, setCompleteRaffle] = useState<CompleteRaffle | null>(null);
 
-  const handleOnSubmit = async ({ name, contact, weightedVote, raffleDate, raffleTime }: RaffleEditFormValue) => {
+  const handleOnSubmit = async (
+    { name, contact, weightedVote, raffleDate, raffleTime }: RaffleEditFormValue,
+    { setFieldError }: any,
+  ) => {
+    if (!prizes.length) {
+      return setFieldError('prize', 'You should have at least one prize');
+    }
+
     if (raffle.token) {
       // Combine dates and get timezone
       if (!raffleDate || !raffleTime) return;

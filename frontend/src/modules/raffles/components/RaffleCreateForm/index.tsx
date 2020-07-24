@@ -108,14 +108,14 @@ const RaffleCreateForm: FC = () => {
   const { push } = useHistory();
 
   // Handlers
-  const handleOnSubmit = async ({
-    name,
-    contact,
-    weightedVote,
-    raffleDate,
-    raffleTime,
-    eligibleEvents,
-  }: RaffleCreateFormValue) => {
+  const handleOnSubmit = async (
+    { name, contact, weightedVote, raffleDate, raffleTime, eligibleEvents }: RaffleCreateFormValue,
+    { setFieldError }: any,
+  ) => {
+    if (!prizes.length) {
+      return setFieldError('prize', 'You should have at least one prize');
+    }
+
     try {
       let submitPrizes: CreatePrize[] = prizes.map((prize) => ({ name: prize.name, order: prize.order }));
       let submitEvents: CreateEvent[] = eligibleEvents.map((event) => {
@@ -141,6 +141,10 @@ const RaffleCreateForm: FC = () => {
       // Submit raffle
       let raffle = await createRaffle(newRaffle);
       if (raffle) push(generatePath(ROUTES.raffleCreated, { id: raffle.id }));
+
+      localStorage.setItem('create-raffle-form-values', JSON.stringify('null'));
+      localStorage.setItem('description-form-values', JSON.stringify('""'));
+      localStorage.setItem('prizes-form-values', JSON.stringify('[]'));
     } catch (error) {
       console.log('RaffleCreateForm:FC -> error', error);
     }
