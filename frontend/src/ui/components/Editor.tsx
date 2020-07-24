@@ -18,7 +18,7 @@ type EditorProps = {
 };
 
 const Wrapper = styled.div`
-  min-height: 500px;
+  min-height: 250px;
 
   .tox-tinymce {
     max-width: 622px;
@@ -44,7 +44,7 @@ const Editor: FC<EditorProps> = ({ title, onChange, initialValue = '<p>Be creati
             initialValue={initialValue}
             apiKey={process.env.REACT_APP_TINY_CLOUD_API_KEY}
             init={{
-              height: 500,
+              height: 250,
               menubar: false,
               images_upload_url: endpoints.fun.raffles.images,
               plugins: [

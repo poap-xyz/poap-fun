@@ -4,6 +4,7 @@ import { useHistory, generatePath } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
 import moment from 'moment-timezone';
 import styled from '@emotion/styled';
+import isEmpty from 'lodash.isempty';
 
 // Components
 import Input from 'ui/components/Input';
@@ -59,6 +60,7 @@ const PrizeContainer = styled.div`
   }
 
   > button {
+    margin-top: 26px;
     flex-basis: 56px;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
@@ -153,7 +155,6 @@ const RaffleCreateForm: FC = () => {
     onSubmit: handleOnSubmit,
     validationSchema: RaffleCreateFormSchema,
   });
-  console.log('RaffleCreateForm:FC -> values', values);
 
   // Effects
   useEffect(() => {
@@ -167,6 +168,17 @@ const RaffleCreateForm: FC = () => {
   useEffect(() => {
     localStorage.setItem('prizes-form-values', JSON.stringify(prizes));
   }, [prizes]);
+
+  useEffect(() => {
+    if (!isEmpty(errors)) {
+      const formCardPosition = document.querySelector('.ant-card-body')?.getBoundingClientRect()?.top;
+
+      if (formCardPosition) {
+        const top = formCardPosition + window.scrollY - 100;
+        window.scroll({ top, behavior: 'smooth' });
+      }
+    }
+  }, [errors]); //eslint-disable-line
 
   // Methods
   const removePrize = (order: number) => {
@@ -263,7 +275,7 @@ const RaffleCreateForm: FC = () => {
             <Col span={24}>
               <PrizeContainer>
                 <Input
-                  label=""
+                  label="Prizes"
                   errors={errors}
                   handleChange={handleChange}
                   name="prize"

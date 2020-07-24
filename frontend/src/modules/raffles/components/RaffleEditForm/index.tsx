@@ -4,6 +4,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
 import moment from 'moment-timezone';
 import styled from '@emotion/styled';
+import isEmpty from 'lodash.isempty';
 
 // Components
 import Input from 'ui/components/Input';
@@ -131,11 +132,23 @@ const RaffleEditForm: FC = () => {
     validationSchema: RaffleEditFormSchema,
   });
 
+  // Effects
   useEffect(() => {
     if (!events || !raffle) return;
     let completeRaffles = mergeRaffleEvent([raffle], events);
     if (completeRaffles.length > 0) setCompleteRaffle(completeRaffles[0]);
   }, [events]); //eslint-disable-line
+
+  useEffect(() => {
+    if (!isEmpty(errors)) {
+      const formCardPosition = document.querySelector('.ant-card-body')?.getBoundingClientRect()?.top;
+
+      if (formCardPosition) {
+        const top = formCardPosition + window.scrollY - 100;
+        window.scroll({ top, behavior: 'smooth' });
+      }
+    }
+  }, [errors]); //eslint-disable-line
 
   const removePrize = (order: number) => {
     let newPrizes = prizes
