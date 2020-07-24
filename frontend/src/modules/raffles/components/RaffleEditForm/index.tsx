@@ -7,7 +7,6 @@ import styled from '@emotion/styled';
 
 // Components
 import Input from 'ui/components/Input';
-import InputSearch from 'ui/components/InputSearch';
 import { Card } from 'ui/styled/antd/Card';
 import { Form } from 'ui/styled/antd/Form';
 import { Button } from 'ui/styled/antd/Button';
