@@ -47,6 +47,7 @@ const Input: FC<InputProps> = ({
       placeholder={placeholder}
       prefix={prefix}
       size={size}
+      onPaste={handleChange}
       value={values[name] ? values[name] : undefined}
     />
     {helpText && <HelpText>{helpText}</HelpText>}
