@@ -3,10 +3,10 @@ import { useFormik } from 'formik';
 import { useHistory, generatePath } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
 import moment from 'moment-timezone';
+import styled from '@emotion/styled';
 
 // Components
 import Input from 'ui/components/Input';
-import InputSearch from 'ui/components/InputSearch';
 import { Card } from 'ui/styled/antd/Card';
 import { Form } from 'ui/styled/antd/Form';
 import { Button } from 'ui/styled/antd/Button';
@@ -38,12 +38,32 @@ import RaffleCreateFormSchema from './schema';
 import { Prize, CreatePrize, CreateEvent, CreateRaffleValues } from 'lib/types';
 export type RaffleCreateFormValue = {
   name: string;
+  prize: string;
   contact: string;
   weightedVote: boolean;
   eligibleEvents: number[];
   raffleDate: moment.Moment | undefined;
   raffleTime: moment.Moment | undefined;
 };
+
+const PrizeContainer = styled.div`
+  display: flex;
+
+  > div {
+    flex: 1;
+
+    input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+
+  > button {
+    flex-basis: 56px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+  }
+`;
 
 const TimeLabel = () => {
   const offset = moment().utcOffset() / 60;
@@ -133,6 +153,7 @@ const RaffleCreateForm: FC = () => {
     onSubmit: handleOnSubmit,
     validationSchema: RaffleCreateFormSchema,
   });
+  console.log('RaffleCreateForm:FC -> values', values);
 
   // Effects
   useEffect(() => {
@@ -159,13 +180,15 @@ const RaffleCreateForm: FC = () => {
     setPrizes(newPrizes);
   };
 
-  const addPrize = (value: string) => {
-    if (!value || value.trim() === '') return;
+  const addPrize = (): void => {
+    const { prize } = values;
+    if (!prize || prize.trim() === '') return;
 
     const position = prizes.length + 1;
-    let newPrize: Prize = { id: position, order: position, name: value };
+    let newPrize: Prize = { id: position, order: position, name: prize };
 
     setPrizes([...prizes, newPrize]);
+    setFieldValue('prize', '');
   };
 
   // Handlers
@@ -238,14 +261,21 @@ const RaffleCreateForm: FC = () => {
               <Editor title={'Raffle description'} initialValue={description} onChange={handleEditorChange} />
             </Col>
             <Col span={24}>
-              <InputSearch
-                name="prize"
-                label="Prize"
-                placeholder={`Enter whatever you want to raffle for the ${prizes.length + 1}º winner`}
-                handleEnter={addPrize}
-                buttonText={'Add'}
-                helpText={'Add any amount of prizes you like to give away!'}
-              />
+              <PrizeContainer>
+                <Input
+                  label=""
+                  errors={errors}
+                  handleChange={handleChange}
+                  name="prize"
+                  placeholder="Add any amount of prizes you like to give away!"
+                  touched={touched}
+                  values={values}
+                  helpText={'Add any amount of prizes you like to give away!'}
+                />
+                <Button onClick={addPrize} type="primary" disabled={values.prize.length === 0}>
+                  Add
+                </Button>
+              </PrizeContainer>
             </Col>
             <Col span={24}>
               {prizes.length > 0 && (
