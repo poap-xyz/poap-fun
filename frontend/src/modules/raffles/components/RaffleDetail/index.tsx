@@ -3,7 +3,6 @@ import { useParams, useHistory } from 'react-router-dom';
 import { generatePath } from 'react-router';
 import styled from '@emotion/styled';
 import last from 'lodash.last';
-import { useWindowSize } from 'react-use';
 import Confetti from 'react-confetti';
 
 // Components
@@ -299,9 +298,6 @@ const RaffleDetail: FC = () => {
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
   const { isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
 
-  // Lib hooks
-  const { width, height } = useWindowSize();
-
   // Router hooks
   const { id } = useParams();
   const { push } = useHistory();
@@ -407,6 +403,9 @@ const RaffleDetail: FC = () => {
       ? participantsData.filter((participant: any) => !resultParticipantsAddress.includes(participant.address))
       : [];
 
+  const confettiWidth = (document.querySelector('#root') as HTMLElement)?.offsetWidth || 300;
+  const confettiHeight = (document.querySelector('#root') as HTMLElement)?.offsetHeight || 200;
+
   // Effects
   useEffect(() => {
     if (!isOngoing || !results || !participantsData) return;
@@ -472,7 +471,7 @@ const RaffleDetail: FC = () => {
         <RaffleWinners winners={results} isLoading={isLoadingResults} />
         <BadgeParty />
 
-        <Confetti run={shouldTriggerConfetti} width={width} height={height} />
+        <Confetti run={shouldTriggerConfetti} width={confettiWidth} height={confettiHeight} />
       </Container>
     );
   }
