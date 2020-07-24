@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 
 services:
   web:
@@ -11,6 +11,7 @@ services:
       dockerfile: DockerfileProduction
   nginx:
     environment:
+      NODE_ENV: 'production'
       REACT_DEFAULT_HOST: 'poap.fun'
       API_DEFAULT_HOST: 'api.poap.fun'
     volumes:
