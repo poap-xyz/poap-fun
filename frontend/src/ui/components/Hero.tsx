@@ -9,19 +9,23 @@ import { Button } from 'ui/styled/antd/Button';
 import { ROUTES } from 'lib/routes';
 
 // Assets
-import CoolPeople from 'assets/img/cool-people.svg';
+import BackgroundImage from 'assets/img/background.jpg';
 
 const HeroWrap = styled.div`
   width: 100%;
   padding-top: 25px;
+
   .title {
     text-align: center;
     padding: 100px 24px 60px;
+
     h1 {
     }
+
     h2 {
       color: var(--tertiary-color);
     }
+
     a {
       button {
         margin-top: 30px;
@@ -29,9 +33,16 @@ const HeroWrap = styled.div`
       }
     }
   }
+
   img {
     width: 100%;
   }
+`;
+
+const Background = styled.img`
+  position: absolute;
+  top: 0;
+  z-index: -1;
 `;
 
 const Hero: FC = () => (
@@ -43,7 +54,7 @@ const Hero: FC = () => (
         <Button type="primary">Create Raffle</Button>
       </NavLink>
     </div>
-    <img alt="POAP Fun" className="logo" src={CoolPeople} />
+    <Background alt="POAP Fun" src={BackgroundImage} />
   </HeroWrap>
 );
 
