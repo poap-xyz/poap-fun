@@ -423,7 +423,7 @@ const RaffleDetail: FC = () => {
   if (isActive) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} activeTag={true} goBack editAction={handleEdit} />
+        <TitlePrimary title={completeRaffle.name} activeTag={true} editAction={handleEdit} />
         <Countdown datetime={completeRaffle.draw_datetime} />
 
         <RaffleContent raffle={completeRaffle} />
@@ -447,7 +447,7 @@ const RaffleDetail: FC = () => {
   if (isOngoing) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} goBack />
+        <TitlePrimary title={completeRaffle.name} />
         <EthStats refetchResults={refetchResults} shouldRefetchResults={Boolean(raffle?.results_table)} />
 
         <RaffleParticipants
@@ -465,7 +465,7 @@ const RaffleDetail: FC = () => {
   if (isFinished) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} goBack />
+        <TitlePrimary title={completeRaffle.name} />
         <RaffleContent raffle={completeRaffle} />
 
         <RaffleWinners winners={results} isLoading={isLoadingResults} />
