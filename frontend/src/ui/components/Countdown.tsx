@@ -12,6 +12,7 @@ import { DATETIMEFORMAT } from 'lib/constants/theme';
 // Types
 type CountdownProps = {
   datetime: string;
+  finishAction: () => void;
 };
 type TimeLeft = {
   days: number;
@@ -33,7 +34,7 @@ const CountdownWrapper = styled.div`
   }
 `;
 
-const Countdown: FC<CountdownProps> = ({ datetime }) => {
+const Countdown: FC<CountdownProps> = ({ datetime, finishAction }) => {
   const calculateTimeLeft = (): TimeLeft => {
     const difference = +moment.utc(datetime).toDate() - +moment.utc(new Date()).toDate();
     let timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -44,6 +45,8 @@ const Countdown: FC<CountdownProps> = ({ datetime }) => {
         minutes: Math.floor((difference / 1000 / 60) % 60),
         seconds: Math.floor((difference / 1000) % 60),
       };
+    } else {
+      finishAction();
     }
     return timeLeft;
   };

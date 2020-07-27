@@ -237,7 +237,7 @@ const EthStats = ({ refetchResults, shouldRefetchResults }: EthStatsProps) => {
 
             if (bestBlock !== lastBlock) {
               setLastBlockTime(0);
-              if (shouldRefetchResults) refetchResults();
+              if (shouldRefetchResults) setTimeout(refetchResults, 6000);
 
               lastBlock = Number(bestBlock);
             }
@@ -308,7 +308,7 @@ const RaffleDetail: FC = () => {
 
   // Query hooks
   const { data: events } = useEvents();
-  const { data: raffle } = useRaffle({ id: parseInt(id, 10) });
+  const { data: raffle, refetch: refetchRaffle } = useRaffle({ id: parseInt(id, 10) });
 
   const { data: results, isLoading: isLoadingResults, refetch: refetchResults } = useResults({
     id: raffle?.results_table,
@@ -449,7 +449,8 @@ const RaffleDetail: FC = () => {
   useEffect(() => {
     if (!isOngoing || !results || !participantsData) return;
     setShouldTriggerConfetti(results?.entries?.length === participantsData.length);
-  }, [isOngoing, participantsData, results]);
+    refetchRaffle();
+  }, [isOngoing, participantsData, results, refetchRaffle]);
 
   if (!completeRaffle) {
     return (
@@ -463,7 +464,7 @@ const RaffleDetail: FC = () => {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary title={completeRaffle.name} activeTag={true} editAction={handleEdit} />
-        <Countdown datetime={completeRaffle.draw_datetime} />
+        <Countdown datetime={completeRaffle.draw_datetime} finishAction={refetchRaffle} />
 
         <RaffleContent raffle={completeRaffle} />
         <ActionButton

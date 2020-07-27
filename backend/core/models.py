@@ -118,7 +118,7 @@ class Raffle(TimeStampedModel):
         task_name = f'generating_results_for_raffle_{self.id}'
         task = PeriodicTask.objects.filter(name=task_name).first()
         if not self.finalized:
-            schedule, _ = IntervalSchedule.objects.get_or_create(every=15, period=IntervalSchedule.SECONDS)
+            schedule, _ = IntervalSchedule.objects.get_or_create(every=3, period=IntervalSchedule.SECONDS)
             if not task:
                 task = PeriodicTask(
                     name=task_name,
