@@ -35,7 +35,11 @@ import { mergeRaffleEvent } from 'lib/helpers/api';
 import { isRaffleActive, isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
 
 // Types
-import { ResultsTable, CompleteRaffle, JoinRaffleValues } from 'lib/types';
+import { ResultsTable, CompleteRaffle, JoinRaffleValues, Participant } from 'lib/types';
+type ParticipantObject = {
+  address: string;
+  poaps: number[];
+};
 
 const TimeSandIcon = (props: any) => {
   return (
@@ -398,10 +402,45 @@ const RaffleDetail: FC = () => {
   const isFinished: boolean = completeRaffle ? isRaffleFinished(completeRaffle) : false;
 
   const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.address) ?? [];
-  const activeParticipants =
-    participantsData && participantsData.length > 0
-      ? participantsData.filter((participant: any) => !resultParticipantsAddress.includes(participant.address))
-      : [];
+  let activeParticipants: Participant[] = [];
+  if (participantsData && participantsData.length > 0 && raffle) {
+    activeParticipants = participantsData;
+    if (raffle.one_address_one_vote) {
+      // If the raffle is not weighted (one address = one vote) we will keep the lowest POAP ID of each address
+
+      // First, convert the participants to an array of object
+      // type = [{address: string, poaps: number[]}, ]
+      const participantsMap: ParticipantObject | {} = participantsData.reduce((acc, participant) => {
+        const { address, poap_id } = participant;
+        const poapId = parseInt(poap_id, 10);
+
+        acc[address] = {
+          ...(acc[address] || { address }),
+          poaps: [...(acc[address]?.poaps || []), poapId],
+        };
+
+        return acc;
+      }, {});
+
+      const output: ParticipantObject[] = Object.values(participantsMap);
+      // Sort poaps for each address and keep the first one
+      // Transform output to Participant[]
+      activeParticipants = output
+        .map((each) => {
+          const [firstPoapSorted] = each.poaps.sort((a, b) => a - b);
+          return { ...each, poaps: [firstPoapSorted] };
+        })
+        .map(({ address, poaps }) => {
+          const [firstPoap] = poaps;
+          return { address, event_id: '', id: firstPoap, poap_id: firstPoap.toString() };
+        });
+    }
+    // Remove participants that are in the winner's result table
+    // Only necessary for On Going events
+    activeParticipants = activeParticipants.filter(
+      (participant: any) => !resultParticipantsAddress.includes(participant.address),
+    );
+  }
 
   const confettiWidth = (document.querySelector('#root') as HTMLElement)?.offsetWidth || 300;
   const confettiHeight = (document.querySelector('#root') as HTMLElement)?.offsetHeight || 200;

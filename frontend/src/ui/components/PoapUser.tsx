@@ -94,7 +94,7 @@ const PoapUser: FC = () => {
         <div className={'poaps'}>
           {poaps.slice(0, 3).map((poap) => {
             return (
-              <div className={'badge'}>
+              <div className={'badge'} key={poap.tokenId}>
                 <img src={poap.event.image_url} alt={poap.event.name} />
               </div>
             );
