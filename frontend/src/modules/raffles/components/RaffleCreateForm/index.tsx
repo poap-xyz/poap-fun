@@ -288,7 +288,7 @@ const RaffleCreateForm: FC = () => {
                   values={values}
                   helpText={'Add any amount of prizes you like to give away!'}
                 />
-                <Button onClick={addPrize} type="primary" disabled={values.prize.length === 0}>
+                <Button onClick={addPrize} type="primary" disabled={!!(values?.prize?.length === 0)}>
                   Add
                 </Button>
               </PrizeContainer>

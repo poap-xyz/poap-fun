@@ -117,7 +117,7 @@ class PrizeViewSet(viewsets.ModelViewSet):
     queryset = Prize.objects.all()
     serializer_class = PrizeSerializer
     lookup_field = 'id'
-    http_method_names = ['get', ]
+    http_method_names = ['get', 'delete', ]
 
     def get_permissions(self):
         restricted_actions = ['update', 'partial_update', 'destroy']
