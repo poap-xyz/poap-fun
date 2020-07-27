@@ -20,6 +20,7 @@ type InputProps = {
   prefix?: ReactNode;
   className?: string;
   size?: 'large' | 'small';
+  secondaryAction?: () => void;
 };
 
 const Input: FC<InputProps> = ({
@@ -34,6 +35,7 @@ const Input: FC<InputProps> = ({
   placeholder,
   helpText,
   size = 'large',
+  secondaryAction,
 }) => (
   <Item
     className={className}
@@ -49,6 +51,9 @@ const Input: FC<InputProps> = ({
       size={size}
       onPaste={handleChange}
       value={values[name] ? values[name] : undefined}
+      onKeyPress={(event) => {
+        if (event.key === 'Enter' && secondaryAction) secondaryAction();
+      }}
     />
     {helpText && <HelpText>{helpText}</HelpText>}
   </Item>
