@@ -405,35 +405,35 @@ const RaffleDetail: FC = () => {
   let activeParticipants: Participant[] = [];
   if (participantsData && participantsData.length > 0 && raffle) {
     activeParticipants = participantsData;
-    if (raffle.one_address_one_vote) {
+if (raffle.one_address_one_vote) {
       // If the raffle is not weighted (one address = one vote) we will keep the lowest POAP ID of each address
 
       // First, convert the participants to an array of object
       // type = [{address: string, poaps: number[]}, ]
-      let output: ParticipantObject[] = Object.values(
-        participantsData.reduce((a, c) => {
-          a[c.address] = a[c.address] || { address: c.address };
-          let _poap_id = parseInt(c.poap_id, 10);
-          a[c.address]['poaps'] = a[c.address]['poaps'] ? [...a[c.address]['poaps'], _poap_id] : [_poap_id];
-          return a;
-        }, {}),
-      );
+      const participantsMap: ParticipantObject | {} = participantsData.reduce((acc, participant) => {
+        const { address, poap_id } = participant;
+        const poapId = parseInt(poap_id, 10);
 
-      // Sort poaps for each address and keep the first one
-      output = output.map((each) => {
-        let sortedParticipant = each['poaps'].sort((a, b) => a - b);
-        return { ...each, poaps: [sortedParticipant[0]] };
-      });
-
-      // Transform output to Participant[]
-      activeParticipants = output.map((each) => {
-        return {
-          id: each.poaps[0],
-          poap_id: each.poaps[0].toString(),
-          address: each.address,
-          event_id: '',
+        acc[address] = {
+          ...(acc[address] || { address }),
+          poaps: [...(acc[address]?.poaps || []), poapId],
         };
-      });
+
+        return acc;
+      }, {});
+
+      const output: ParticipantObject[] = Object.values(participantsMap);
+      // Sort poaps for each address and keep the first one
+      // Transform output to Participant[]
+      activeParticipants = output
+        .map((each) => {
+          const [firstPoapSorted] = each.poaps.sort((a, b) => a - b);
+          return { ...each, poaps: [firstPoapSorted] };
+        })
+        .map(({ address, poaps }) => {
+          const [firstPoap] = poaps;
+          return { address, event_id: '', id: firstPoap, poap_id: firstPoap.toString() };
+        });
     }
     // Remove participants that are in the winner's result table
     // Only necessary for On Going events
