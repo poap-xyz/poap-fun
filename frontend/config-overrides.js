@@ -4,5 +4,5 @@ const { override, fixBabelImports, addExternalBabelPlugin } = require('customize
 module.exports = override(
   addReactRefresh(),
   addExternalBabelPlugin('emotion'),
-  fixBabelImports('import', { libraryName: 'antd', libraryDirectory: 'es', style: 'css' })
+  fixBabelImports('import', { libraryName: 'antd', libraryDirectory: 'es', style: 'css' }),
 );

@@ -10,7 +10,7 @@ services:
       context: ./frontend
       dockerfile: DockerfileProduction
     environment:
-      NODE_ENV: 'production'
+      REACT_APP_ENABLE_REACT_QUERY: 'false'
   nginx:
     environment:
       REACT_DEFAULT_HOST: 'fun.xivis.com'
