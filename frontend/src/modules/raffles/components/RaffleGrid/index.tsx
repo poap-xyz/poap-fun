@@ -2,11 +2,11 @@ import React, { FC, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { Row, Col } from 'antd';
 import { FiSearch } from 'react-icons/fi';
+import { useDebounce } from 'use-debounce';
 
 // Lib
 import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffles } from 'lib/hooks/useRaffles';
-import { useDebounce } from 'lib/hooks/useDebounce';
 
 // Helpers
 import { mergeRaffleEvent } from 'lib/helpers/api';
@@ -46,7 +46,7 @@ const RaffleGrid: FC = () => {
   const [query, setQuery] = useState<string>('');
   const [raffles, setRaffles] = useState<CompleteRaffle[]>([]);
 
-  const debouncedSearchTerm: string = useDebounce(query, 500);
+  const [debouncedSearchTerm] = useDebounce(query, 600);
 
   // Query hooks
   const { data: events } = useEvents();
@@ -77,7 +77,7 @@ const RaffleGrid: FC = () => {
   useEffect(() => {
     if (!events || !apiRaffles) return;
 
-    setRaffles([...raffles, ...mergeRaffleEvent(apiRaffles.results, events)]);
+    setRaffles((prevRaffles) => [...prevRaffles, ...mergeRaffleEvent(apiRaffles.results, events)]);
     setTotalPages(Math.ceil(apiRaffles.count / API_PAGE_SIZE));
   }, [apiRaffles, events]); //eslint-disable-line
 

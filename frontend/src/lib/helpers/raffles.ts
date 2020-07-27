@@ -1,4 +1,3 @@
-import slugify from 'slugify';
 import moment from 'moment';
 import { generatePath } from 'react-router';
 
@@ -9,9 +8,8 @@ import { ROUTES } from 'lib/routes';
 import { Raffle, CompleteRaffle } from 'lib/types';
 
 export const createRaffleLink = (raffle: Raffle | CompleteRaffle, relative: boolean): string => {
-  const path = generatePath(ROUTES.raffleDetail, { id: raffle.id, slug: slugify(raffle.name.toLowerCase()) });
-  if (relative) return path;
-  return `${process.env.REACT_APP_PAGE_URL}${path}`;
+  const path = generatePath(ROUTES.raffleDetail, { id: raffle.id });
+  return relative ? path : `${process.env.REACT_APP_PAGE_URL}${path}`;
 };
 
 export const isRaffleActive = (raffle: CompleteRaffle | Raffle): boolean => {

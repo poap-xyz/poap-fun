@@ -1,19 +1,16 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { NavLink } from 'react-router-dom';
-import { FiArrowLeft, FiEdit3 } from 'react-icons/fi';
+import { FiEdit3 } from 'react-icons/fi';
 
 // Components
 import StatusTag from 'ui/components/StatusTag';
 
 // Constants
-import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Types
 type TitlePrimaryProps = {
   title: string;
-  goBack?: boolean;
   activeTag?: boolean;
   editAction?: () => void;
 };
@@ -87,15 +84,10 @@ const Title = styled.div`
   }
 `;
 
-const TitlePrimary: FC<TitlePrimaryProps> = ({ title, goBack, editAction, activeTag }) => {
+const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag }) => {
   return (
     <Title>
       <div className={'navigation'}>
-        {goBack && (
-          <NavLink to={ROUTES.home}>
-            <FiArrowLeft color={'var(--primary-color)'} />
-          </NavLink>
-        )}
         {activeTag && (
           <div className={'tag'}>
             <StatusTag text={'active'} />

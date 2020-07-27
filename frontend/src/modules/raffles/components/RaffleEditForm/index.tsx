@@ -3,10 +3,11 @@ import { useFormik } from 'formik';
 import { useHistory, useParams } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
 import moment from 'moment-timezone';
+import styled from '@emotion/styled';
+import isEmpty from 'lodash.isempty';
 
 // Components
 import Input from 'ui/components/Input';
-import InputSearch from 'ui/components/InputSearch';
 import { Card } from 'ui/styled/antd/Card';
 import { Form } from 'ui/styled/antd/Form';
 import { Button } from 'ui/styled/antd/Button';
@@ -39,12 +40,32 @@ import RaffleEditFormSchema from './schema';
 // Types
 import { Prize, CompleteRaffle, CreatePrize } from 'lib/types';
 export type RaffleEditFormValue = {
+  prize: string;
   name: string;
   contact: string;
   weightedVote: boolean;
   raffleDate: moment.Moment | undefined;
   raffleTime: moment.Moment | undefined;
 };
+
+const PrizeContainer = styled.div`
+  display: flex;
+
+  > div {
+    flex: 1;
+
+    input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+
+  > button {
+    flex-basis: 56px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+  }
+`;
 
 const RaffleEditForm: FC = () => {
   const { push } = useHistory();
@@ -60,11 +81,19 @@ const RaffleEditForm: FC = () => {
       let each: Prize = { id: i + 1, name: prize.name, order: i + 1 };
       return each;
     });
+
   const [prizes, setPrizes] = useState<Prize[]>(sortedPrizes);
   const [description, setDescription] = useState<string>(raffle.description);
   const [completeRaffle, setCompleteRaffle] = useState<CompleteRaffle | null>(null);
 
-  const handleOnSubmit = async ({ name, contact, weightedVote, raffleDate, raffleTime }: RaffleEditFormValue) => {
+  const handleOnSubmit = async (
+    { name, contact, weightedVote, raffleDate, raffleTime }: RaffleEditFormValue,
+    { setFieldError }: any,
+  ) => {
+    if (!prizes.length) {
+      return setFieldError('prize', 'You should have at least one prize');
+    }
+
     if (raffle.token) {
       // Combine dates and get timezone
       if (!raffleDate || !raffleTime) return;
@@ -96,6 +125,7 @@ const RaffleEditForm: FC = () => {
   const localDrawDateTime = moment.utc(raffle.draw_datetime).local();
 
   const initialValues: RaffleEditFormValue = {
+    prize: '',
     name: raffle.name,
     contact: raffle.contact,
     weightedVote: !raffle.one_address_one_vote,
@@ -106,15 +136,27 @@ const RaffleEditForm: FC = () => {
   // Lib hooks
   const { values, errors, touched, handleChange, submitForm, setFieldValue } = useFormik({
     initialValues,
-    validationSchema: RaffleEditFormSchema,
     onSubmit: handleOnSubmit,
+    validationSchema: RaffleEditFormSchema,
   });
 
+  // Effects
   useEffect(() => {
     if (!events || !raffle) return;
     let completeRaffles = mergeRaffleEvent([raffle], events);
     if (completeRaffles.length > 0) setCompleteRaffle(completeRaffles[0]);
   }, [events]); //eslint-disable-line
+
+  useEffect(() => {
+    if (!isEmpty(errors)) {
+      const formCardPosition = document.querySelector('.ant-card-body')?.getBoundingClientRect()?.top;
+
+      if (formCardPosition) {
+        const top = formCardPosition + window.scrollY - 100;
+        window.scroll({ top, behavior: 'smooth' });
+      }
+    }
+  }, [errors]); //eslint-disable-line
 
   const removePrize = (order: number) => {
     let newPrizes = prizes
@@ -126,11 +168,15 @@ const RaffleEditForm: FC = () => {
     setPrizes(newPrizes);
   };
 
-  const addPrize = (value: string) => {
-    if (!value || value.trim() === '') return;
+  const addPrize = (): void => {
+    const { prize } = values;
+    if (!prize || prize.trim() === '') return;
+
     const position = prizes.length + 1;
-    let newPrize: Prize = { id: position, order: position, name: value };
+    let newPrize: Prize = { id: position, order: position, name: prize };
+
     setPrizes([...prizes, newPrize]);
+    setFieldValue('prize', '');
   };
 
   const handleEditorChange = (content: string, editor: any) => setDescription(content);
@@ -203,14 +249,21 @@ const RaffleEditForm: FC = () => {
               <Editor title={'Raffle description'} onChange={handleEditorChange} initialValue={description} />
             </Col>
             <Col span={24}>
-              <InputSearch
-                name="prize"
-                label="Prize"
-                placeholder={`Enter whatever you want to raffle for the ${prizes.length + 1}º winner`}
-                handleEnter={addPrize}
-                buttonText={'Add'}
-                helpText={'Add any amount of prizes you like to give away!'}
-              />
+              <PrizeContainer>
+                <Input
+                  label=""
+                  errors={errors}
+                  handleChange={handleChange}
+                  name="prize"
+                  placeholder="Add any amount of prizes you like to give away!"
+                  touched={touched}
+                  values={values}
+                  helpText={'Add any amount of prizes you like to give away!'}
+                />
+                <Button onClick={addPrize} type="primary" disabled={values.prize.length === 0}>
+                  Add
+                </Button>
+              </PrizeContainer>
             </Col>
             <Col span={24}>
               {prizes.length > 0 && (

@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 
 services:
   web:
@@ -9,6 +9,8 @@ services:
     build:
       context: ./frontend
       dockerfile: DockerfileProduction
+    environment:
+      NODE_ENV: 'production'
   nginx:
     environment:
       REACT_DEFAULT_HOST: 'fun.xivis.com'

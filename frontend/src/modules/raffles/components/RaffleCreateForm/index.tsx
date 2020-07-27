@@ -3,10 +3,11 @@ import { useFormik } from 'formik';
 import { useHistory, generatePath } from 'react-router-dom';
 import { Col, Row, Tooltip } from 'antd';
 import moment from 'moment-timezone';
+import styled from '@emotion/styled';
+import isEmpty from 'lodash.isempty';
 
 // Components
 import Input from 'ui/components/Input';
-import InputSearch from 'ui/components/InputSearch';
 import { Card } from 'ui/styled/antd/Card';
 import { Form } from 'ui/styled/antd/Form';
 import { Button } from 'ui/styled/antd/Button';
@@ -38,12 +39,33 @@ import RaffleCreateFormSchema from './schema';
 import { Prize, CreatePrize, CreateEvent, CreateRaffleValues } from 'lib/types';
 export type RaffleCreateFormValue = {
   name: string;
+  prize: string;
   contact: string;
   weightedVote: boolean;
   eligibleEvents: number[];
   raffleDate: moment.Moment | undefined;
   raffleTime: moment.Moment | undefined;
 };
+
+const PrizeContainer = styled.div`
+  display: flex;
+
+  > div {
+    flex: 1;
+
+    input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+
+  > button {
+    margin-top: 26px;
+    flex-basis: 56px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+  }
+`;
 
 const TimeLabel = () => {
   const offset = moment().utcOffset() / 60;
@@ -86,14 +108,14 @@ const RaffleCreateForm: FC = () => {
   const { push } = useHistory();
 
   // Handlers
-  const handleOnSubmit = async ({
-    name,
-    contact,
-    weightedVote,
-    raffleDate,
-    raffleTime,
-    eligibleEvents,
-  }: RaffleCreateFormValue) => {
+  const handleOnSubmit = async (
+    { name, contact, weightedVote, raffleDate, raffleTime, eligibleEvents }: RaffleCreateFormValue,
+    { setFieldError }: any,
+  ) => {
+    if (!prizes.length) {
+      return setFieldError('prize', 'You should have at least one prize');
+    }
+
     try {
       let submitPrizes: CreatePrize[] = prizes.map((prize) => ({ name: prize.name, order: prize.order }));
       let submitEvents: CreateEvent[] = eligibleEvents.map((event) => {
@@ -119,6 +141,10 @@ const RaffleCreateForm: FC = () => {
       // Submit raffle
       let raffle = await createRaffle(newRaffle);
       if (raffle) push(generatePath(ROUTES.raffleCreated, { id: raffle.id }));
+
+      localStorage.setItem('create-raffle-form-values', JSON.stringify('null'));
+      localStorage.setItem('description-form-values', JSON.stringify('""'));
+      localStorage.setItem('prizes-form-values', JSON.stringify('[]'));
     } catch (error) {
       console.log('RaffleCreateForm:FC -> error', error);
     }
@@ -147,6 +173,17 @@ const RaffleCreateForm: FC = () => {
     localStorage.setItem('prizes-form-values', JSON.stringify(prizes));
   }, [prizes]);
 
+  useEffect(() => {
+    if (!isEmpty(errors)) {
+      const formCardPosition = document.querySelector('.ant-card-body')?.getBoundingClientRect()?.top;
+
+      if (formCardPosition) {
+        const top = formCardPosition + window.scrollY - 100;
+        window.scroll({ top, behavior: 'smooth' });
+      }
+    }
+  }, [errors]); //eslint-disable-line
+
   // Methods
   const removePrize = (order: number) => {
     let newPrizes = prizes
@@ -159,13 +196,15 @@ const RaffleCreateForm: FC = () => {
     setPrizes(newPrizes);
   };
 
-  const addPrize = (value: string) => {
-    if (!value || value.trim() === '') return;
+  const addPrize = (): void => {
+    const { prize } = values;
+    if (!prize || prize.trim() === '') return;
 
     const position = prizes.length + 1;
-    let newPrize: Prize = { id: position, order: position, name: value };
+    let newPrize: Prize = { id: position, order: position, name: prize };
 
     setPrizes([...prizes, newPrize]);
+    setFieldValue('prize', '');
   };
 
   // Handlers
@@ -238,14 +277,21 @@ const RaffleCreateForm: FC = () => {
               <Editor title={'Raffle description'} initialValue={description} onChange={handleEditorChange} />
             </Col>
             <Col span={24}>
-              <InputSearch
-                name="prize"
-                label="Prize"
-                placeholder={`Enter whatever you want to raffle for the ${prizes.length + 1}º winner`}
-                handleEnter={addPrize}
-                buttonText={'Add'}
-                helpText={'Add any amount of prizes you like to give away!'}
-              />
+              <PrizeContainer>
+                <Input
+                  label="Prizes"
+                  errors={errors}
+                  handleChange={handleChange}
+                  name="prize"
+                  placeholder="Add any amount of prizes you like to give away!"
+                  touched={touched}
+                  values={values}
+                  helpText={'Add any amount of prizes you like to give away!'}
+                />
+                <Button onClick={addPrize} type="primary" disabled={values.prize.length === 0}>
+                  Add
+                </Button>
+              </PrizeContainer>
             </Col>
             <Col span={24}>
               {prizes.length > 0 && (
