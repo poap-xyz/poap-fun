@@ -447,10 +447,14 @@ const RaffleDetail: FC = () => {
 
   // Effects
   useEffect(() => {
-    if (!isOngoing || !results || !participantsData) return;
-    setShouldTriggerConfetti(results?.entries?.length === participantsData.length);
+    if (!isOngoing || !results || !participantsData || !raffle) return;
+    let participantsLength = participantsData.length;
+    if (raffle.one_address_one_vote) {
+      participantsLength = Array.from(new Set(participantsData.map((each) => each.address))).length;
+    }
+    setShouldTriggerConfetti(results?.entries?.length === participantsLength);
     refetchRaffle();
-  }, [isOngoing, participantsData, results, refetchRaffle]);
+  }, [isOngoing, participantsData, results, refetchRaffle, raffle]);
 
   if (!completeRaffle) {
     return (

@@ -9,6 +9,8 @@ services:
     build:
       context: ./frontend
       dockerfile: DockerfileProduction
+    environment:
+      REACT_APP_ENABLE_REACT_QUERY: 'false'
   nginx:
     environment:
       REACT_DEFAULT_HOST: 'poap.fun'

@@ -30,9 +30,7 @@ services:
 
   node:
     restart: always
-    build: ./frontend
     container_name: poap-fun-node
-    command: ["npm", "start"]
     environment:
       VIRTUAL_HOST: 'frontend'
     volumes:

@@ -4,6 +4,9 @@ services:
   web:
     environment:
       DEBUG: 'true'
+  node:
+    build: ./frontend
+    command: ["npm", "start"]
   nginx:
     environment:
       REACT_DEFAULT_HOST: 'localhost'
