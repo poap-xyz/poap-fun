@@ -11,6 +11,7 @@ import { ResultsTable } from 'lib/types';
 type RaffleWinnersProps = {
   isLoading: boolean;
   winners?: ResultsTable;
+  accountAddress: string;
 };
 
 const Content = styled.div`
@@ -52,10 +53,14 @@ const Title = styled.h3`
   padding: 20px 0;
 `;
 
+const WinnerText = styled.span`
+  font-weight: ${({ isWinner }: { isWinner?: boolean }) => (isWinner ? 700 : 400)};
+`;
+
 // Utils
 const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
-const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading }) => {
+const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading, accountAddress }) => {
   if (!winners || winners?.entries?.length === 0) {
     return (
       <Content>
@@ -74,9 +79,9 @@ const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading }) => {
             ?.map(({ id, order, participant }: any) => {
               return (
                 <div key={id}>
-                  <span>
+                  <WinnerText isWinner={participant.address === accountAddress}>
                     {order + 1}º - POAP #{participant.poap_id.padStart(5, '0')} - {shortAddress(participant.address)}
-                  </span>
+                  </WinnerText>
                 </div>
               );
             })}
