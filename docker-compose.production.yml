@@ -11,9 +11,9 @@ services:
       dockerfile: DockerfileProduction
   nginx:
     environment:
-      NODE_ENV: 'production'
       REACT_DEFAULT_HOST: 'poap.fun'
       API_DEFAULT_HOST: 'api.poap.fun'
+      REACT_APP_ENABLE_REACT_QUERY: 'false'
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro

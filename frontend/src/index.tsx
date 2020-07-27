@@ -27,7 +27,7 @@ import RaffleCreated from 'modules/raffles/pages/RaffleCreated';
 import RafflePage from 'modules/raffles/pages/RafflePage';
 
 const queryConfig = { mutations: { throwOnError: true } };
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = process.env.REACT_APP_ENABLE_REACT_QUERY === 'true';
 
 const publicRoutes = [
   { Component: RaffleCreate, path: ROUTES.raffleCreation },
