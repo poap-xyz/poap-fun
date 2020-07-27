@@ -405,7 +405,7 @@ const RaffleDetail: FC = () => {
   let activeParticipants: Participant[] = [];
   if (participantsData && participantsData.length > 0 && raffle) {
     activeParticipants = participantsData;
-if (raffle.one_address_one_vote) {
+    if (raffle.one_address_one_vote) {
       // If the raffle is not weighted (one address = one vote) we will keep the lowest POAP ID of each address
 
       // First, convert the participants to an array of object
