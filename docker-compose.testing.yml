@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  web:
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  node:
+    build:
+      context: ./frontend
+      dockerfile: DockerfileProduction
+    environment:
+      REACT_APP_ENABLE_REACT_QUERY: 'false'
+  nginx:
+    environment:
+      REACT_DEFAULT_HOST: 'fun.xivis.com'
+      API_DEFAULT_HOST: 'apifun.xivis.com'
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  postgres:
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

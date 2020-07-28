@@ -3,16 +3,19 @@ from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext as _
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
-
-
+from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent, Participant, ResultsTable, \
+    ResultsTableEntry, BlockData
+from core.services import poap_integration_service
 
 UserModel = get_user_model()
+
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('id', 'name', )
+        fields = ('id', 'name',)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -75,3 +78,151 @@ class UserSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError(_('Email already exists'))
 
         return validated_data
+
+
+class PrizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prize
+        fields = ["id", "name", "order"]
+
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ["id", "event_id", "name"]
+
+
+class RaffleSerializer(serializers.ModelSerializer):
+    prizes = PrizeSerializer(many=True)
+    events = EventSerializer(many=True)
+    token = serializers.CharField(
+        allow_blank=True,
+        read_only=True,
+        required=False,
+        source="_token",
+        default=""
+    )
+
+    class Meta:
+        model = Raffle
+        fields = [
+            "id", "name", "description", "contact", "draw_datetime", "end_datetime",
+            "one_address_one_vote", "prizes", "events", "token", "results_table", "finalized"
+        ]
+
+        extra_kwargs = {
+            'results_table': {'read_only': True},
+            'finalized': {'read_only': True},
+        }
+
+    def create(self, validated_data):
+        prizes_data = validated_data.pop("prizes")
+        events_data = validated_data.pop("events")
+        raffle = Raffle.objects.create(**validated_data)
+        for prize_data in prizes_data:
+            Prize.objects.create(raffle=raffle, **prize_data)
+        for event_data in events_data:
+            # the event is validated in the serializer,
+            # so if it does not exist we create it
+            event, _ = Event.objects.get_or_create(event_id=event_data["event_id"])
+            # update the name if the name has changed
+            if event_data["name"] != event.name:
+                event.name = event_data["name"]
+                event.save(update_fields=["name"])
+            RaffleEvent.objects.create(event=event, raffle=raffle)
+        return raffle
+
+    def update(self, instance, validated_data):
+        prizes_data = validated_data.pop("prizes", [])
+        events_data = validated_data.pop("events", None)
+        if events_data:
+            raise ValidationError("cannot modify events through a raffle, use the event resource")
+
+        for prize_data in prizes_data:
+            Prize.objects.create(raffle=instance, **prize_data)
+        return super(RaffleSerializer, self).update(instance, validated_data)
+
+
+class ParticipantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Participant
+        fields = ["id", "address", "ens_name", "poap_id", "event_id"]
+
+
+class MultiParticipantSerializer(serializers.Serializer):
+    """
+    Specific serializer used to validate the creation of
+    multiple participants from a single address
+    """
+    address = serializers.CharField(max_length=50)
+    signature = serializers.CharField(max_length=255)
+    message = serializers.CharField()
+    raffle_id = serializers.IntegerField()
+
+    def validate_raffle_id(self, value):
+        raffle = Raffle.objects.filter(id=value)
+        if not raffle.exists():
+            raise ValidationError("raffle id must belong to a valid raffle")
+        return value
+
+    def validate(self, attrs):
+        # validate that the participant is who he claims to be
+        authenticated = poap_integration_service.valid_participant_address(
+            attrs["address"], attrs["signature"], attrs["raffle_id"]
+        )
+        if not authenticated:
+            raise ValidationError(
+                "the address does not correspond with the signature"
+            )
+
+        raffle = Raffle.objects.filter(id=attrs["raffle_id"]).first()
+        if raffle.has_participant(attrs["address"]):
+            raise ValidationError(
+                "This address is already participating"
+            )
+        return attrs
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError
+
+    def create(self, validated_data):
+        address = validated_data.get("address")
+        signature = validated_data.get("signature")
+        message = validated_data.get("message")
+        raffle = Raffle.objects.filter(id=validated_data.get("raffle_id")).first()
+        Participant.objects.create_from_address(
+            address=address,
+            signature=signature,
+            message=message,
+            raffle=raffle
+        )
+        return Participant.objects.filter(raffle=raffle, address=address.lower())
+
+
+class TextEditorImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TextEditorImage
+        fields = "__all__"
+
+
+class ResultsTableEntrySerializer(serializers.ModelSerializer):
+    participant = ParticipantSerializer(many=False)
+
+    class Meta:
+        model = ResultsTableEntry
+        fields = ["id", "order", "participant"]
+
+
+class ResultsTableSerializer(serializers.ModelSerializer):
+    entries = ResultsTableEntrySerializer(many=True)
+
+    class Meta:
+        model = ResultsTable
+        fields = ["id", "raffle_id", "entries"]
+
+
+class BlockDataSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BlockData
+        fields = ["id", "raffle", "order", "block_number", "gas_limit"]

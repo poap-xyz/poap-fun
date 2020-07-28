@@ -1,8 +1,46 @@
+from datetime import datetime
+
 from django.test import TestCase
 
-# Write the tests for the models here
+from core.models import Raffle
 
-class DefaultTestCase(TestCase):
 
-    def test_hello_world(self):
-        """ Remove this test"""
+class RaffleTestCase(TestCase):
+
+    def setUp(self):
+        self.name = 'raffle name'
+        self.description = 'raffle description'
+        self.contact = 'test@email.com'
+        self.draw_datetime = datetime.now()
+        self.end_datetime = datetime.now()
+        self.one_address_one_vote = True
+        self.raffle = Raffle.objects.create(
+            name=self.name,
+            description=self.description,
+            contact=self.contact,
+            draw_datetime=self.draw_datetime,
+            end_datetime=self.end_datetime,
+            one_address_one_vote=self.one_address_one_vote,
+        )
+        self.token = self.raffle._token
+
+    def test_hash_token(self):
+        """
+        Test that the token is not being stored as plaintext
+        """
+        assert self.token != self.raffle.token
+
+    def test_verify_token(self):
+        """
+        Test that the hash verification mechanism works
+        """
+        assert self.raffle.is_valid_token(self.token)
+
+    def test_modification_integrity(self):
+        """
+        Test that if the object is modified, the token still validates
+        """
+        self.raffle.description = 'new description'
+        self.raffle.save()
+        assert self.raffle.is_valid_token(self.token)
+

@@ -41,3 +41,6 @@ backend/media/
 
 ####Docker####
 nginx/sites-enabled/nginx.conf
+
+## coverage db
+backend/.coverage

@@ -1,20 +1,37 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "CommonJS",
+    "module": "esnext",
     "moduleResolution": "node",
-    "isolatedModules": false,
     "resolveJsonModule": true,
-    "noEmit": true,
+    "isolatedModules": true,
+    "sourceMap": true,
+    "importHelpers": true,
+    "declaration": true,
+    "rootDir": "src",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "jsx": "react",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "suppressImplicitAnyIndexErrors": true,
+    "experimentalDecorators": false,
+    "noEmit": true
   },
-  "include": ["src", "server.ts"]
+  "include": [
+    "src",
+    "server.ts"
+  ]
 }

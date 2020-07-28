@@ -22,14 +22,14 @@ class CustomUserAdmin(UserAdmin):
                 )
             }
         ),
-        # (
-        #     _('Tool Info'),
-        #     {
-        #         'fields': (
-        #             'password', 'contractor', 'phone'
-        #         )
-        #     }
-        # ),
+        (
+            _('Tool Info'),
+            {
+                'fields': (
+                    'password',
+                )
+            }
+        ),
         (
             _('Group and Permissions Info'),
             {
@@ -45,3 +45,39 @@ class CustomUserAdmin(UserAdmin):
             }
         ),
     )
+
+
+@admin.register(Raffle)
+class RaffleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'id', 'draw_datetime', 'end_datetime', 'finalized')
+    list_filter = ('finalized',)
+
+
+@admin.register(Prize)
+class PrizeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'order', 'raffle')
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('event_id', 'name')
+
+
+@admin.register(Participant)
+class ParticipantAdmin(admin.ModelAdmin):
+    list_display = ('address', 'raffle', 'poap_id', 'event_id')
+
+
+@admin.register(ResultsTable)
+class ResultsTabletAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ResultsTableEntry)
+class ResultsTableEntryAdmin(admin.ModelAdmin):
+    list_display = ('order', 'participant', 'results_table')
+
+
+@admin.register(BlockData)
+class BlockDataAdmin(admin.ModelAdmin):
+    list_display = ('order', 'raffle', 'block_number', 'gas_limit')

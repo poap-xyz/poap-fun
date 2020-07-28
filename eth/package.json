@@ -1,0 +1,27 @@
+{
+  "name": "signature-verifier",
+  "version": "1.0.0",
+  "description": "Raffle Signature EIP712 verifier",
+  "main": "index.js",
+  "repository": "https://github.com/poapxyz/poap-fun",
+  "author": "ragonzal",
+  "license": "MIT",
+  "keywords": [
+    "POAP",
+    "ethereum"
+  ],
+  "scripts": {
+    "compile": "npx buidler compile",
+    "deploy": "npx buidler run scripts/deploy.js"
+  },
+  "devDependencies": {
+    "@nomiclabs/buidler": "^1.3.8",
+    "@nomiclabs/buidler-ethers": "^2.0.0",
+    "@nomiclabs/buidler-waffle": "^2.0.0",
+    "chai": "^4.2.0",
+    "dotenv": "^8.2.0",
+    "ethereum-waffle": "^3.0.2",
+    "ethers": "^5.0.7"
+  },
+  "dependencies": {}
+}

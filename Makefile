@@ -1,8 +1,8 @@
 WEB=`docker-compose ps | grep gunicorn | cut -d\  -f 1 | head -n 1`
 NODE=`docker-compose ps | grep npm | cut -d\  -f 1 | head -n 1`
 WEBS=`docker-compose ps | grep gunicorn | cut -d\  -f 1 `
-FILE=docker-compose.yml
-BACKUPS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../backups/)
+COMPOSE_ENV=override
+BACKUPS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/backups/)
 ENV_STAGE = ``
 
 #########
@@ -10,25 +10,20 @@ ENV_STAGE = ``
 #########
 
 build:
-	docker-compose -f $(FILE) build
+	docker-compose -f docker-compose.yml -f docker-compose.$(COMPOSE_ENV).yml build
 
-loadinitialdb:
-	docker exec $(WEB) /bin/sh -c "python manage.py loaddata fixtures/initial/*.json"
-
-loadtestdb: loadinitialdb
-	docker exec $(WEB) /bin/sh -c "python manage.py loaddata fixtures/testing/*.json"
 
 up:
-	docker-compose -f $(FILE) up -d web nginx postgres node celeryworker celerybeat redis
+	docker-compose -f docker-compose.yml -f docker-compose.$(COMPOSE_ENV).yml up -d
 
 start:
-	docker-compose -f $(FILE) start
+	docker-compose -f docker-compose.yml -f docker-compose.$(COMPOSE_ENV).yml start
 
 stop:
-	docker-compose -f $(FILE) stop
+	docker-compose -f docker-compose.yml -f docker-compose.$(COMPOSE_ENV).yml stop
 
 ps:
-	docker-compose -f $(FILE) ps
+	docker-compose -f docker-compose.yml -f docker-compose.$(COMPOSE_ENV).yml ps
 	@echo "---------------------------"
 	@echo "Web:     `ps aux | grep /usr/local/bin/gunicorn | grep -v grep | wc -l` threads running"
 
@@ -91,6 +86,12 @@ log-celeryw:
 
 log-celeryb:
 	docker-compose logs celerybeat
+
+log-celeryw-live:
+	docker-compose logs --tail 50 --follow --timestamps celeryworker
+
+log-celeryb-live:
+	docker-compose logs --tail 50 --follow --timestamps celerybeat
 
 #######
 #Tests#
@@ -158,6 +159,14 @@ backup-db:
 	$(eval DUMP_NAME = $(BACKUPS_DIR)/`date +%Y%m%d`$(ENV_STAGE)_db_dump_.gz)
 	docker exec -t poap-fun-postgres pg_dumpall -c -U postgres | gzip > $(DUMP_NAME)
 
+azure-backup:
+	docker exec $(WEB) /bin/sh -c "python manage.py azure_backup_process"
+
+clean-backups:
+	find $(BACKUPS_DIR)/*.gz -mtime +2 -type f -delete
+
+daily-backup-process: backup-db azure-backup clean-backups
+
 ############
 #DEPLOYMENT#
 ############
@@ -166,4 +175,4 @@ clean-nginx-conf:
 	rm -f nginx/sites-enabled/nginx.conf
 
 deploy:clean-nginx-conf
-	make clean build up set-django FILE=$(FILE)
+	make clean build up set-django

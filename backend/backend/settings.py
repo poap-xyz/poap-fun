@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 import datetime
 from .local_settings import *
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'fake_key')
 DEBUG = True if os.getenv('DEBUG', 'true') == 'true' else False
 
 ADMINS = (
-    ('VonPix', 'info@vonpix.com'),
+    ('Xivis', 'info@xivis.com'),
 )
 
 
@@ -46,6 +48,9 @@ INSTALLED_APPS = [
     # Basic app
     'core',
 
+    # Backup
+    'django_azure_backup',
+
     # Third-party apps
     'rest_framework',
     'hijack',
@@ -55,16 +60,18 @@ INSTALLED_APPS = [
     'django_filters',
     'solo',
     'celery',
-
+    'drf_yasg',
+    'django_celery_beat',
 ]
 
 if DEBUG:
     INSTALLED_APPS += ['rosetta']
 else:
-    INSTALLED_APPS += ['raven.contrib.django.raven_compat']
-    RAVEN_CONFIG = {
-        'dsn': 'https://bb3de6a27fa441a0a161763a02368d1d:6532db6fef23492eae22b929d02796f4@sentry.io/254318'
-    }
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_SDK", "https://xxxx.ingest.sentry.io/0000"),
+        integrations=[DjangoIntegration()],
+        send_default_pii=True
+    )
 
 
 # IMPORTANT - CUSTOM MODEL FOR USER
@@ -73,6 +80,7 @@ AUTH_USER_MODEL = 'core.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -142,7 +150,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend', ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
+    'PAGE_SIZE': 10,
 }
 
 JWT_AUTH = {
@@ -168,7 +176,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -199,5 +207,44 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = True
 
-from .celery_beat_schedule import beat_schedule
-CELERY_BEAT_SCHEDULE = beat_schedule
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Logging
+from django.utils.log import DEFAULT_LOGGING
+LOGLEVEL = os.getenv('LOGLEVEL', 'info').upper()
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '[%(asctime)s] [%(levelname)s] %(message)s'
+        },
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+        # # Add Handler for Sentry for `warning` and above
+        # 'sentry': {
+        #     'level': 'WARNING',
+        #     'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        # },
+        'django.server': DEFAULT_LOGGING['handlers']['django.server']
+    },
+    'loggers': {
+        # root logger
+        '': {
+            'level': 'WARNING',
+            'handlers': ['console'],
+        },
+        'app': {
+            'level': 'INFO',
+            'handlers': ['console'],
+            # required to avoid double logging with root logger
+            'propagate': False,
+        },
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
+    },
+}
