@@ -13,7 +13,7 @@ from django.contrib.auth.hashers import make_password, check_password
 
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
-from core.utils import generate_unique_filename, get_poaps_for_address
+from core.utils import generate_unique_filename, get_poaps_for_address, get_address_name
 from core.validators import validate_image_size
 
 
@@ -214,10 +214,13 @@ class ParticipantManager(models.Manager):
         if not len(valid_poaps_for_raffle) > 0:
             return ValidationError("the participant does not have any required poap")
 
+        ens_name = get_poaps_for_address(address)
+
         participants = deque()
         for each in valid_poaps_for_raffle:
             participant = Participant(
                 address=address.lower(),
+                ens_name=ens_name,
                 signature=signature,
                 poap_id=each['poap'],
                 event_id=each['event'],
@@ -241,8 +244,9 @@ class Participant(TimeStampedModel):
         unique_together = [["raffle", "poap_id"]]
 
     address = models.CharField(_("address"), max_length=50)
+    ens_name = models.CharField(_("ens name"), max_length=255, null=True, blank=True)
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="participants", on_delete=models.PROTECT)
-    poap_id = models.CharField(_("poap id"), max_length=100)
+    poap_id = models.IntegerField(_("poap id"))
     event_id = models.CharField(_("event id"), max_length=100)
     signature = models.CharField(_("signature"), max_length=255)
     message = models.TextField(_("message"), null=True, blank=True)
@@ -297,7 +301,7 @@ class ResultsTableEntry(TimeStampedModel):
     order = models.IntegerField(_("order"))
 
     def __str__(self):
-        return f"results table entry for table {self.results_table}, participant {self.participant}"
+        return f"{self.order}º - {self.results_table.raffle} - {self.participant}"
 
     def __repr__(self):
         return (
@@ -315,6 +319,7 @@ class BlockData(TimeStampedModel):
     class Meta:
         verbose_name = _("block data")
         verbose_name_plural = _("block data")
+        ordering = ['raffle', '-order']
 
     # the raffle in which this block was used
     raffle = models.ForeignKey(Raffle, verbose_name=_("raffle"), related_name="blocks_data", on_delete=models.PROTECT)

@@ -5,13 +5,15 @@ import { Spin } from 'antd';
 // Constants
 import { BREAKPOINTS } from 'lib/constants/theme';
 
+// Helpers
+import { etherscanLinks } from 'lib/helpers/etherscan';
+
 // Types
-import { ResultsTable } from 'lib/types';
+import { BlockData } from 'lib/types';
 
 type RaffleWinnersProps = {
   isLoading: boolean;
-  winners?: ResultsTable;
-  accountAddress: string;
+  blocks?: BlockData[];
 };
 
 const Content = styled.div`
@@ -21,7 +23,7 @@ const Content = styled.div`
     padding: 30px 100px;
   }
 
-  .participant-box {
+  .box {
     background: var(--system-gray);
     border-radius: 12px;
     padding: 25px;
@@ -29,6 +31,8 @@ const Content = styled.div`
     grid-template-columns: 1fr;
     margin: auto;
     max-width: 500px;
+    max-height: 300px;
+    overflow-y: auto;
 
     @media (max-width: ${BREAKPOINTS.xs}) {
       grid-template-columns: 1fr 1fr 1fr;
@@ -40,6 +44,10 @@ const Content = styled.div`
       font-size: 14px;
       line-height: 24px;
       padding: 3px 0;
+
+      a {
+        color: var(--tabs-color-active);
+      }
     }
   }
 `;
@@ -53,36 +61,30 @@ const Title = styled.h3`
   padding: 20px 0;
 `;
 
-const WinnerText = styled.span`
-  font-weight: ${({ isWinner }: { isWinner?: boolean }) => (isWinner ? 700 : 400)};
-`;
-
-// Utils
-const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
-
-const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading, accountAddress }) => {
-  if (!winners || winners?.entries?.length === 0) {
+const RaffleBlocks: FC<RaffleWinnersProps> = ({ blocks, isLoading }) => {
+  if (!blocks || blocks?.length === 0) {
     return (
       <Content>
-        <Title>No registered winners</Title>
+        <Title>No registered blocks</Title>
       </Content>
     );
   }
 
   return (
-    <Spin spinning={isLoading} tip="Loading winners">
+    <Spin spinning={isLoading} tip="Loading blocks">
       <Content>
-        <Title>Winners result's table</Title>
-        <div className={'participant-box'}>
-          {winners?.entries
-            ?.sort((b: any, a: any) => b.order - a.order)
-            ?.map(({ id, order, participant }: any) => {
+        <Title>Last Blocks used</Title>
+        <div className={'box'}>
+          {blocks
+            .sort((a: BlockData, b: BlockData) => b.order - a.order)
+            .map((block) => {
               return (
-                <div key={id}>
-                  <WinnerText isWinner={participant.address === accountAddress}>
-                    {order + 1}º - POAP #{participant.poap_id.toString().padStart(5, '0')} -{' '}
-                    {shortAddress(participant.address)}
-                  </WinnerText>
+                <div key={block.id}>
+                  {block.order + 1}º -{' '}
+                  <a href={etherscanLinks.blocks(block.block_number)} target={'_blank'} rel="noopener noreferrer">
+                    #{block.block_number}
+                  </a>{' '}
+                  - Gas Limit: {block.gas_limit}
                 </div>
               );
             })}
@@ -92,4 +94,4 @@ const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading, accountAddr
   );
 };
 
-export default RaffleWinners;
+export default RaffleBlocks;

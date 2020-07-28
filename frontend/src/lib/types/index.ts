@@ -93,7 +93,7 @@ export type CreateRaffleValues = {
 export type Participant = {
   id: number;
   address: string;
-  poap_id: string;
+  poap_id: number;
   event_id: string;
 };
 
@@ -109,19 +109,16 @@ export type ResultsTable = {
   entries: ResultsTableEntry[];
 };
 
-export interface DjangoResponse<Result> {
-  count: number;
-  next?: string;
-  previous?: string;
-  results: Result[];
-}
-
-export type ResultsResponse = DjangoResponse<ResultsTable>;
-export type ParticipantsResponse = DjangoResponse<Participant>;
-
 export type JoinRaffleValues = {
   signature: string;
   message: string;
   address: string;
   raffle_id: number;
+};
+
+export type BlockData = {
+  raffle: number;
+  order: number;
+  block_number: number;
+  gas_limit: number;
 };
