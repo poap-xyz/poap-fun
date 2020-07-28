@@ -1,6 +1,6 @@
 from django.db import models as django_models
 from django_filters import rest_framework as filters, DateFilter, IsoDateTimeFilter
-from core.models import User, Participant, Raffle, ResultsTable
+from core.models import User, Participant, Raffle, ResultsTable, BlockData
 
 
 class UserFilter(filters.FilterSet):
@@ -50,6 +50,15 @@ class ResultsTableFilter(filters.FilterSet):
 
     class Meta:
         model = ResultsTable
+        fields = {
+            'raffle': ['exact', ],
+        }
+
+
+class BlockDataFilter(filters.FilterSet):
+
+    class Meta:
+        model = BlockData
         fields = {
             'raffle': ['exact', ],
         }

@@ -12,6 +12,7 @@ import Loading from 'ui/components/Loading';
 import Countdown from 'ui/components/Countdown';
 import RaffleContent from 'ui/components/RaffleContent';
 import RaffleWinners from 'ui/components/RaffleWinners';
+import RaffleBlocks from 'ui/components/RaffleBlocks';
 import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
@@ -26,6 +27,7 @@ import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffle } from 'lib/hooks/useRaffle';
 import { useModal } from 'lib/hooks/useModal';
 import { useResults } from 'lib/hooks/useResults';
+import { useBlocks } from 'lib/hooks/useBlocks';
 import { useJoinRaffle } from 'lib/hooks/useJoinRaffle';
 import { useParticipants } from 'lib/hooks/useParticipants';
 import { useStateContext } from 'lib/hooks/useCustomState';
@@ -35,11 +37,7 @@ import { mergeRaffleEvent } from 'lib/helpers/api';
 import { isRaffleActive, isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
 
 // Types
-import { ResultsTable, CompleteRaffle, JoinRaffleValues, Participant } from 'lib/types';
-type ParticipantObject = {
-  address: string;
-  poaps: number[];
-};
+import { ResultsTable, CompleteRaffle, JoinRaffleValues, Participant, BlockData } from 'lib/types';
 
 const TimeSandIcon = (props: any) => {
   return (
@@ -193,10 +191,17 @@ type EthStatsProps = {
         }
       | undefined,
   ) => Promise<ResultsTable>;
+  refetchBlocks: (
+    throwOnError?:
+      | {
+          throwOnError?: boolean | undefined;
+        }
+      | undefined,
+  ) => Promise<BlockData>;
   shouldRefetchResults: boolean;
 };
 
-const EthStats = ({ refetchResults, shouldRefetchResults }: EthStatsProps) => {
+const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks }: EthStatsProps) => {
   const [gasLimit, setGasLimit] = useState<any>(undefined);
   const [bestBlock, setBestBlock] = useState<any>(undefined);
   const [lastBlockTime, setLastBlockTime] = useState<number>(0);
@@ -237,7 +242,11 @@ const EthStats = ({ refetchResults, shouldRefetchResults }: EthStatsProps) => {
 
             if (bestBlock !== lastBlock) {
               setLastBlockTime(0);
-              if (shouldRefetchResults) setTimeout(refetchResults, 6000);
+              if (shouldRefetchResults)
+                setTimeout(() => {
+                  refetchResults();
+                  refetchBlocks();
+                }, 6000);
 
               lastBlock = Number(bestBlock);
             }
@@ -314,6 +323,9 @@ const RaffleDetail: FC = () => {
     id: raffle?.results_table,
   });
   const { data: participantsData, isLoading: isLoadingParticipants, refetch: refetchParticipants } = useParticipants({
+    raffle: id,
+  });
+  const { data: blocksData, isLoading: isLoadingBlocks, refetch: refetchBlocks } = useBlocks({
     raffle: id,
   });
 
@@ -402,59 +414,18 @@ const RaffleDetail: FC = () => {
   const isFinished: boolean = completeRaffle ? isRaffleFinished(completeRaffle) : false;
 
   const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.address) ?? [];
-  let activeParticipants: Participant[] = [];
-  if (participantsData && participantsData.length > 0 && raffle) {
-    activeParticipants = participantsData;
-    if (raffle.one_address_one_vote) {
-      // If the raffle is not weighted (one address = one vote) we will keep the lowest POAP ID of each address
-
-      // First, convert the participants to an array of object
-      // type = [{address: string, poaps: number[]}, ]
-      const participantsMap: ParticipantObject | {} = participantsData.reduce((acc, participant) => {
-        const { address, poap_id } = participant;
-        const poapId = parseInt(poap_id, 10);
-
-        acc[address] = {
-          ...(acc[address] || { address }),
-          poaps: [...(acc[address]?.poaps || []), poapId],
-        };
-
-        return acc;
-      }, {});
-
-      const output: ParticipantObject[] = Object.values(participantsMap);
-      // Sort poaps for each address and keep the first one
-      // Transform output to Participant[]
-      activeParticipants = output
-        .map((each) => {
-          const [firstPoapSorted] = each.poaps.sort((a, b) => a - b);
-          return { ...each, poaps: [firstPoapSorted] };
-        })
-        .map(({ address, poaps }) => {
-          const [firstPoap] = poaps;
-          return { address, event_id: '', id: firstPoap, poap_id: firstPoap.toString() };
-        });
-    }
-    // Remove participants that are in the winner's result table
-    // Only necessary for On Going events
-    activeParticipants = activeParticipants.filter(
-      (participant: any) => !resultParticipantsAddress.includes(participant.address),
-    );
-  }
+  const activeParticipants: Participant[] =
+    participantsData?.filter((participant: any) => !resultParticipantsAddress.includes(participant.address)) ?? [];
 
   const confettiWidth = (document.querySelector('#root') as HTMLElement)?.offsetWidth || 300;
   const confettiHeight = (document.querySelector('#root') as HTMLElement)?.offsetHeight || 200;
 
   // Effects
   useEffect(() => {
-    if (!isOngoing || !results || !participantsData || !raffle) return;
-    let participantsLength = participantsData.length;
-    if (raffle.one_address_one_vote) {
-      participantsLength = Array.from(new Set(participantsData.map((each) => each.address))).length;
-    }
-    setShouldTriggerConfetti(results?.entries?.length === participantsLength);
+    if (!isOngoing || !results || !participantsData) return;
+    setShouldTriggerConfetti(results?.entries?.length === participantsData.length);
     refetchRaffle();
-  }, [isOngoing, participantsData, results, refetchRaffle, raffle]);
+  }, [isOngoing, participantsData, results, refetchRaffle]);
 
   if (!completeRaffle) {
     return (
@@ -492,7 +463,11 @@ const RaffleDetail: FC = () => {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary title={completeRaffle.name} />
-        <EthStats refetchResults={refetchResults} shouldRefetchResults={Boolean(raffle?.results_table)} />
+        <EthStats
+          refetchResults={refetchResults}
+          refetchBlocks={refetchBlocks}
+          shouldRefetchResults={Boolean(raffle?.results_table)}
+        />
 
         <RaffleParticipants
           participants={activeParticipants}
@@ -501,6 +476,9 @@ const RaffleDetail: FC = () => {
         />
 
         <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />
+
+        <RaffleBlocks isLoading={isLoadingBlocks} blocks={blocksData} />
+
         <BadgeParty />
       </Container>
     );

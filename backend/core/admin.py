@@ -55,17 +55,17 @@ class RaffleAdmin(admin.ModelAdmin):
 
 @admin.register(Prize)
 class PrizeAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'order', 'raffle')
 
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('event_id', 'name')
 
 
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
-    list_display = ('address', 'id', 'raffle', 'poap_id', 'event_id')
+    list_display = ('address', 'raffle', 'poap_id', 'event_id')
 
 
 @admin.register(ResultsTable)
@@ -75,9 +75,9 @@ class ResultsTabletAdmin(admin.ModelAdmin):
 
 @admin.register(ResultsTableEntry)
 class ResultsTableEntryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('order', 'participant', 'results_table')
 
 
 @admin.register(BlockData)
 class BlockDataAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('order', 'raffle', 'block_number', 'gas_limit')

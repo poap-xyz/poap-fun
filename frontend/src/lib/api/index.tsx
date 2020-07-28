@@ -5,7 +5,7 @@ import wretch, { WretcherError } from 'wretch';
 // env
 const { REACT_APP_API_FUN, REACT_APP_API_POAP, REACT_APP_POAP_APP } = process.env;
 
-type Params = {
+export type Params = {
   [key: string]: string | number | boolean | undefined;
 };
 
@@ -35,6 +35,9 @@ export const endpoints = {
     participants: {
       all: (params: Params) => `${REACT_APP_API_FUN}/api/v1/participants/?${queryString.stringify(params)}`,
       detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/participants/${id}/`,
+    },
+    blocks: {
+      all: (params: Params) => `${REACT_APP_API_FUN}/api/v1/blocks/?${queryString.stringify(params)}`,
     },
   },
 };

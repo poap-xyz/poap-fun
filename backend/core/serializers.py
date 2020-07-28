@@ -5,7 +5,8 @@ from django.utils.translation import ugettext as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent, Participant, ResultsTable, ResultsTableEntry
+from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent, Participant, ResultsTable, \
+    ResultsTableEntry, BlockData
 from core.services import poap_integration_service
 
 UserModel = get_user_model()
@@ -14,7 +15,7 @@ UserModel = get_user_model()
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('id', 'name', )
+        fields = ('id', 'name',)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -143,10 +144,9 @@ class RaffleSerializer(serializers.ModelSerializer):
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Participant
-        fields = ["id", "address", "poap_id", "event_id"]
+        fields = ["id", "address", "ens_name", "poap_id", "event_id"]
 
 
 class MultiParticipantSerializer(serializers.Serializer):
@@ -219,3 +219,10 @@ class ResultsTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResultsTable
         fields = ["id", "raffle_id", "entries"]
+
+
+class BlockDataSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BlockData
+        fields = ["id", "raffle", "order", "block_number", "gas_limit"]

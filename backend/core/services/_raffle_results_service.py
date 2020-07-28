@@ -68,7 +68,7 @@ class RaffleResultsService:
             comparing_digits_identical = True
             gas_limit_last_digit = gas_limit % 10
             for participant in participants:
-                poap_id = int(participant.poap_id)
+                poap_id = participant.poap_id
                 poap_id_cmp_digit = math.floor(poap_id/order) % 10
 
                 if poap_id_cmp_digit == gas_limit_last_digit:

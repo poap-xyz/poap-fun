@@ -2,17 +2,19 @@
 import { useQuery } from 'react-query';
 
 // Lib
-import { api, endpoints } from 'lib/api';
+import { api, endpoints, Params } from 'lib/api';
 import { Participant } from 'lib/types';
 
-type FetchParticipantsValues = {
-  raffleId: number;
+type ParticipantParams = {
+  raffle?: number | null;
 };
 
-export const useParticipants = ({ raffleId }: FetchParticipantsValues) => {
-  const fetchParticipants = (key: string, raffleId: number): Promise<Participant[]> =>
-    api().url(endpoints.fun.participants.all).query({ raffle: raffleId }).get().json();
+export const isParamsEnabled = (params: Params) => Object.values(params).every(Boolean);
 
+const fetchParticipants = (key: string, params: ParticipantParams): Promise<Participant[]> =>
+  api().url(endpoints.fun.participants.all(params)).get().json();
+
+export const useParticipants = (params: ParticipantParams) => {
   // react query
-  return useQuery(['participants', raffleId], fetchParticipants);
+  return useQuery(['participants', params], fetchParticipants, { enabled: isParamsEnabled(params) });
 };

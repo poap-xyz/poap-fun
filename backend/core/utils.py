@@ -6,6 +6,8 @@ import requests
 
 from django.utils.deconstruct import deconstructible
 
+from ens.main import ENS
+
 
 @deconstructible
 class GenerateUniqueFilename(object):
@@ -68,3 +70,13 @@ def get_poaps_for_address(address):
             return None
 
     return user_poaps
+
+
+def get_address_name(address):
+    try:
+        ens = ENS()
+        name = ens.name(address)
+        return name if name else ''
+    except:
+        pass
+    return ''
