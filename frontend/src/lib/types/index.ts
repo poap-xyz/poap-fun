@@ -117,6 +117,7 @@ export type JoinRaffleValues = {
 };
 
 export type BlockData = {
+  id: number;
   raffle: number;
   order: number;
   block_number: number;

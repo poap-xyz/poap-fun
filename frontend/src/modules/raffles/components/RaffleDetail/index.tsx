@@ -197,7 +197,7 @@ type EthStatsProps = {
           throwOnError?: boolean | undefined;
         }
       | undefined,
-  ) => Promise<BlockData>;
+  ) => Promise<BlockData[]>;
   shouldRefetchResults: boolean;
 };
 
