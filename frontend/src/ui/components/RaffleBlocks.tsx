@@ -37,6 +37,7 @@ const Content = styled.div`
     @media (max-width: ${BREAKPOINTS.xs}) {
       grid-template-columns: 1fr 1fr 1fr;
     }
+
     div {
       text-align: center;
       color: var(--primary-color);
