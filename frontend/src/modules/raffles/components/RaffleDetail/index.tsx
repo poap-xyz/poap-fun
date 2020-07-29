@@ -26,6 +26,7 @@ import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Hooks
+import { useSounds } from 'lib/hooks/useSounds';
 import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffle } from 'lib/hooks/useRaffle';
 import { useModal } from 'lib/hooks/useModal';
@@ -212,9 +213,10 @@ type EthStatsProps = {
       | undefined,
   ) => Promise<BlockData[]>;
   shouldRefetchResults: boolean;
+  playSound: () => void;
 };
 
-const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks }: EthStatsProps) => {
+const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks, playSound }: EthStatsProps) => {
   const [gasLimit, setGasLimit] = useState<any>(undefined);
   const [bestBlock, setBestBlock] = useState<any>(undefined);
   const [lastBlockTime, setLastBlockTime] = useState<number>(0);
@@ -254,12 +256,15 @@ const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks }: EthSt
             const bestBlock = last(parsedEvent?.data?.height);
 
             if (bestBlock !== lastBlock) {
+              playSound();
               setLastBlockTime(0);
-              if (shouldRefetchResults)
+
+              if (shouldRefetchResults) {
                 setTimeout(() => {
                   refetchResults();
                   refetchBlocks();
                 }, 6000);
+              }
 
               lastBlock = Number(bestBlock);
             }
@@ -340,6 +345,7 @@ const RaffleDetail: FC = () => {
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
 
+  const [lastResultsLength, setLastResultsLength] = useState(-1);
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
   const { rafflesInfo, isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
 
@@ -362,6 +368,9 @@ const RaffleDetail: FC = () => {
   });
 
   // Lib hooks
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const { playBeganRaffle, playBlockPassed, playNewWinner } = useSounds({ soundEnabled });
+
   const { showModal: handleEdit } = useModal({
     component: RaffleEditModal,
     closable: true,
@@ -422,6 +431,15 @@ const RaffleDetail: FC = () => {
       setCanJoinRaffle(false);
     }
   }, [poaps, raffle]); //eslint-disable-line
+
+  useEffect(() => {
+    if (!results) return;
+
+    if (results.entries.length !== lastResultsLength) {
+      playNewWinner();
+      setLastResultsLength((prevLastResultsLength) => prevLastResultsLength + 1);
+    }
+  }, [setLastResultsLength, results]); //eslint-disable-line
 
   const isAccountParticipating = () => {
     if (account && participantsData && participantsData.length > 0) {
@@ -484,6 +502,10 @@ const RaffleDetail: FC = () => {
     refetchRaffle();
   }, [isOngoing, participantsData, results, refetchRaffle]);
 
+  useEffect(() => {
+    if (!isActive && isOngoing) playBeganRaffle();
+  }, [isActive]); //eslint-disable-line
+
   if (!completeRaffle) {
     return (
       <Container sidePadding thinWidth>
@@ -495,7 +517,13 @@ const RaffleDetail: FC = () => {
   if (isActive) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} activeTag={'Active'} editAction={handleEdit} />
+        <TitlePrimary
+          soundEnabled={soundEnabled}
+          handleSoundEnabled={setSoundEnabled}
+          title={completeRaffle.name}
+          activeTag={'Active'}
+          editAction={handleEdit}
+        />
         {completeRaffle.draw_datetime ? (
           <Countdown
             datetime={completeRaffle.draw_datetime}
@@ -527,8 +555,9 @@ const RaffleDetail: FC = () => {
   if (isOngoing) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} />
+        <TitlePrimary soundEnabled={soundEnabled} handleSoundEnabled={setSoundEnabled} title={completeRaffle.name} />
         <EthStats
+          playSound={playBlockPassed}
           refetchResults={refetchResults}
           refetchBlocks={refetchBlocks}
           shouldRefetchResults={Boolean(raffle?.results_table)}
@@ -552,7 +581,12 @@ const RaffleDetail: FC = () => {
   if (isFinished) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} activeTag={'Finished'} />
+        <TitlePrimary
+          soundEnabled={soundEnabled}
+          handleSoundEnabled={setSoundEnabled}
+          title={completeRaffle.name}
+          activeTag={'Finished'}
+        />
         <RaffleContent raffle={completeRaffle} />
 
         <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />

@@ -33,6 +33,7 @@
     "react-router-dom": "^5.2.0",
     "react-use": "^15.3.2",
     "use-debounce": "^3.4.3",
+    "use-sound": "^1.0.2",
     "web3": "^1.2.11",
     "web3modal": "^1.8.0",
     "wretch": "^1.7.2",

@@ -1,6 +1,7 @@
-import React, { FC } from 'react';
+import React, { FC, Dispatch, SetStateAction } from 'react';
 import styled from '@emotion/styled';
 import { FiEdit3 } from 'react-icons/fi';
+import { GiSpeaker, GiSpeakerOff } from 'react-icons/gi';
 
 // Components
 import StatusTag from 'ui/components/StatusTag';
@@ -13,6 +14,8 @@ type TitlePrimaryProps = {
   title: string;
   activeTag?: string;
   editAction?: () => void;
+  soundEnabled?: boolean;
+  handleSoundEnabled?: Dispatch<SetStateAction<boolean>>;
 };
 
 // Styled component
@@ -25,6 +28,13 @@ const Title = styled.div`
 
   @media (max-width: ${BREAKPOINTS.xs}) {
     padding: 10px 0 24px;
+  }
+
+  .sound-icons svg {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    fill: var(--secondary-color);
   }
 
   .navigation {
@@ -51,6 +61,7 @@ const Title = styled.div`
       }
     }
   }
+
   .title {
     display: flex;
     flex-direction: row;
@@ -84,7 +95,7 @@ const Title = styled.div`
   }
 `;
 
-const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag }) => {
+const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag, soundEnabled, handleSoundEnabled }) => {
   return (
     <Title>
       <div className={'navigation'}>
@@ -103,6 +114,15 @@ const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag }) =
           {editAction && (
             <div className={'edit-action'} onClick={editAction}>
               Edit raffle <FiEdit3 color={'var(--secondary-color)'} />
+            </div>
+          )}
+          {handleSoundEnabled && (
+            <div className="sound-icons">
+              {soundEnabled ? (
+                <GiSpeaker onClick={() => handleSoundEnabled(false)} />
+              ) : (
+                <GiSpeakerOff onClick={() => handleSoundEnabled(true)} />
+              )}
             </div>
           )}
         </div>
