@@ -19,6 +19,7 @@ import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
 import RaffleStartModal from 'ui/components/RaffleStartModal';
 import ActionButton from 'ui/components/ActionButton';
+import { Button } from 'ui/styled/antd/Button';
 
 // Constants
 import { ROUTES } from 'lib/routes';
@@ -177,6 +178,16 @@ const GasLimitValue = styled.p`
   margin-bottom: 0;
 `;
 
+const ContactContainer = styled.div`
+  margin: 24px auto 24px auto;
+  display: flex;
+  justify-content: center;
+`;
+
+const ContactButton = styled(Button)`
+  width: 300px;
+`;
+
 // Utils
 const lastBlockTimeClass = (time: number) => {
   if (time >= 0 && time < 15) return 'text-success';
@@ -302,6 +313,25 @@ const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks }: EthSt
   );
 };
 
+const ContactModal = ({ id }: { id: number }) => {
+  const { data: raffle } = useRaffle({ id });
+
+  return (
+    <>
+      <p>If you have won, please contact the raffle organizer at:</p>
+      <p>
+        <a href={`mailto:${raffle?.contact}`} target="_blank" rel="noopener noreferrer">
+          {raffle?.contact}
+        </a>
+      </p>
+      <p>If you want to send a proof that you're the address owner, you can sign a mesagge on MyCrypto</p>
+      <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank" rel="noopener noreferrer">
+        Sign message
+      </a>
+    </>
+  );
+};
+
 const RaffleDetail: FC = () => {
   // React hooks
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
@@ -356,9 +386,19 @@ const RaffleDetail: FC = () => {
     id: parseInt(id, 10),
     alert: !participantsData || participantsData?.length === 0,
     onSuccess: (data: any) => {
-      console.log(data);
       refetchRaffle();
     },
+  });
+  const { showModal: handleContactModal } = useModal({
+    component: ContactModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    title: 'Contact organizer',
+    id: parseInt(id, 10),
   });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
 
@@ -516,9 +556,15 @@ const RaffleDetail: FC = () => {
         <RaffleContent raffle={completeRaffle} />
 
         <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />
-        <BadgeParty />
 
+        <ContactContainer>
+          <ContactButton type="primary" margin onClick={handleContactModal}>
+            Contact Event Organizer
+          </ContactButton>
+        </ContactContainer>
         <Confetti run={shouldTriggerConfetti} width={confettiWidth} height={confettiHeight} />
+
+        <BadgeParty />
       </Container>
     );
   }
