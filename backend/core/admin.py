@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
+from solo.admin import SingletonModelAdmin
+
 from .models import *
 
 
@@ -81,3 +83,6 @@ class ResultsTableEntryAdmin(admin.ModelAdmin):
 @admin.register(BlockData)
 class BlockDataAdmin(admin.ModelAdmin):
     list_display = ('order', 'raffle', 'block_number', 'gas_limit')
+
+
+admin.site.register(EmailConfiguration, SingletonModelAdmin)

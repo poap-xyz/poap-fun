@@ -33,6 +33,7 @@ model-bakery==1.1.0
 
 # 3rd party
 web3==5.11.1
+sendgrid==6.4.4
 django-celery-beat==2.0.0
 
 # dev requirements

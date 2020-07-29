@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 from core.models import Raffle, TextEditorImage, Prize, Event, RaffleEvent, Participant, ResultsTable, \
     ResultsTableEntry, BlockData
 from core.services import poap_integration_service
+from core.emails import send_raffle_created_email
 
 UserModel = get_user_model()
 
@@ -119,6 +120,11 @@ class RaffleSerializer(serializers.ModelSerializer):
         prizes_data = validated_data.pop("prizes")
         events_data = validated_data.pop("events")
         raffle = Raffle.objects.create(**validated_data)
+
+        # Send contact the edit information
+        if raffle._token:
+            send_raffle_created_email(raffle)
+
         for prize_data in prizes_data:
             Prize.objects.create(raffle=raffle, **prize_data)
         for event_data in events_data:

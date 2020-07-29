@@ -248,3 +248,6 @@ LOGGING = {
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 }
+
+# Sengrid
+SENDGRID_KEY = os.getenv('SENDGRID_KEY', '')

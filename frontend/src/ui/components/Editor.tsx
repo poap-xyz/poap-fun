@@ -47,6 +47,7 @@ const Editor: FC<EditorProps> = ({ title, onChange, initialValue = '<p>Be creati
               height: 250,
               menubar: false,
               images_upload_url: endpoints.fun.raffles.images,
+              elementpath: false,
               plugins: [
                 'advlist autolink lists link image charmap anchor',
                 'searchreplace visualblocks code fullscreen',
