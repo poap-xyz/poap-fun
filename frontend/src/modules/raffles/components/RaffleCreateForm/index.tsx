@@ -295,7 +295,7 @@ const RaffleCreateForm: FC = () => {
               </PrizeContainer>
             </Col>
             <Col span={24}>
-              {prizes.length > 0 && (
+              {Array.isArray(prizes) && prizes.length > 0 && (
                 <>
                   <Separator />
                   {prizes.map((prize) => {
