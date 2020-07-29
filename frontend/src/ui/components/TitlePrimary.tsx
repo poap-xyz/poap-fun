@@ -111,9 +111,24 @@ const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag, sou
           {activeTag && <StatusTag text={activeTag} className={'tag'} />}
         </div>
         <div>
-          {editAction && (
-            <div className={'edit-action'} onClick={editAction}>
-              Edit raffle <FiEdit3 color={'var(--secondary-color)'} />
+          <div>
+            {editAction && (
+              <div className={'edit-action'} onClick={editAction}>
+                Edit raffle <FiEdit3 color={'var(--secondary-color)'} />
+              </div>
+            )}
+          </div>
+        </div>
+        <div>
+          {activeTag && <StatusTag text={'active'} className={'tag'} />}
+
+          {handleSoundEnabled && (
+            <div className="sound-icons">
+              {soundEnabled ? (
+                <GiSpeaker onClick={() => handleSoundEnabled(false)} />
+              ) : (
+                <GiSpeakerOff onClick={() => handleSoundEnabled(true)} />
+              )}
             </div>
           )}
           {handleSoundEnabled && (
