@@ -13,9 +13,10 @@ from django.contrib.auth.hashers import make_password, check_password
 
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
+from solo.models import SingletonModel
+
 from core.utils import generate_unique_filename, get_poaps_for_address, get_address_name
 from core.validators import validate_image_size
-
 
 logger = logging.getLogger("app")
 
@@ -113,6 +114,9 @@ class Raffle(TimeStampedModel):
             raw_token, token = self.generate_token()
             self._token = raw_token
             self.token = token
+
+            # send_raffle_created_email()
+
         super().save(**kwargs)
 
         task_name = f'generating_results_for_raffle_{self.id}'
@@ -345,3 +349,14 @@ class TextEditorImage(TimeStampedModel):
 
     file = models.ImageField(upload_to=generate_unique_filename, validators=[validate_image_size])
 
+
+class EmailConfiguration(SingletonModel):
+    sender = models.CharField(max_length=255, null=True, blank=True)
+    welcome_template = models.CharField(max_length=255, null=True, blank=True)
+    raffle_created_template = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return _("Email Configuration")
+
+    class Meta:
+        verbose_name = _("Email Configuration")

@@ -142,9 +142,9 @@ const RaffleCreateForm: FC = () => {
       let raffle = await createRaffle(newRaffle);
       if (raffle) push(generatePath(ROUTES.raffleCreated, { id: raffle.id }));
 
-      localStorage.setItem('create-raffle-form-values', JSON.stringify('null'));
-      localStorage.setItem('description-form-values', JSON.stringify('""'));
-      localStorage.setItem('prizes-form-values', JSON.stringify('[]'));
+      localStorage.removeItem('create-raffle-form-values');
+      localStorage.removeItem('description-form-values');
+      localStorage.removeItem('prizes-form-values');
     } catch (error) {
       console.log('RaffleCreateForm:FC -> error', error);
     }
