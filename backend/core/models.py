@@ -219,7 +219,7 @@ class ParticipantManager(models.Manager):
         if not len(valid_poaps_for_raffle) > 0:
             return ValidationError("the participant does not have any required poap")
 
-        ens_name = get_poaps_for_address(address)
+        ens_name = get_address_name(address)
 
         participants = deque()
         for each in valid_poaps_for_raffle:
