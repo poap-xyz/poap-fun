@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { Spin } from 'antd';
+import { Spin, Tooltip } from 'antd';
 
 // Constants
 import { BREAKPOINTS } from 'lib/constants/theme';
@@ -136,10 +136,14 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
               <div className={'ticket-holder'}>
                 {accountTickets.map((each) => {
                   return (
-                    <div key={each.id} className="number-container">
-                      <img src={each.event.image_url} alt={each.event.name} />
-                      <a href={etherscanLinks.poap(each.poap_id)}>#{each.poap_id.toString().padStart(5, '0')}</a>
-                    </div>
+                    <Tooltip title={each.event.name} placement="bottom">
+                      <div key={each.id} className="number-container">
+                        <a href={etherscanLinks.poap(each.poap_id)} target="_blank" rel="noopener noreferrer">
+                          <img src={each.event.image_url} alt={each.event.name} />
+                          <span>#{each.poap_id.toString().padStart(5, '0')}</span>
+                        </a>
+                      </div>
+                    </Tooltip>
                   );
                 })}
               </div>
@@ -151,12 +155,14 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
           <div className={'ticket-holder'}>
             {otherTickets.map((each) => {
               return (
-                <div key={each.id} className="number-container">
-                  <img src={each.event.image_url} alt={each.event.name} />
-                  <a href={etherscanLinks.poap(each.poap_id)} target="_blank" rel="noopener noreferrer">
-                    #{each.poap_id.toString().padStart(5, '0')}
-                  </a>
-                </div>
+                <Tooltip title={each.event.name} placement="bottom">
+                  <div key={each.id} className="number-container">
+                    <a href={etherscanLinks.poap(each.poap_id)} target="_blank" rel="noopener noreferrer">
+                      <img src={each.event.image_url} alt={each.event.name} />
+                      <span>#{each.poap_id.toString().padStart(5, '0')}</span>
+                    </a>
+                  </div>
+                </Tooltip>
               );
             })}
           </div>

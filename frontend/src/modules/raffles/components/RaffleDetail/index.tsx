@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { generatePath } from 'react-router';
 import styled from '@emotion/styled';
@@ -488,6 +488,34 @@ const RaffleDetail: FC = () => {
   const isOngoing: boolean = completeRaffle ? isRaffleOnGoing(completeRaffle) : false;
   const isFinished: boolean = completeRaffle ? isRaffleFinished(completeRaffle) : false;
 
+  const raffleStatus = useMemo(
+    () =>
+      new Proxy(
+        { isActive, isOngoing },
+        {
+          set: function (target, key, value) {
+            const shouldTriggerActionFromIsActive =
+              target['isActive'] === false && key === 'isOngoing' && value === true;
+            const shouldTriggerActionFromIsOngoing =
+              target['isOngoing'] === false && key === 'isActive' && value === true;
+
+            if (shouldTriggerActionFromIsActive || shouldTriggerActionFromIsOngoing) {
+              playBeganRaffle();
+            }
+
+            target[key] = value;
+            return true;
+          },
+        },
+      ),
+    [], //eslint-disable-line
+  );
+
+  useEffect(() => {
+    raffleStatus.isOngoing = isOngoing;
+    raffleStatus.isActive = isActive;
+  }, [isActive, isOngoing]); //eslint-disable-line
+
   const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.address) ?? [];
   const activeParticipants: Participant[] =
     participantsData?.filter((participant: any) => !resultParticipantsAddress.includes(participant.address)) ?? [];
@@ -501,10 +529,6 @@ const RaffleDetail: FC = () => {
     setShouldTriggerConfetti(results?.entries?.length === participantsData.length);
     refetchRaffle();
   }, [isOngoing, participantsData, results, refetchRaffle]);
-
-  useEffect(() => {
-    if (!isActive && isOngoing) playBeganRaffle();
-  }, [isActive]); //eslint-disable-line
 
   if (!completeRaffle) {
     return (
