@@ -73,7 +73,8 @@ class Raffle(TimeStampedModel):
     contact = models.EmailField(_("contact email"))
     token = models.CharField(_("raffle token"), max_length=256)
     # all raffle dates MUST be in UTC TODO find a way to enforce this invariant
-    draw_datetime = models.DateTimeField(_("raffle's draw date and time"))
+    draw_datetime = models.DateTimeField(_("raffle's draw date and time"), null=True, blank=True)
+    start_date_helper = models.TextField(_("start date helper"), null=True, blank=True)
     end_datetime = models.DateTimeField(_("raffle's end date and time"), null=True, blank=True)
     # if true, no matter how many poaps the address has, it counts as one vote.
     # if false, each of the address's poaps counts as a vote
@@ -115,13 +116,11 @@ class Raffle(TimeStampedModel):
             self._token = raw_token
             self.token = token
 
-            # send_raffle_created_email()
-
         super().save(**kwargs)
 
         task_name = f'generating_results_for_raffle_{self.id}'
         task = PeriodicTask.objects.filter(name=task_name).first()
-        if not self.finalized:
+        if self.draw_datetime and not self.finalized:
             schedule, _ = IntervalSchedule.objects.get_or_create(every=3, period=IntervalSchedule.SECONDS)
             if not task:
                 task = PeriodicTask(
@@ -134,12 +133,14 @@ class Raffle(TimeStampedModel):
             if self.draw_datetime > timezone.now():
                 task.start_time = self.draw_datetime
             else:
-                task.start_time = None
+                task.start_time = timezone.now()
 
+            task.enabled = True
             task.save()
         elif task:
-            task.enabled = False
-            task.save()
+            if task:
+                task.enabled = False
+                task.save()
 
     def __str__(self):
         return self.name

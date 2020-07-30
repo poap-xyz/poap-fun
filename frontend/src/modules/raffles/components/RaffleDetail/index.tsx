@@ -10,6 +10,7 @@ import { Container } from 'ui/styled/Container';
 import TitlePrimary from 'ui/components/TitlePrimary';
 import Loading from 'ui/components/Loading';
 import Countdown from 'ui/components/Countdown';
+import RaffleAnnouncement from 'ui/components/RaffleAnnouncement';
 import RaffleContent from 'ui/components/RaffleContent';
 import RaffleWinners from 'ui/components/RaffleWinners';
 import RaffleBlocks from 'ui/components/RaffleBlocks';
@@ -439,7 +440,11 @@ const RaffleDetail: FC = () => {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary title={completeRaffle.name} activeTag={true} editAction={handleEdit} />
-        <Countdown datetime={completeRaffle.draw_datetime} finishAction={refetchRaffle} />
+        {completeRaffle.draw_datetime ? (
+          <Countdown datetime={completeRaffle.draw_datetime} finishAction={refetchRaffle} />
+        ) : (
+          <RaffleAnnouncement message={completeRaffle.start_date_helper} />
+        )}
 
         <RaffleContent raffle={completeRaffle} />
         <ActionButton

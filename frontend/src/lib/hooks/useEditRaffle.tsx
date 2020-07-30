@@ -17,7 +17,8 @@ type UpdateRaffleValues = {
   name?: string;
   description?: string;
   contact?: string;
-  draw_datetime?: string;
+  start_date_helper?: string;
+  draw_datetime?: string | null;
   one_address_one_vote?: boolean;
   prizes?: CreatePrize[];
 };
@@ -31,20 +32,22 @@ const patchRaffle = ({
   contact,
   draw_datetime,
   prizes,
+  start_date_helper,
 }: UpdateRaffleValues): Promise<Raffle> => {
   return api()
     .auth(token)
     .url(endpoints.fun.raffles.detail(id))
-    .json(
-      cleanDeep({
+    .json({
+      ...cleanDeep({
         name,
         description,
         one_address_one_vote,
         contact,
-        draw_datetime,
         prizes,
+        start_date_helper,
       }),
-    )
+      draw_datetime,
+    })
     .patch()
     .json()
     .then((data) => {

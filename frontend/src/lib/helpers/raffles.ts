@@ -13,13 +13,13 @@ export const createRaffleLink = (raffle: Raffle | CompleteRaffle, relative: bool
 };
 
 export const isRaffleActive = (raffle: CompleteRaffle | Raffle): boolean => {
-  return moment(raffle.draw_datetime).isAfter(moment());
+  return !raffle.finalized && (!raffle.draw_datetime || moment(raffle.draw_datetime).isAfter(moment()));
 };
 
 export const isRaffleOnGoing = (raffle: CompleteRaffle | Raffle): boolean => {
-  return !raffle.finalized && moment(raffle.draw_datetime).isBefore(moment());
+  return !raffle.finalized && !!raffle.draw_datetime && moment(raffle.draw_datetime).isBefore(moment());
 };
 
 export const isRaffleFinished = (raffle: CompleteRaffle | Raffle): boolean => {
-  return raffle.finalized === true;
+  return raffle.finalized;
 };

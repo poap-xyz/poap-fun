@@ -44,6 +44,8 @@ export type RaffleEditFormValue = {
   name: string;
   contact: string;
   weightedVote: boolean;
+  undefinedDrawDateTime: boolean;
+  startDateHelper: string;
   raffleDate: moment.Moment | undefined;
   raffleTime: moment.Moment | undefined;
 };
@@ -87,7 +89,15 @@ const RaffleEditForm: FC = () => {
   const [completeRaffle, setCompleteRaffle] = useState<CompleteRaffle | null>(null);
 
   const handleOnSubmit = async (
-    { name, contact, weightedVote, raffleDate, raffleTime }: RaffleEditFormValue,
+    {
+      name,
+      contact,
+      weightedVote,
+      raffleDate,
+      raffleTime,
+      startDateHelper,
+      undefinedDrawDateTime,
+    }: RaffleEditFormValue,
     { setFieldError }: any,
   ) => {
     if (!prizes.length) {
@@ -96,7 +106,7 @@ const RaffleEditForm: FC = () => {
 
     if (raffle.token) {
       // Combine dates and get timezone
-      if (!raffleDate || !raffleTime) return;
+      if (!undefinedDrawDateTime && (!raffleDate || !raffleTime)) return;
       let raffleDatetime = mergeRaffleDatetime(raffleDate, raffleTime);
 
       // Delete all prizes
@@ -111,8 +121,9 @@ const RaffleEditForm: FC = () => {
         name,
         description,
         contact,
+        start_date_helper: startDateHelper,
+        draw_datetime: undefinedDrawDateTime ? null : raffleDatetime,
         one_address_one_vote: !weightedVote,
-        draw_datetime: raffleDatetime,
         prizes: submitPrizes,
       });
       if (patchedRaffle) push(createRaffleLink(patchedRaffle, true));
@@ -122,15 +133,19 @@ const RaffleEditForm: FC = () => {
   // Hooks
   const [patchRaffle, { isLoading }] = useEditRaffle();
   const [deletePrize] = useDeletePrize();
-  const localDrawDateTime = moment.utc(raffle.draw_datetime).local();
+  const localDrawDateTime = raffle.draw_datetime ? moment.utc(raffle.draw_datetime).local() : undefined;
 
   const initialValues: RaffleEditFormValue = {
     prize: '',
     name: raffle.name,
     contact: raffle.contact,
     weightedVote: !raffle.one_address_one_vote,
+    undefinedDrawDateTime: !localDrawDateTime,
+    startDateHelper: raffle.start_date_helper,
     raffleDate: localDrawDateTime,
-    raffleTime: moment(new Date()).hours(localDrawDateTime.hours()).minutes(localDrawDateTime.minutes()),
+    raffleTime: localDrawDateTime
+      ? moment(new Date()).hours(localDrawDateTime.hours()).minutes(localDrawDateTime.minutes())
+      : undefined,
   };
 
   // Lib hooks
@@ -222,7 +237,7 @@ const RaffleEditForm: FC = () => {
                 values={values}
               />
             </Col>
-            <Col offset={4} span={8}>
+            <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }} lg={{ offset: 4, span: 8 }}>
               <DatePicker
                 setFieldValue={setFieldValue}
                 name="raffleDate"
@@ -232,9 +247,10 @@ const RaffleEditForm: FC = () => {
                 touched={touched}
                 errors={errors}
                 values={values}
+                disabled={values['undefinedDrawDateTime']}
               />
             </Col>
-            <Col span={8}>
+            <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }} lg={{ offset: 0, span: 8 }}>
               <TimePicker
                 setFieldValue={setFieldValue}
                 name="raffleTime"
@@ -243,8 +259,31 @@ const RaffleEditForm: FC = () => {
                 touched={touched}
                 errors={errors}
                 values={values}
+                disabled={values['undefinedDrawDateTime']}
               />
             </Col>
+            <Col span={24}>
+              <Checkbox
+                handleChange={handleChange}
+                name="undefinedDrawDateTime"
+                sideText="Decide raffle date time later"
+                helpText="If you're not sure when the raffle will start, you can edit the raffle later"
+                values={values}
+              />
+            </Col>
+            {values['undefinedDrawDateTime'] && (
+              <Col span={24}>
+                <Input
+                  errors={errors}
+                  handleChange={handleChange}
+                  label="Raffle start date time helper"
+                  name="startDateHelper"
+                  placeholder="i.e: the raffle will start near the month's end"
+                  touched={touched}
+                  values={values}
+                />
+              </Col>
+            )}
             <Col span={24}>
               <Editor title={'Raffle description'} onChange={handleEditorChange} initialValue={description} />
             </Col>

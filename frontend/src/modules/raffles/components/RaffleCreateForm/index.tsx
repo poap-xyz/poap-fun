@@ -42,6 +42,8 @@ export type RaffleCreateFormValue = {
   prize: string;
   contact: string;
   weightedVote: boolean;
+  undefinedDrawDateTime: boolean;
+  startDateHelper: string;
   eligibleEvents: number[];
   raffleDate: moment.Moment | undefined;
   raffleTime: moment.Moment | undefined;
@@ -91,8 +93,11 @@ const RaffleCreateForm: FC = () => {
   const initialValues: RaffleCreateFormValue = initialValuesParsed || {
     name: '',
     contact: '',
+    prize: '',
     eligibleEvents: [],
     weightedVote: false,
+    undefinedDrawDateTime: false,
+    startDateHelper: '',
     raffleDate: undefined,
     raffleTime: undefined,
   };
@@ -109,7 +114,16 @@ const RaffleCreateForm: FC = () => {
 
   // Handlers
   const handleOnSubmit = async (
-    { name, contact, weightedVote, raffleDate, raffleTime, eligibleEvents }: RaffleCreateFormValue,
+    {
+      name,
+      contact,
+      weightedVote,
+      raffleDate,
+      raffleTime,
+      eligibleEvents,
+      startDateHelper,
+      undefinedDrawDateTime,
+    }: RaffleCreateFormValue,
     { setFieldError }: any,
   ) => {
     if (!prizes.length) {
@@ -125,14 +139,15 @@ const RaffleCreateForm: FC = () => {
       });
 
       // Combine dates and get timezone
-      if (!raffleDate || !raffleTime) return;
+      if (!undefinedDrawDateTime && (!raffleDate || !raffleTime)) return;
       let raffleDatetime = mergeRaffleDatetime(raffleDate, raffleTime);
 
       let newRaffle: CreateRaffleValues = {
         name,
         description,
         contact,
-        draw_datetime: raffleDatetime,
+        start_date_helper: startDateHelper,
+        draw_datetime: undefinedDrawDateTime ? null : raffleDatetime,
         one_address_one_vote: !weightedVote,
         prizes: submitPrizes,
         events: submitEvents,
@@ -211,7 +226,7 @@ const RaffleCreateForm: FC = () => {
   const handleEditorChange = (content: string, editor: any) => setDescription(content);
 
   const handleSubmitClick = () => submitForm();
-
+  console.log(values);
   return (
     <Container sidePadding thinWidth>
       <TitlePrimary title={'Create New Raffle'} />
@@ -260,6 +275,7 @@ const RaffleCreateForm: FC = () => {
                 touched={touched}
                 errors={errors}
                 values={values}
+                disabled={values['undefinedDrawDateTime']}
               />
             </Col>
             <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }} lg={{ offset: 0, span: 8 }}>
@@ -271,8 +287,31 @@ const RaffleCreateForm: FC = () => {
                 touched={touched}
                 errors={errors}
                 values={values}
+                disabled={values['undefinedDrawDateTime']}
               />
             </Col>
+            <Col span={24}>
+              <Checkbox
+                handleChange={handleChange}
+                name="undefinedDrawDateTime"
+                sideText="Decide raffle date time later"
+                helpText="If you're not sure when the raffle will start, you can edit the raffle later"
+                values={values}
+              />
+            </Col>
+            {values['undefinedDrawDateTime'] && (
+              <Col span={24}>
+                <Input
+                  errors={errors}
+                  handleChange={handleChange}
+                  label="Raffle start date time helper"
+                  name="startDateHelper"
+                  placeholder="i.e: the raffle will start near the month's end"
+                  touched={touched}
+                  values={values}
+                />
+              </Col>
+            )}
             <Col span={24}>
               <Editor title={'Raffle description'} initialValue={description} onChange={handleEditorChange} />
             </Col>

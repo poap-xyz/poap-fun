@@ -23,7 +23,8 @@ export const mergeRaffleEvent = (raffles: Raffle[], events: PoapEvent[]): Comple
   return completeRaffles;
 };
 
-export const mergeRaffleDatetime = (raffleDate: Moment, raffleTime: Moment): string => {
+export const mergeRaffleDatetime = (raffleDate: Moment | undefined, raffleTime: Moment | undefined): string => {
+  if (!raffleDate || !raffleTime) return '';
   try {
     let raffleDatetime = raffleDate
       .hours(raffleTime.hours())

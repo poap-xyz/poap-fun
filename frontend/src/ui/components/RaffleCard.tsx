@@ -71,6 +71,7 @@ const RaffleCardWrapper = styled.div`
 
     .deadline {
       color: var(--font-color);
+      text-align: center;
       background: var(--system-gray);
       border-radius: 6px;
       font-size: 10px;
@@ -143,7 +144,11 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
             <div>
               <div className={'bottom-title'}>Inscription deadline</div>
               <div className={'bottom-data'}>
-                <div className={'deadline'}>{moment.utc(raffle.draw_datetime).local().format(DATETIMEFORMAT)}</div>
+                <div className={'deadline'}>
+                  {raffle.draw_datetime
+                    ? moment.utc(raffle.draw_datetime).local().format(DATETIMEFORMAT)
+                    : 'To be announced'}
+                </div>
               </div>
             </div>
             <div>
