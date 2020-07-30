@@ -38,7 +38,7 @@ const EventDisplay: FC<EventDisplayProps> = ({ events }) => {
   return (
     <PoapContainer>
       {events
-        .sort((event) => (poapsEventsIds.includes(event.id) ? -1 : 1))
+        .sort((eventA, eventB) => poapsEventsIds.indexOf(eventB.id) - poapsEventsIds.indexOf(eventA.id))
         .map((event) => (
           <div key={event.id}>
             <Tooltip title={event.name}>

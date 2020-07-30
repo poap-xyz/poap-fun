@@ -98,7 +98,6 @@ const RaffleContent: FC<RaffleContentProps> = ({ raffle }) => {
                 <PrizeRowForm order={prize.order} key={prize.order} prize={prize.name} />
               ))}
             </div>
-            a
           </div>
           <div className={'description'} dangerouslySetInnerHTML={{ __html: description }} />
           <Separator />
