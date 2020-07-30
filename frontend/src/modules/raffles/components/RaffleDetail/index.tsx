@@ -362,7 +362,7 @@ const RaffleDetail: FC = () => {
 
   useEffect(() => {
     if (raffle && isConnected && !isFetchingPoaps && !canAccountParticipate()) {
-      setJoinDisabledReason("You don't have any required POAP");
+      setJoinDisabledReason(`You don't have any eligible POAP${raffle.events.length > 1 ? 's' : ''}`);
       setCanJoinRaffle(false);
     }
   }, [poaps, raffle]); //eslint-disable-line
