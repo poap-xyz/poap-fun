@@ -21,6 +21,7 @@ type TimePickerProps = {
   errors?: FormikErrors<FormikValues>;
   label?: string | React.ReactNode;
   futureDates?: boolean;
+  disabled?: boolean;
 };
 
 const Content = styled.div`
@@ -39,6 +40,7 @@ const TimePicker: FC<TimePickerProps> = ({
   format = 'HH:mm',
   touched,
   values,
+  disabled = false,
 }) => {
   const handleTimeChange = (time: moment.Moment | null) => setFieldValue(name, time);
 
@@ -55,8 +57,9 @@ const TimePicker: FC<TimePickerProps> = ({
           name={name}
           placeholder={placeholder}
           format={format}
-          value={values[name] ? values[name] : undefined}
+          value={values[name] && !disabled ? values[name] : undefined}
           onChange={handleTimeChange}
+          disabled={disabled}
         />
       </Content>
     </Item>

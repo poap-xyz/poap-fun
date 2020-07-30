@@ -11,7 +11,7 @@ import { BREAKPOINTS } from 'lib/constants/theme';
 // Types
 type TitlePrimaryProps = {
   title: string;
-  activeTag?: boolean;
+  activeTag?: string;
   editAction?: () => void;
 };
 
@@ -76,7 +76,7 @@ const Title = styled.div`
       margin-top: 10px;
     }
     .tag {
-      margin: 5px auto;
+      margin: 5px 0;
       @media (max-width: ${BREAKPOINTS.sm}) {
         display: none;
       }
@@ -97,13 +97,15 @@ const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag }) =
       <div className={'title'}>
         <div>
           <h1>{title}</h1>
+          {activeTag && <StatusTag text={activeTag} className={'tag'} />}
+        </div>
+        <div>
           {editAction && (
             <div className={'edit-action'} onClick={editAction}>
               Edit raffle <FiEdit3 color={'var(--secondary-color)'} />
             </div>
           )}
         </div>
-        <div>{activeTag && <StatusTag text={'active'} className={'tag'} />}</div>
       </div>
     </Title>
   );

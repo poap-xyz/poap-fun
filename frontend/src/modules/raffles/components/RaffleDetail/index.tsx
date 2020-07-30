@@ -10,12 +10,14 @@ import { Container } from 'ui/styled/Container';
 import TitlePrimary from 'ui/components/TitlePrimary';
 import Loading from 'ui/components/Loading';
 import Countdown from 'ui/components/Countdown';
+import RaffleAnnouncement from 'ui/components/RaffleAnnouncement';
 import RaffleContent from 'ui/components/RaffleContent';
 import RaffleWinners from 'ui/components/RaffleWinners';
 import RaffleBlocks from 'ui/components/RaffleBlocks';
 import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
+import RaffleStartModal from 'ui/components/RaffleStartModal';
 import ActionButton from 'ui/components/ActionButton';
 
 // Constants
@@ -309,7 +311,7 @@ const RaffleDetail: FC = () => {
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
 
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
-  const { isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
+  const { rafflesInfo, isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
 
   // Router hooks
   const { id } = useParams();
@@ -343,6 +345,21 @@ const RaffleDetail: FC = () => {
       if (data?.id) push(generatePath(ROUTES.raffleEdit, { id: data.id }));
     },
   });
+  const { showModal: handleCounterAction } = useModal({
+    component: RaffleStartModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    id: parseInt(id, 10),
+    alert: !participantsData || participantsData?.length === 0,
+    onSuccess: (data: any) => {
+      console.log(data);
+      refetchRaffle();
+    },
+  });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
 
   // Effects
@@ -361,7 +378,7 @@ const RaffleDetail: FC = () => {
 
   useEffect(() => {
     if (raffle && isConnected && !isFetchingPoaps && !canAccountParticipate()) {
-      setJoinDisabledReason("You don't have any required POAP");
+      setJoinDisabledReason(`You don't have any eligible POAP${raffle.events.length > 1 ? 's' : ''}`);
       setCanJoinRaffle(false);
     }
   }, [poaps, raffle]); //eslint-disable-line
@@ -438,8 +455,16 @@ const RaffleDetail: FC = () => {
   if (isActive) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} activeTag={true} editAction={handleEdit} />
-        <Countdown datetime={completeRaffle.draw_datetime} finishAction={refetchRaffle} />
+        <TitlePrimary title={completeRaffle.name} activeTag={'Active'} editAction={handleEdit} />
+        {completeRaffle.draw_datetime ? (
+          <Countdown
+            datetime={completeRaffle.draw_datetime}
+            finishAction={refetchRaffle}
+            action={rafflesInfo[completeRaffle.id]?.token ? handleCounterAction : undefined}
+          />
+        ) : (
+          <RaffleAnnouncement message={completeRaffle.start_date_helper} />
+        )}
 
         <RaffleContent raffle={completeRaffle} />
         <ActionButton
@@ -487,7 +512,7 @@ const RaffleDetail: FC = () => {
   if (isFinished) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} />
+        <TitlePrimary title={completeRaffle.name} activeTag={'Finished'} />
         <RaffleContent raffle={completeRaffle} />
 
         <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />

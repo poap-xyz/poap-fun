@@ -14,7 +14,7 @@ def send_raffle_created_email(raffle):
     data = {
         'raffle_id': raffle.id,
         'raffle_token': raffle._token,
-        'raffle_draw_datetime': f'{raffle.draw_datetime.strftime("%d-%b-%Y %H:%M")} UTC'
+        'raffle_draw_datetime': f'{raffle.draw_datetime.strftime("%d-%b-%Y %H:%M")} UTC' if raffle.draw_datetime else 'TBD'
     }
     service.set_data(data)
     service.send_email()

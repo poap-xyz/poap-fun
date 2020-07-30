@@ -21,6 +21,7 @@ type DatePickerProps = {
   errors?: FormikErrors<FormikValues>;
   label?: string;
   futureDates?: boolean;
+  disabled?: boolean;
 };
 
 const Content = styled.div`
@@ -40,6 +41,7 @@ const DatePicker: FC<DatePickerProps> = ({
   touched,
   values,
   futureDates = false,
+  disabled = false,
 }) => {
   const handleDateChange = (date: moment.Moment | null) => setFieldValue(name, date);
 
@@ -64,7 +66,8 @@ const DatePicker: FC<DatePickerProps> = ({
           name={name}
           placeholder={placeholder}
           format={format}
-          value={values[name] ? values[name] : undefined}
+          value={values[name] && !disabled ? values[name] : undefined}
+          disabled={disabled}
           onChange={handleDateChange}
         />
       </Content>

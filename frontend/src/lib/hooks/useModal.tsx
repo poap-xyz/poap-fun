@@ -16,6 +16,7 @@ type Props = {
   width?: number;
   okButtonWidth?: number;
   okButtonText?: string;
+  alert?: boolean;
   onSuccess?: (data: object) => void;
 };
 
@@ -30,6 +31,7 @@ export const useModal = ({
   okButtonWidth = 100,
   okButtonText = 'Ok',
   onSuccess = (data: any) => {},
+  alert = false,
 }: Props) => {
   const ModalWrapper = () => {
     let footer: ReactNode[] | null = [
@@ -50,7 +52,7 @@ export const useModal = ({
         visible
         width={`${width}px`}
       >
-        {React.createElement(component, { hideModal, id, onSuccess })}
+        {React.createElement(component, { hideModal, id, onSuccess, alert })}
       </Modal>
     );
   };

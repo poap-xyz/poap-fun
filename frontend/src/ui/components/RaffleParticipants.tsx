@@ -82,7 +82,7 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
   if (participants.length === 0) {
     return (
       <Content>
-        <Title>No registered participants yet.{canJoin && ` Be the first to join!`}</Title>
+        <Title>Nobody is participating yet.{canJoin && ` Be the first to join!`}</Title>
       </Content>
     );
   }

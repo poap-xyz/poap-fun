@@ -107,7 +107,7 @@ class RaffleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Raffle
         fields = [
-            "id", "name", "description", "contact", "draw_datetime", "end_datetime",
+            "id", "name", "description", "contact", "draw_datetime", "end_datetime", "start_date_helper",
             "one_address_one_vote", "prizes", "events", "token", "results_table", "finalized"
         ]
 
@@ -115,6 +115,13 @@ class RaffleSerializer(serializers.ModelSerializer):
             'results_table': {'read_only': True},
             'finalized': {'read_only': True},
         }
+
+
+    def validate(self, validated_data):
+        if "draw_datetime" in validated_data:
+            if not validated_data["draw_datetime"] and not validated_data["start_date_helper"]:
+                raise ValidationError("Please submit a text for the start date")
+        return validated_data
 
     def create(self, validated_data):
         prizes_data = validated_data.pop("prizes")
@@ -143,6 +150,9 @@ class RaffleSerializer(serializers.ModelSerializer):
         events_data = validated_data.pop("events", None)
         if events_data:
             raise ValidationError("cannot modify events through a raffle, use the event resource")
+
+        if instance.finalized:
+            raise ValidationError("cannot edit a finalized raffle")
 
         for prize_data in prizes_data:
             Prize.objects.create(raffle=instance, **prize_data)
