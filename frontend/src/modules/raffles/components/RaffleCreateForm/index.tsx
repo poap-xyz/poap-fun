@@ -365,7 +365,7 @@ const RaffleCreateForm: FC = () => {
         </Form>
       </Card>
       <Button onClick={handleSubmitClick} type="primary" margin loading={isLoading}>
-        Submit
+        Create raffle
       </Button>
     </Container>
   );
