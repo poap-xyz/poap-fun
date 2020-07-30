@@ -52,6 +52,7 @@ const Countdown: FC<CountdownProps> = ({ datetime, finishAction }) => {
   };
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft());
   const timeLeftString = moment.utc(datetime).local().format(DATETIMEFORMAT);
+  const offset = moment().utcOffset() / 60;
 
   useEffect(() => {
     setTimeout(() => {
@@ -62,14 +63,16 @@ const Countdown: FC<CountdownProps> = ({ datetime, finishAction }) => {
   return (
     <CardWithBadges>
       <CountdownWrapper>
+        <div>Time left before raffle starts</div>
         <div className={'countdown'}>
           <CountdownBox number={timeLeft.days} unit={'Days'} />
           <CountdownBox number={timeLeft.hours} unit={'Hours'} />
           <CountdownBox number={timeLeft.minutes} unit={'Minutes'} />
           <CountdownBox number={timeLeft.seconds} unit={'Seconds'} />
         </div>
-        <div>Time left before inscription ends</div>
-        <div>{timeLeftString}</div>
+        <div>
+          {timeLeftString} (UTC {offset > 0 ? `+${offset}` : offset})
+        </div>
       </CountdownWrapper>
     </CardWithBadges>
   );

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { FiLink } from 'react-icons/fi';
 
@@ -13,6 +13,11 @@ import EventDisplay from 'ui/components/EventDisplay';
 // Lib
 import { useModal } from 'lib/hooks/useModal';
 import { isRaffleActive } from 'lib/helpers/raffles';
+
+// Assets
+import Telegram from 'assets/img/share-telegram.svg';
+import Twitter from 'assets/img/share-twitter.svg';
+import Whatsapp from 'assets/img/share-whatsapp.svg';
 
 // Types
 import { CompleteRaffle } from 'lib/types';
@@ -50,6 +55,14 @@ const Share = styled.div`
 `;
 
 const RaffleContent: FC<RaffleContentProps> = ({ raffle }) => {
+  useEffect(() => {
+    // Modal is delaying image loading
+    const imagesToBePreloaded = [Telegram, Twitter, Whatsapp];
+    imagesToBePreloaded.forEach((image) => {
+      new Image().src = image;
+    });
+  }, []);
+
   const { showModal: handleShare } = useModal({
     component: RaffleShareContent,
     closable: true,
