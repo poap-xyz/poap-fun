@@ -107,7 +107,6 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
     ...participant,
     event: eventsFilteredById[participant.event_id],
   }));
-  console.log('participantsWithEventData', participantsWithEventData);
 
   let accountTickets: ParticipantWithEvent[] = [];
   let otherTickets = participantsWithEventData;
@@ -139,8 +138,10 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
                   return (
                     <Tooltip title={each.event.name} placement="bottom">
                       <div key={each.id} className="number-container">
-                        <img src={each.event.image_url} alt={each.event.name} />
-                        <a href={etherscanLinks.poap(each.poap_id)}>#{each.poap_id.toString().padStart(5, '0')}</a>
+                        <a href={etherscanLinks.poap(each.poap_id)} target="_blank" rel="noopener noreferrer">
+                          <img src={each.event.image_url} alt={each.event.name} />
+                          <span>#{each.poap_id.toString().padStart(5, '0')}</span>
+                        </a>
                       </div>
                     </Tooltip>
                   );
@@ -156,9 +157,9 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
               return (
                 <Tooltip title={each.event.name} placement="bottom">
                   <div key={each.id} className="number-container">
-                    <img src={each.event.image_url} alt={each.event.name} />
                     <a href={etherscanLinks.poap(each.poap_id)} target="_blank" rel="noopener noreferrer">
-                      #{each.poap_id.toString().padStart(5, '0')}
+                      <img src={each.event.image_url} alt={each.event.name} />
+                      <span>#{each.poap_id.toString().padStart(5, '0')}</span>
                     </a>
                   </div>
                 </Tooltip>
