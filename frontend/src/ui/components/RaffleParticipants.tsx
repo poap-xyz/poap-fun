@@ -132,7 +132,7 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
         <div className={'participant-box'}>
           {accountTickets.length > 0 && (
             <div>
-              <div className={'box-title'}>Your number{accountTickets.length > 1 ? 's' : ''}:</div>
+              <div className={'box-title'}>Your POAP{accountTickets.length > 1 ? 's' : ''}:</div>
               <div className={'ticket-holder'}>
                 {accountTickets.map((each) => {
                   return (
@@ -146,7 +146,7 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
             </div>
           )}
           {accountTickets.length > 0 && otherTickets.length > 0 && (
-            <div className={'box-title upper'}>Other numbers:</div>
+            <div className={'box-title upper'}>Other POAP{otherTickets.length > 1 ? 's' : ''}:</div>
           )}
           <div className={'ticket-holder'}>
             {otherTickets.map((each) => {
