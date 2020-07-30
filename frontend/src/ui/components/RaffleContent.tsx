@@ -13,6 +13,7 @@ import EventDisplay from 'ui/components/EventDisplay';
 // Lib
 import { useModal } from 'lib/hooks/useModal';
 import { isRaffleActive } from 'lib/helpers/raffles';
+import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Assets
 import Telegram from 'assets/img/share-telegram.svg';
@@ -55,13 +56,8 @@ const Share = styled.div`
 `;
 
 const RaffleContent: FC<RaffleContentProps> = ({ raffle }) => {
-  useEffect(() => {
-    // Modal is delaying image loading
-    const imagesToBePreloaded = [Telegram, Twitter, Whatsapp];
-    imagesToBePreloaded.forEach((image) => {
-      new Image().src = image;
-    });
-  }, []);
+  // Lib hooks
+  const { poaps } = useStateContext();
 
   const { showModal: handleShare } = useModal({
     component: RaffleShareContent,
@@ -73,6 +69,21 @@ const RaffleContent: FC<RaffleContentProps> = ({ raffle }) => {
     id: raffle.id,
   });
 
+  // Effects
+  useEffect(() => {
+    // Modal is delaying image loading
+    const imagesToBePreloaded = [Telegram, Twitter, Whatsapp];
+    imagesToBePreloaded.forEach((image) => {
+      new Image().src = image;
+    });
+  }, []);
+
+  // Constants
+  const { prizes, events, description } = raffle;
+
+  const poapsEventsIds = poaps?.map(({ event }) => event.id) ?? [];
+  const hasAtLeastOneRaffleEventsPoap = raffle.events.some(({ id }) => poapsEventsIds.includes(id));
+
   return (
     <Content>
       <Card>
@@ -81,22 +92,24 @@ const RaffleContent: FC<RaffleContentProps> = ({ raffle }) => {
             <Share onClick={handleShare}>
               Get sharable link <FiLink />
             </Share>
-            <InputTitle>Prize{raffle.prizes.length > 1 && `s`}</InputTitle>
+            <InputTitle>Prize{prizes.length > 1 && `s`}</InputTitle>
             <div>
-              {raffle.prizes.map((prize) => (
+              {prizes.map((prize) => (
                 <PrizeRowForm order={prize.order} key={prize.order} prize={prize.name} />
               ))}
             </div>
+            a
           </div>
-          <div className={'description'} dangerouslySetInnerHTML={{ __html: raffle.description }} />
+          <div className={'description'} dangerouslySetInnerHTML={{ __html: description }} />
           <Separator />
           <div className={'poaps'}>
-            <InputTitle>Elegible POAP{raffle.events.length > 1 && `s`}</InputTitle>
-            <EventDisplay events={raffle.events} />
+            <InputTitle>Elegible POAP{events.length > 1 && `s`}</InputTitle>
+            <EventDisplay events={events} />
             {isRaffleActive(raffle) && (
               <p>
-                {!raffle.one_address_one_vote && `You need at least one, but having more means more chances!`}
-                {raffle.one_address_one_vote && `You need at least one to participate!`}
+                {hasAtLeastOneRaffleEventsPoap
+                  ? `You own elegible POAPS. Join the raffle now!`
+                  : `You don't have any of the elegible POAPs, but having more means more chances!`}
               </p>
             )}
           </div>
