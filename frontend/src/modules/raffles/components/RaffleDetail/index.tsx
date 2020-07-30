@@ -19,12 +19,14 @@ import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
 import RaffleStartModal from 'ui/components/RaffleStartModal';
 import ActionButton from 'ui/components/ActionButton';
+import { Button } from 'ui/styled/antd/Button';
 
 // Constants
 import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Hooks
+import { useSounds } from 'lib/hooks/useSounds';
 import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffle } from 'lib/hooks/useRaffle';
 import { useModal } from 'lib/hooks/useModal';
@@ -177,6 +179,16 @@ const GasLimitValue = styled.p`
   margin-bottom: 0;
 `;
 
+const ContactContainer = styled.div`
+  margin: 24px auto 24px auto;
+  display: flex;
+  justify-content: center;
+`;
+
+const ContactButton = styled(Button)`
+  width: 300px;
+`;
+
 // Utils
 const lastBlockTimeClass = (time: number) => {
   if (time >= 0 && time < 15) return 'text-success';
@@ -201,9 +213,10 @@ type EthStatsProps = {
       | undefined,
   ) => Promise<BlockData[]>;
   shouldRefetchResults: boolean;
+  playSound: () => void;
 };
 
-const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks }: EthStatsProps) => {
+const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks, playSound }: EthStatsProps) => {
   const [gasLimit, setGasLimit] = useState<any>(undefined);
   const [bestBlock, setBestBlock] = useState<any>(undefined);
   const [lastBlockTime, setLastBlockTime] = useState<number>(0);
@@ -243,12 +256,15 @@ const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks }: EthSt
             const bestBlock = last(parsedEvent?.data?.height);
 
             if (bestBlock !== lastBlock) {
+              playSound();
               setLastBlockTime(0);
-              if (shouldRefetchResults)
+
+              if (shouldRefetchResults) {
                 setTimeout(() => {
                   refetchResults();
                   refetchBlocks();
                 }, 6000);
+              }
 
               lastBlock = Number(bestBlock);
             }
@@ -302,6 +318,25 @@ const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks }: EthSt
   );
 };
 
+const ContactModal = ({ id }: { id: number }) => {
+  const { data: raffle } = useRaffle({ id });
+
+  return (
+    <>
+      <p>If you have won, please contact the raffle organizer at:</p>
+      <p>
+        <a href={`mailto:${raffle?.contact}`} target="_blank" rel="noopener noreferrer">
+          {raffle?.contact}
+        </a>
+      </p>
+      <p>If you want to send a proof that you're the address owner, you can sign a mesagge on MyCrypto</p>
+      <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank" rel="noopener noreferrer">
+        Sign message
+      </a>
+    </>
+  );
+};
+
 const RaffleDetail: FC = () => {
   // React hooks
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
@@ -310,6 +345,7 @@ const RaffleDetail: FC = () => {
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
 
+  const [lastResultsLength, setLastResultsLength] = useState(-1);
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
   const { rafflesInfo, isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
 
@@ -332,6 +368,9 @@ const RaffleDetail: FC = () => {
   });
 
   // Lib hooks
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const { playBeganRaffle, playBlockPassed, playNewWinner } = useSounds({ soundEnabled });
+
   const { showModal: handleEdit } = useModal({
     component: RaffleEditModal,
     closable: true,
@@ -356,9 +395,19 @@ const RaffleDetail: FC = () => {
     id: parseInt(id, 10),
     alert: !participantsData || participantsData?.length === 0,
     onSuccess: (data: any) => {
-      console.log(data);
       refetchRaffle();
     },
+  });
+  const { showModal: handleContactModal } = useModal({
+    component: ContactModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    title: 'Contact organizer',
+    id: parseInt(id, 10),
   });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
 
@@ -382,6 +431,15 @@ const RaffleDetail: FC = () => {
       setCanJoinRaffle(false);
     }
   }, [poaps, raffle]); //eslint-disable-line
+
+  useEffect(() => {
+    if (!results) return;
+
+    if (results.entries.length !== lastResultsLength) {
+      playNewWinner();
+      setLastResultsLength((prevLastResultsLength) => prevLastResultsLength + 1);
+    }
+  }, [setLastResultsLength, results]); //eslint-disable-line
 
   const isAccountParticipating = () => {
     if (account && participantsData && participantsData.length > 0) {
@@ -444,6 +502,10 @@ const RaffleDetail: FC = () => {
     refetchRaffle();
   }, [isOngoing, participantsData, results, refetchRaffle]);
 
+  useEffect(() => {
+    if (!isActive && isOngoing) playBeganRaffle();
+  }, [isActive]); //eslint-disable-line
+
   if (!completeRaffle) {
     return (
       <Container sidePadding thinWidth>
@@ -455,7 +517,13 @@ const RaffleDetail: FC = () => {
   if (isActive) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} activeTag={'Active'} editAction={handleEdit} />
+        <TitlePrimary
+          soundEnabled={soundEnabled}
+          handleSoundEnabled={setSoundEnabled}
+          title={completeRaffle.name}
+          activeTag={'Active'}
+          editAction={handleEdit}
+        />
         {completeRaffle.draw_datetime ? (
           <Countdown
             datetime={completeRaffle.draw_datetime}
@@ -487,8 +555,9 @@ const RaffleDetail: FC = () => {
   if (isOngoing) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} />
+        <TitlePrimary soundEnabled={soundEnabled} handleSoundEnabled={setSoundEnabled} title={completeRaffle.name} />
         <EthStats
+          playSound={playBlockPassed}
           refetchResults={refetchResults}
           refetchBlocks={refetchBlocks}
           shouldRefetchResults={Boolean(raffle?.results_table)}
@@ -512,13 +581,24 @@ const RaffleDetail: FC = () => {
   if (isFinished) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary title={completeRaffle.name} activeTag={'Finished'} />
+        <TitlePrimary
+          soundEnabled={soundEnabled}
+          handleSoundEnabled={setSoundEnabled}
+          title={completeRaffle.name}
+          activeTag={'Finished'}
+        />
         <RaffleContent raffle={completeRaffle} />
 
         <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />
-        <BadgeParty />
 
+        <ContactContainer>
+          <ContactButton type="primary" margin onClick={handleContactModal}>
+            Contact Event Organizer
+          </ContactButton>
+        </ContactContainer>
         <Confetti run={shouldTriggerConfetti} width={confettiWidth} height={confettiHeight} />
+
+        <BadgeParty />
       </Container>
     );
   }

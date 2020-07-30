@@ -2,6 +2,9 @@ import React, { FC } from 'react';
 import { Tooltip } from 'antd';
 import styled from '@emotion/styled';
 
+// Lib
+import { useStateContext } from 'lib/hooks/useCustomState';
+
 // Types
 import { PoapEvent } from 'lib/types';
 type EventDisplayProps = {
@@ -26,17 +29,23 @@ const PoapContainer = styled.div`
 `;
 
 const EventDisplay: FC<EventDisplayProps> = ({ events }) => {
+  // Lib hooks
+  const { poaps } = useStateContext();
+
+  // Constants
+  const poapsEventsIds = poaps?.map(({ event }) => event.id) ?? [];
+
   return (
     <PoapContainer>
-      {events.map((event) => {
-        return (
+      {events
+        .sort((event) => (poapsEventsIds.includes(event.id) ? -1 : 1))
+        .map((event) => (
           <div key={event.id}>
             <Tooltip title={event.name}>
               <img src={event.image_url} alt={event.name} />
             </Tooltip>
           </div>
-        );
-      })}
+        ))}
     </PoapContainer>
   );
 };

@@ -14,6 +14,7 @@ import BackgroundImage from 'assets/img/background.jpg';
 const HeroWrap = styled.div`
   width: 100%;
   padding-top: 25px;
+  position: relative;
 
   .title {
     text-align: center;
