@@ -6,10 +6,14 @@ import { Spin } from 'antd';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Hooks
+import { useEvents } from 'lib/hooks/useEvents';
 import { useStateContext } from 'lib/hooks/useCustomState';
 
+// Helpers
+import { etherscanLinks } from 'lib/helpers/etherscan';
+
 // Types
-import { Participant } from 'lib/types';
+import { Participant, PoapEvent } from 'lib/types';
 
 type RaffleParticipantsProps = {
   participants?: Participant[];
@@ -29,9 +33,24 @@ const Content = styled.div`
     border-radius: 12px;
     padding: 25px;
 
+    .number-container {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+
+      img {
+        width: 60px;
+        height: 60px;
+        border-radius: 20px;
+        margin-bottom: 6px;
+      }
+    }
+
     .box-title {
       font-family: var(--alt-font);
       font-size: 16px;
+      margin-bottom: 4px;
+
       &.upper {
         padding-top: 20px;
       }
@@ -66,20 +85,39 @@ const Title = styled.h3`
   padding: 20px 0;
 `;
 
+type ParticipantWithEvent = Participant & { event: PoapEvent };
+
 const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoading, canJoin }) => {
+  // Custom hooks
   const { isConnected, account } = useStateContext();
 
-  if (!participants) return <div />;
+  // Query hooks
+  const { data: events } = useEvents();
 
-  let accountTickets: Participant[] = [];
-  let otherTickets: Participant[] = participants;
+  if (!participants || !events) return <div />;
+
+  // constants
+  const participantsEventsIds = participants.map(({ event_id: eventId }) => eventId);
+
+  const eventsFilteredById = events
+    .filter(({ id }) => participantsEventsIds.includes(String(id)))
+    .reduce((acc, event) => ({ ...acc, [event.id]: event }), {});
+
+  const participantsWithEventData: ParticipantWithEvent[] = participants.map((participant) => ({
+    ...participant,
+    event: eventsFilteredById[participant.event_id],
+  }));
+
+  let accountTickets: ParticipantWithEvent[] = [];
+  let otherTickets = participantsWithEventData;
+
   if (isConnected && account) {
-    accountTickets = participants.filter((each) => each.address.toLowerCase() === account.toLowerCase());
-    otherTickets = participants.filter((each) => each.address.toLowerCase() !== account.toLowerCase());
+    accountTickets = participantsWithEventData.filter((each) => each.address.toLowerCase() === account.toLowerCase());
+    otherTickets = participantsWithEventData.filter((each) => each.address.toLowerCase() !== account.toLowerCase());
   }
 
   // Empty State
-  if (participants.length === 0) {
+  if (participantsWithEventData.length === 0) {
     return (
       <Content>
         <Title>Nobody is participating yet.{canJoin && ` Be the first to join!`}</Title>
@@ -98,8 +136,9 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
               <div className={'ticket-holder'}>
                 {accountTickets.map((each) => {
                   return (
-                    <div key={each.id}>
-                      <b>#{each.poap_id.toString().padStart(5, '0')}</b>
+                    <div key={each.id} className="number-container">
+                      <img src={each.event.image_url} alt={each.event.name} />
+                      <a href={etherscanLinks.poap(each.poap_id)}>#{each.poap_id.toString().padStart(5, '0')}</a>
                     </div>
                   );
                 })}
@@ -111,7 +150,14 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
           )}
           <div className={'ticket-holder'}>
             {otherTickets.map((each) => {
-              return <div key={each.id}>#{each.poap_id.toString().padStart(5, '0')}</div>;
+              return (
+                <div key={each.id} className="number-container">
+                  <img src={each.event.image_url} alt={each.event.name} />
+                  <a href={etherscanLinks.poap(each.poap_id)} target="_blank" rel="noopener noreferrer">
+                    #{each.poap_id.toString().padStart(5, '0')}
+                  </a>
+                </div>
+              );
             })}
           </div>
         </div>
