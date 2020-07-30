@@ -151,6 +151,9 @@ class RaffleSerializer(serializers.ModelSerializer):
         if events_data:
             raise ValidationError("cannot modify events through a raffle, use the event resource")
 
+        if instance.finalized:
+            raise ValidationError("cannot edit a finalized raffle")
+
         for prize_data in prizes_data:
             Prize.objects.create(raffle=instance, **prize_data)
         return super(RaffleSerializer, self).update(instance, validated_data)

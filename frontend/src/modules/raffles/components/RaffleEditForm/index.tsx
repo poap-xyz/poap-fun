@@ -141,7 +141,7 @@ const RaffleEditForm: FC = () => {
     contact: raffle.contact,
     weightedVote: !raffle.one_address_one_vote,
     undefinedDrawDateTime: !localDrawDateTime,
-    startDateHelper: raffle.start_date_helper,
+    startDateHelper: raffle.start_date_helper || '',
     raffleDate: localDrawDateTime,
     raffleTime: localDrawDateTime
       ? moment(new Date()).hours(localDrawDateTime.hours()).minutes(localDrawDateTime.minutes())
