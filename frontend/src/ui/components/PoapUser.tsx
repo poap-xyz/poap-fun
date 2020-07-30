@@ -5,6 +5,9 @@ import Blockies from 'react-blockies';
 // Hooks
 import { useStateContext } from 'lib/hooks/useCustomState';
 
+// Constants
+import { BREAKPOINTS } from 'lib/constants/theme';
+
 // Styled Components
 const UserWrapper = styled.div`
   cursor: pointer;
@@ -29,6 +32,19 @@ const UserWrapper = styled.div`
     font-family: var(--alt-font);
     font-size: 16px;
     padding: 0 10px 0 5px;
+
+    .short-address {
+      display: none;
+    }
+
+    @media (max-width: ${BREAKPOINTS.sm}) {
+      .full-address {
+        display: none;
+      }
+      .short-address {
+        display: flex;
+      }
+    }
   }
 
   .poaps {
@@ -89,7 +105,10 @@ const PoapUser: FC = () => {
       <div className={'blockie'}>
         <Blockies seed={account} size={6} />
       </div>
-      <div className={'address'}>{shortAddress(account)}</div>
+      <div className={'address'}>
+        <span className={'full-address'}>{account}</span>
+        <span className={'short-address'}>{shortAddress(account)}</span>
+      </div>
       {poaps && poaps.length > 0 && (
         <div className={'poaps'}>
           {poaps.slice(0, 3).map((poap) => {
