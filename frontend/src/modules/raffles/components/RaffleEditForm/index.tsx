@@ -294,10 +294,9 @@ const RaffleEditForm: FC = () => {
                   errors={errors}
                   handleChange={handleChange}
                   name="prize"
-                  placeholder="Add any amount of prizes you like to give away!"
+                  placeholder="Add prizes you'd like to raffle!"
                   touched={touched}
                   values={values}
-                  helpText={'Add any amount of prizes you like to give away!'}
                 />
                 <Button onClick={addPrize} type="primary" disabled={values.prize.length === 0}>
                   Add
@@ -328,8 +327,7 @@ const RaffleEditForm: FC = () => {
                 handleChange={handleChange}
                 label="Contact"
                 name="contact"
-                placeholder="Enter your email"
-                helpText="Please, enter your email so the winners can contact you"
+                placeholder="Enter your email so the winners can get in touch"
                 touched={touched}
                 values={values}
               />
