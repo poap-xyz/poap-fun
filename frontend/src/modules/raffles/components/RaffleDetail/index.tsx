@@ -508,8 +508,8 @@ const RaffleDetail: FC = () => {
           },
         },
       ),
-    [],
-  ); //eslint-disable-line
+    [], //eslint-disable-line
+  );
 
   useEffect(() => {
     raffleStatus.isOngoing = isOngoing;
