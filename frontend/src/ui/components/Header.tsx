@@ -18,6 +18,7 @@ import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Helpers
 import { endpoints } from 'lib/api';
+import { etherscanLinks } from 'lib/helpers/etherscan';
 import { isMobileOrTablet } from 'lib/helpers/utils';
 
 // Types
@@ -114,7 +115,7 @@ const Header: FC = () => {
           <>
             {poaps.map((poap: UserPoap) => (
               <a
-                href={endpoints.poap.token(poap.tokenId)}
+                href={etherscanLinks.poap(poap.tokenId)}
                 target={'_blank'}
                 key={poap.tokenId}
                 rel="noopener noreferrer"

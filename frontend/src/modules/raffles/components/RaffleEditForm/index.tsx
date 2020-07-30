@@ -336,7 +336,7 @@ const RaffleEditForm: FC = () => {
         </Form>
       </Card>
       <Button onClick={handleSubmitClick} type="primary" margin loading={isLoading}>
-        Submit
+        Update raffle
       </Button>
     </Container>
   );
