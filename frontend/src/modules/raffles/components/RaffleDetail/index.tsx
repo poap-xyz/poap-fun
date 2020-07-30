@@ -17,6 +17,7 @@ import RaffleBlocks from 'ui/components/RaffleBlocks';
 import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
+import RaffleStartModal from 'ui/components/RaffleStartModal';
 import ActionButton from 'ui/components/ActionButton';
 
 // Constants
@@ -310,7 +311,7 @@ const RaffleDetail: FC = () => {
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
 
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
-  const { isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
+  const { rafflesInfo, isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
 
   // Router hooks
   const { id } = useParams();
@@ -342,6 +343,21 @@ const RaffleDetail: FC = () => {
     id: parseInt(id, 10),
     onSuccess: (data: any) => {
       if (data?.id) push(generatePath(ROUTES.raffleEdit, { id: data.id }));
+    },
+  });
+  const { showModal: handleCounterAction } = useModal({
+    component: RaffleStartModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    id: parseInt(id, 10),
+    alert: !participantsData || participantsData?.length === 0,
+    onSuccess: (data: any) => {
+      console.log(data);
+      refetchRaffle();
     },
   });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
@@ -441,7 +457,11 @@ const RaffleDetail: FC = () => {
       <Container sidePadding thinWidth>
         <TitlePrimary title={completeRaffle.name} activeTag={'Active'} editAction={handleEdit} />
         {completeRaffle.draw_datetime ? (
-          <Countdown datetime={completeRaffle.draw_datetime} finishAction={refetchRaffle} />
+          <Countdown
+            datetime={completeRaffle.draw_datetime}
+            finishAction={refetchRaffle}
+            action={rafflesInfo[completeRaffle.id]?.token ? handleCounterAction : undefined}
+          />
         ) : (
           <RaffleAnnouncement message={completeRaffle.start_date_helper} />
         )}

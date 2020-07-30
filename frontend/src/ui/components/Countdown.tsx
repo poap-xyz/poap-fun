@@ -5,6 +5,7 @@ import moment from 'moment';
 // Components
 import CardWithBadges from 'ui/components/CardWithBadges';
 import CountdownBox from 'ui/components/CountdownBox';
+import { Button } from 'ui/styled/antd/Button';
 
 // Constants
 import { DATETIMEFORMAT } from 'lib/constants/theme';
@@ -13,6 +14,7 @@ import { DATETIMEFORMAT } from 'lib/constants/theme';
 type CountdownProps = {
   datetime: string;
   finishAction: () => void;
+  action?: () => void;
 };
 type TimeLeft = {
   days: number;
@@ -34,7 +36,16 @@ const CountdownWrapper = styled.div`
   }
 `;
 
-const Countdown: FC<CountdownProps> = ({ datetime, finishAction }) => {
+const ButtonWrapper = styled.div`
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  button {
+    width: 200px;
+  }
+`;
+
+const Countdown: FC<CountdownProps> = ({ datetime, finishAction, action }) => {
   const calculateTimeLeft = (): TimeLeft => {
     const difference = +moment.utc(datetime).toDate() - +moment.utc(new Date()).toDate();
     let timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -73,6 +84,13 @@ const Countdown: FC<CountdownProps> = ({ datetime, finishAction }) => {
         <div>
           {timeLeftString} (UTC {offset > 0 ? `+${offset}` : offset})
         </div>
+        {action && (
+          <ButtonWrapper>
+            <Button onClick={action} type={'primary'}>
+              Start raffle now!
+            </Button>
+          </ButtonWrapper>
+        )}
       </CountdownWrapper>
     </CardWithBadges>
   );
