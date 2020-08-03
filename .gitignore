@@ -44,3 +44,4 @@ nginx/sites-enabled/nginx.conf
 
 ## coverage db
 backend/.coverage
+backups/

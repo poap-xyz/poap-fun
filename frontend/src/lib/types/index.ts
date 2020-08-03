@@ -125,4 +125,5 @@ export type BlockData = {
   order: number;
   block_number: number;
   gas_limit: number;
+  timestamp: number;
 };
