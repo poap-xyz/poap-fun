@@ -64,11 +64,7 @@ const WinnerText = styled.span`
 const PrizeInfo = styled.div`
   color: var(--secondary-color);
   border-bottom: 1px dotted var(--border-color);
-`;
-
-const BigNumber = styled.span`
-  font-size: 28px;
-  line-height: 32px;
+  margin: 5px 0;
 `;
 
 // Utils
@@ -95,7 +91,7 @@ const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading, accountAddr
               return (
                 <div key={id}>
                   <WinnerText isWinner={participant.address === accountAddress}>
-                    {prize ? <BigNumber>{order + 1}º</BigNumber> : <>{order + 1}º</>} - POAP{' '}
+                    {order + 1}º - POAP{' '}
                     <a href={etherscanLinks.poap(participant.poap_id)} target={'_blank'} rel="noopener noreferrer">
                       #{participant.poap_id.toString().padStart(5, '0')}
                     </a>{' '}
