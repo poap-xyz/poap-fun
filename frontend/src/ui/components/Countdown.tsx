@@ -80,7 +80,7 @@ const Countdown: FC<CountdownProps> = ({ datetime, finishAction, action }) => {
       return () => clearInterval(interval);
     }
     return;
-  }, [calculateTimeLeft, finishAction, finished]);
+  }, [calculateTimeLeft, finishAction, finished]); //eslint-disable-line
 
   if (!timeLeft) return <div />;
 
