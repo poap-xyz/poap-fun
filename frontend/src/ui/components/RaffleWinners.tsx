@@ -5,12 +5,16 @@ import { Spin } from 'antd';
 // Constants
 import { BREAKPOINTS } from 'lib/constants/theme';
 
+// Helpers
+import { etherscanLinks } from 'lib/helpers/etherscan';
+
 // Types
-import { ResultsTable } from 'lib/types';
+import { ResultsTable, Prize } from 'lib/types';
 
 type RaffleWinnersProps = {
   isLoading: boolean;
   winners?: ResultsTable;
+  prizes: Prize[];
   accountAddress: string;
 };
 
@@ -57,10 +61,20 @@ const WinnerText = styled.span`
   font-weight: ${({ isWinner }: { isWinner?: boolean }) => (isWinner ? 700 : 400)};
 `;
 
+const PrizeInfo = styled.div`
+  color: var(--secondary-color);
+  border-bottom: 1px dotted var(--border-color);
+`;
+
+const BigNumber = styled.span`
+  font-size: 28px;
+  line-height: 32px;
+`;
+
 // Utils
 const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
-const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading, accountAddress }) => {
+const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading, accountAddress, prizes }) => {
   if (!winners || winners?.entries?.length === 0) {
     return (
       <Content>
@@ -72,16 +86,24 @@ const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading, accountAddr
   return (
     <Spin spinning={isLoading} tip="Loading winners">
       <Content>
-        <Title>Winners result's table</Title>
+        <Title>Leaderboard</Title>
         <div className={'participant-box'}>
           {winners?.entries
             ?.sort((b: any, a: any) => b.order - a.order)
             ?.map(({ id, order, participant }: any) => {
+              let prize = prizes.find((prize) => prize.order === order + 1);
               return (
                 <div key={id}>
                   <WinnerText isWinner={participant.address === accountAddress}>
-                    {order + 1}º - POAP #{participant.poap_id.toString().padStart(5, '0')} -{' '}
-                    {shortAddress(participant.address)}
+                    {prize ? <BigNumber>{order + 1}º</BigNumber> : <>{order + 1}º</>} - POAP{' '}
+                    <a href={etherscanLinks.poap(participant.poap_id)} target={'_blank'} rel="noopener noreferrer">
+                      #{participant.poap_id.toString().padStart(5, '0')}
+                    </a>{' '}
+                    -{' '}
+                    <a href={etherscanLinks.address(participant.address)} target={'_blank'} rel="noopener noreferrer">
+                      {participant.ens_name ? participant.ens_name : shortAddress(participant.address)}
+                    </a>
+                    {prize && <PrizeInfo>🎖{prize.name}</PrizeInfo>}
                   </WinnerText>
                 </div>
               );

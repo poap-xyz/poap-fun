@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState, useMemo } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { generatePath } from 'react-router';
 import styled from '@emotion/styled';
@@ -38,7 +38,7 @@ import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Helpers
 import { mergeRaffleEvent } from 'lib/helpers/api';
-import { isRaffleActive, isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
+import { isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
 
 // Types
 import { CompleteRaffle, JoinRaffleValues, Participant } from 'lib/types';
@@ -82,6 +82,7 @@ const STATUS = {
 const RaffleDetail: FC = () => {
   // React hooks
   const [raffleStatus, setRaffleStatus] = useState<string>('');
+  const [raffleInitialStatus, setInitialRaffleStatus] = useState<string>('');
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
 
@@ -206,6 +207,14 @@ const RaffleDetail: FC = () => {
     localStorage.setItem('sound', soundEnabled.toString());
   }, [soundEnabled]); //eslint-disable-line
 
+  useEffect(() => {
+    if (raffleInitialStatus === '') {
+      setInitialRaffleStatus(raffleStatus);
+    } else if (raffleStatus === STATUS.FINISHED) {
+      setShouldTriggerConfetti(true);
+    }
+  }, [raffleStatus]); //eslint-disable-line
+
   const calculateRaffleStatus = (raffle: CompleteRaffle) => {
     if (isRaffleFinished(raffle)) {
       setRaffleStatus(STATUS.FINISHED);
@@ -281,7 +290,6 @@ const RaffleDetail: FC = () => {
   // Effects
   useEffect(() => {
     if (!results || !participantsData) return;
-    setShouldTriggerConfetti(results?.entries?.length === participantsData.length);
     refetchRaffle();
   }, [participantsData, results, refetchRaffle]);
 
@@ -352,7 +360,12 @@ const RaffleDetail: FC = () => {
           canJoin={canJoinRaffle}
         />
 
-        <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />
+        <RaffleWinners
+          accountAddress={account}
+          winners={results}
+          isLoading={isLoadingResults}
+          prizes={completeRaffle.prizes}
+        />
 
         <RaffleBlocks isLoading={isLoadingBlocks} blocks={blocksData} />
 
@@ -367,7 +380,12 @@ const RaffleDetail: FC = () => {
         <TitlePrimary title={completeRaffle.name} activeTag={'Finished'} />
         <RaffleContent raffle={completeRaffle} />
 
-        <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />
+        <RaffleWinners
+          accountAddress={account}
+          winners={results}
+          isLoading={isLoadingResults}
+          prizes={completeRaffle.prizes}
+        />
 
         <ContactContainer>
           <ContactButton type="primary" margin onClick={handleContactModal}>

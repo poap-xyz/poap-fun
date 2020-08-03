@@ -96,6 +96,7 @@ export type CreateRaffleValues = {
 export type Participant = {
   id: number;
   address: string;
+  ens_name: string | null;
   poap_id: number;
   event_id: string;
 };

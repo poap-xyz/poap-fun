@@ -46,7 +46,7 @@ const ButtonWrapper = styled.div`
 `;
 
 const Countdown: FC<CountdownProps> = ({ datetime, finishAction, action }) => {
-  const calculateTimeLeft = useCallback((): TimeLeft | null => {
+  const calculateTimeLeft = (): TimeLeft | null => {
     const difference = +moment.utc(datetime).toDate() - +moment.utc(new Date()).toDate();
     let timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
     if (difference > 0) {
@@ -60,7 +60,7 @@ const Countdown: FC<CountdownProps> = ({ datetime, finishAction, action }) => {
       return null;
     }
     return timeLeft;
-  });
+  }; //eslint-disable-line
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(calculateTimeLeft());
   const [finished, setFinished] = useState<boolean>(false);
   const timeLeftString = moment.utc(datetime).local().format(DATETIMEFORMAT);
@@ -80,7 +80,7 @@ const Countdown: FC<CountdownProps> = ({ datetime, finishAction, action }) => {
       return () => clearInterval(interval);
     }
     return;
-  }, [calculateTimeLeft, finishAction, finished]); //eslint-disable-line
+  }, [finishAction, finished]); //eslint-disable-line
 
   if (!timeLeft) return <div />;
 
