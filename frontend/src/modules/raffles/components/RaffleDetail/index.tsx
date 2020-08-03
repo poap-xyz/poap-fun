@@ -186,7 +186,7 @@ const RaffleDetail: FC = () => {
   useEffect(() => {
     if (!results) return;
 
-    if (results.entries.length !== lastResultsLength) {
+    if (results.entries.length !== lastResultsLength && raffleStatus === STATUS.ONGOING) {
       setLastResultsLength((prevLastResultsLength) => prevLastResultsLength + 1);
       playNewWinner();
     }
