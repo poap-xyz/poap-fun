@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import moment from 'moment';
 
 // Constants
 import { BREAKPOINTS } from 'lib/constants/theme';
@@ -169,6 +168,7 @@ const EthStats: FC<EthStatsProps> = ({ raffle, onBlockAction }) => {
     if (blocksData && blocksData.length > 0) {
       const lastBlock = blocksData[0].block_number;
       if (bestBlock !== lastBlock) {
+        // For real time diff, use line below, but means never starting from zero
         // const timeSinceLastBlock = moment().diff(moment(blocksData[0].timestamp * 1000), 'seconds');
         const timeSinceLastBlock = 0;
         setLastBlockTime(timeSinceLastBlock);

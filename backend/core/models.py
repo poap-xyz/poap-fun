@@ -142,6 +142,8 @@ class Raffle(TimeStampedModel):
                 task.enabled = False
                 task.save()
 
+        ResultsTable.objects.get_or_create(raffle=self)
+
     def __str__(self):
         return self.name
 

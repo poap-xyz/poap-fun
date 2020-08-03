@@ -46,7 +46,7 @@ const ButtonWrapper = styled.div`
 `;
 
 const Countdown: FC<CountdownProps> = ({ datetime, finishAction, action }) => {
-  const calculateTimeLeft = (): TimeLeft => {
+  const calculateTimeLeft = useCallback((): TimeLeft | null => {
     const difference = +moment.utc(datetime).toDate() - +moment.utc(new Date()).toDate();
     let timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
     if (difference > 0) {
@@ -57,19 +57,32 @@ const Countdown: FC<CountdownProps> = ({ datetime, finishAction, action }) => {
         seconds: Math.floor((difference / 1000) % 60),
       };
     } else {
-      finishAction();
+      return null;
     }
     return timeLeft;
-  };
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft());
+  });
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(calculateTimeLeft());
+  const [finished, setFinished] = useState<boolean>(false);
   const timeLeftString = moment.utc(datetime).local().format(DATETIMEFORMAT);
   const offset = moment().utcOffset() / 60;
 
   useEffect(() => {
-    setTimeout(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-  });
+    if (!finished) {
+      const interval = setInterval(() => {
+        const _timeLeft = calculateTimeLeft();
+        if (_timeLeft) {
+          setTimeLeft(_timeLeft);
+        } else {
+          finishAction();
+          setFinished(true);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+    return;
+  }, [calculateTimeLeft, finishAction, finished]);
+
+  if (!timeLeft) return <div />;
 
   return (
     <CardWithBadges>

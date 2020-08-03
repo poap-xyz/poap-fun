@@ -42,6 +42,7 @@ import { isRaffleActive, isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/r
 
 // Types
 import { CompleteRaffle, JoinRaffleValues, Participant } from 'lib/types';
+import { safeGetItem } from '../../../../lib/helpers/localStorage';
 
 const ContactContainer = styled.div`
   margin: 24px auto 24px auto;
@@ -72,14 +73,22 @@ const ContactModal = ({ id }: { id: number }) => {
   );
 };
 
+const STATUS = {
+  ACTIVE: 'active',
+  ONGOING: 'ongoing',
+  FINISHED: 'finished',
+};
+
 const RaffleDetail: FC = () => {
   // React hooks
+  const [raffleStatus, setRaffleStatus] = useState<string>('');
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
 
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
 
+  const [pollingEnabled, SetPollingEnabled] = useState<boolean>(false);
   const [lastResultsLength, setLastResultsLength] = useState(-1);
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
   const { rafflesInfo, isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
@@ -103,7 +112,7 @@ const RaffleDetail: FC = () => {
   });
 
   // Lib hooks
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(safeGetItem('sound', 'false') === true);
   const { playBeganRaffle, playBlockPassed, playNewWinner } = useSounds({ soundEnabled });
 
   const { showModal: handleEdit } = useModal({
@@ -150,8 +159,14 @@ const RaffleDetail: FC = () => {
   useEffect(() => {
     if (!events || !raffle) return;
     let completeRaffles = mergeRaffleEvent([raffle], events);
-    if (completeRaffles.length > 0) setRaffle(completeRaffles[0]);
+    if (completeRaffles.length > 0) {
+      setRaffle(completeRaffles[0]);
+    }
   }, [raffle, events]); //eslint-disable-line
+
+  useEffect(() => {
+    if (completeRaffle) calculateRaffleStatus(completeRaffle);
+  }, [completeRaffle]); //eslint-disable-line
 
   useEffect(() => {
     if (isConnected && isAccountParticipating()) {
@@ -171,10 +186,35 @@ const RaffleDetail: FC = () => {
     if (!results) return;
 
     if (results.entries.length !== lastResultsLength) {
-      playNewWinner();
       setLastResultsLength((prevLastResultsLength) => prevLastResultsLength + 1);
+      playNewWinner();
     }
   }, [setLastResultsLength, results]); //eslint-disable-line
+
+  useEffect(() => {
+    if (raffleStatus === STATUS.ONGOING) {
+      const interval = setInterval(() => {
+        refetchBlocks();
+        if (completeRaffle?.results_table) refetchResults();
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+    return;
+  }, [pollingEnabled]); //eslint-disable-line
+
+  useEffect(() => {
+    localStorage.setItem('sound', soundEnabled.toString());
+  }, [soundEnabled]); //eslint-disable-line
+
+  const calculateRaffleStatus = (raffle: CompleteRaffle) => {
+    if (isRaffleFinished(raffle)) {
+      setRaffleStatus(STATUS.FINISHED);
+    } else if (isRaffleOnGoing(raffle)) {
+      setRaffleStatus(STATUS.ONGOING);
+    } else {
+      setRaffleStatus(STATUS.ACTIVE);
+    }
+  };
 
   const isAccountParticipating = () => {
     if (account && participantsData && participantsData.length > 0) {
@@ -218,61 +258,32 @@ const RaffleDetail: FC = () => {
     }
   };
 
-  const onNewBlock = () => {
-    if (soundEnabled) playBlockPassed();
-
+  const onCountdownEnd = async () => {
+    playBeganRaffle();
     setTimeout(() => {
-      if (raffle?.results_table) refetchResults();
-      refetchBlocks();
-    }, 6000);
+      if (completeRaffle) calculateRaffleStatus(completeRaffle);
+    }, 3000);
+  };
+
+  const onNewBlock = () => {
+    playBlockPassed();
+    if (!pollingEnabled) SetPollingEnabled(true);
   };
 
   // Constants
-  const isActive: boolean = completeRaffle ? isRaffleActive(completeRaffle) : false;
-  const isOngoing: boolean = completeRaffle ? isRaffleOnGoing(completeRaffle) : false;
-  const isFinished: boolean = completeRaffle ? isRaffleFinished(completeRaffle) : false;
-
-  const raffleStatus = useMemo(
-    () =>
-      new Proxy(
-        { isActive, isOngoing },
-        {
-          set: function (target, key, value) {
-            const shouldTriggerActionFromIsActive =
-              target['isActive'] === false && key === 'isOngoing' && value === true;
-            const shouldTriggerActionFromIsOngoing =
-              target['isOngoing'] === false && key === 'isActive' && value === true;
-
-            if (shouldTriggerActionFromIsActive || shouldTriggerActionFromIsOngoing) {
-              playBeganRaffle();
-            }
-
-            target[key] = value;
-            return true;
-          },
-        },
-      ),
-    [], //eslint-disable-line
-  );
-
-  useEffect(() => {
-    raffleStatus.isOngoing = isOngoing;
-    raffleStatus.isActive = isActive;
-  }, [isActive, isOngoing]); //eslint-disable-line
-
-  const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.address) ?? [];
+  const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.id) ?? [];
   const activeParticipants: Participant[] =
-    participantsData?.filter((participant: any) => !resultParticipantsAddress.includes(participant.address)) ?? [];
+    participantsData?.filter((participant: any) => !resultParticipantsAddress.includes(participant.id)) ?? [];
 
   const confettiWidth = (document.querySelector('#root') as HTMLElement)?.offsetWidth || 300;
   const confettiHeight = (document.querySelector('#root') as HTMLElement)?.offsetHeight || 200;
 
   // Effects
   useEffect(() => {
-    if (!isOngoing || !results || !participantsData) return;
+    if (!results || !participantsData) return;
     setShouldTriggerConfetti(results?.entries?.length === participantsData.length);
     refetchRaffle();
-  }, [isOngoing, participantsData, results, refetchRaffle]);
+  }, [participantsData, results, refetchRaffle]);
 
   const SoundComponent = (
     <div className="sound-icons">
@@ -292,7 +303,7 @@ const RaffleDetail: FC = () => {
     );
   }
 
-  if (isActive) {
+  if (raffleStatus === STATUS.ACTIVE) {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary
@@ -304,7 +315,7 @@ const RaffleDetail: FC = () => {
         {completeRaffle.draw_datetime ? (
           <Countdown
             datetime={completeRaffle.draw_datetime}
-            finishAction={refetchRaffle}
+            finishAction={onCountdownEnd}
             action={rafflesInfo[completeRaffle.id]?.token ? handleCounterAction : undefined}
           />
         ) : (
@@ -329,7 +340,7 @@ const RaffleDetail: FC = () => {
     );
   }
 
-  if (isOngoing) {
+  if (raffleStatus === STATUS.ONGOING) {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary secondaryComponent={SoundComponent} title={completeRaffle.name} />
@@ -350,7 +361,7 @@ const RaffleDetail: FC = () => {
     );
   }
 
-  if (isFinished) {
+  if (raffleStatus === STATUS.FINISHED) {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary title={completeRaffle.name} activeTag={'Finished'} />

@@ -86,6 +86,7 @@ const Title = styled.div`
       font-size: 18px;
       line-height: 20px;
       margin-top: 10px;
+      min-width: 90px;
     }
     .tag {
       margin: 5px 0;
