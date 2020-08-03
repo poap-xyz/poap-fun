@@ -152,7 +152,7 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
               </div>
             </div>
             <div>
-              <div className={'bottom-title'}>Elegible POAPs</div>
+              <div className={'bottom-title'}>Eligible POAPs</div>
               <div className={'bottom-data'}>
                 <div className={'badge'}>
                   {mainEvents.map((badge) => {

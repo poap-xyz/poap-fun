@@ -102,13 +102,13 @@ const RaffleContent: FC<RaffleContentProps> = ({ raffle }) => {
           <div className={'description'} dangerouslySetInnerHTML={{ __html: description }} />
           <Separator />
           <div className={'poaps'}>
-            <InputTitle>Elegible POAP{events.length > 1 && `s`}</InputTitle>
+            <InputTitle>Eligible POAP{events.length > 1 && `s`}</InputTitle>
             <EventDisplay events={events} />
             {isRaffleActive(raffle) && (
               <p>
                 {hasAtLeastOneRaffleEventsPoap
-                  ? `You own elegible POAPS. Join the raffle now!`
-                  : `You don't have any of the elegible POAPs, but having more means more chances!`}
+                  ? `You own eligible POAPS. Join the raffle now!`
+                  : `You don't have any of the eligible POAPs, but having more means more chances!`}
               </p>
             )}
           </div>
