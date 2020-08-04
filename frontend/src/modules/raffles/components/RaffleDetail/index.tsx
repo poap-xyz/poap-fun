@@ -4,6 +4,7 @@ import { generatePath } from 'react-router';
 import styled from '@emotion/styled';
 import Confetti from 'react-confetti';
 import { GiSpeaker, GiSpeakerOff } from 'react-icons/gi';
+import { FaCalendar } from 'react-icons/fa';
 
 // Components
 import { Container } from 'ui/styled/Container';
@@ -18,6 +19,8 @@ import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
 import RaffleStartModal from 'ui/components/RaffleStartModal';
+import ContactModal from 'ui/components/ContactModal';
+import CalendarModal from 'ui/components/CalendarModal';
 import ActionButton from 'ui/components/ActionButton';
 import EthStats from 'ui/components/EthStats';
 import { Button } from 'ui/styled/antd/Button';
@@ -53,25 +56,6 @@ const ContactContainer = styled.div`
 const ContactButton = styled(Button)`
   width: 300px;
 `;
-
-const ContactModal = ({ id }: { id: number }) => {
-  const { data: raffle } = useRaffle({ id });
-
-  return (
-    <>
-      <p>If you have won, please contact the raffle organizer at:</p>
-      <p>
-        <a href={`mailto:${raffle?.contact}`} target="_blank" rel="noopener noreferrer">
-          {raffle?.contact}
-        </a>
-      </p>
-      <p>If you want to send a proof that you're the address owner, you can sign a mesagge on MyCrypto</p>
-      <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank" rel="noopener noreferrer">
-        Sign message
-      </a>
-    </>
-  );
-};
 
 const STATUS = {
   ACTIVE: 'active',
@@ -153,6 +137,17 @@ const RaffleDetail: FC = () => {
     width: 400,
     okButtonWidth: 70,
     title: 'Contact organizer',
+    id: parseInt(id, 10),
+  });
+  const { showModal: handleCalendarAction } = useModal({
+    component: CalendarModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    title: 'Add to calendar',
     id: parseInt(id, 10),
   });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
@@ -297,13 +292,14 @@ const RaffleDetail: FC = () => {
     refetchRaffle();
   }, [participantsData, results, refetchRaffle]);
 
-  const SoundComponent = (
+  const IconsComponent = (
     <div className="sound-icons">
       {soundEnabled ? (
         <GiSpeaker onClick={() => setSoundEnabled(false)} />
       ) : (
         <GiSpeakerOff onClick={() => setSoundEnabled(true)} />
       )}
+      {completeRaffle?.draw_datetime && <FaCalendar onClick={handleCalendarAction} />}
     </div>
   );
 
@@ -319,7 +315,7 @@ const RaffleDetail: FC = () => {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary
-          secondaryComponent={SoundComponent}
+          secondaryComponent={IconsComponent}
           title={completeRaffle.name}
           activeTag={'Active'}
           editAction={handleEdit}
@@ -356,7 +352,7 @@ const RaffleDetail: FC = () => {
   if (raffleStatus === STATUS.ONGOING) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary secondaryComponent={SoundComponent} title={completeRaffle.name} />
+        <TitlePrimary secondaryComponent={IconsComponent} title={completeRaffle.name} />
         <EthStats raffle={completeRaffle.id} onBlockAction={onNewBlock} />
 
         <RaffleParticipants

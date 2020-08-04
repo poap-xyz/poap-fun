@@ -128,3 +128,11 @@ export type BlockData = {
   gas_limit: number;
   timestamp: number;
 };
+
+export type CalendarEvent = {
+  title: string;
+  description: string;
+  location: string;
+  startTime: string;
+  endTime: string;
+};
