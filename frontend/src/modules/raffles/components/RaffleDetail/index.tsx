@@ -82,6 +82,7 @@ const STATUS = {
 const RaffleDetail: FC = () => {
   // React hooks
   const [raffleStatus, setRaffleStatus] = useState<string>('');
+  const [actionButtonText, setActionButtonText] = useState<string>('Join Raffle');
   const [raffleInitialStatus, setInitialRaffleStatus] = useState<string>('');
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
@@ -248,8 +249,10 @@ const RaffleDetail: FC = () => {
 
     if (raffle && account && !isAccountParticipating() && canAccountParticipate()) {
       setIsSigning(true);
+      setActionButtonText('Please follow instructions on your wallet');
       let typedSignedMessage = await signMessage(raffle);
       setIsSigning(false);
+      setActionButtonText('Joining raffle');
       if (typedSignedMessage.length > 1) {
         if (typedSignedMessage[0] === '') return;
 
@@ -265,6 +268,7 @@ const RaffleDetail: FC = () => {
         await refetchParticipants();
       }
     }
+    setActionButtonText('Join Raffle');
   };
 
   const onCountdownEnd = async () => {
@@ -333,6 +337,7 @@ const RaffleDetail: FC = () => {
         <RaffleContent raffle={completeRaffle} />
         <ActionButton
           action={join}
+          text={actionButtonText}
           disabled={!canJoinRaffle}
           helpText={joinDisabledReason}
           loading={isJoiningRaffle || isSigning}
