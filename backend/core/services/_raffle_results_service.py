@@ -182,6 +182,7 @@ class RaffleResultsService:
             raffle=raffle,
             gas_limit=gas_limit,
             block_number=raw_block_data.get("number"),
+            timestamp=raw_block_data.get("timestamp"),
             order=order
         )
 
@@ -218,5 +219,4 @@ class RaffleResultsService:
         )
 
         return finished
-
 

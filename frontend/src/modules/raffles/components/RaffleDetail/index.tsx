@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useState, useMemo } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { generatePath } from 'react-router';
 import styled from '@emotion/styled';
-import last from 'lodash.last';
 import Confetti from 'react-confetti';
+import { GiSpeaker, GiSpeakerOff } from 'react-icons/gi';
+import { FiCalendar, FiBellOff, FiBell } from 'react-icons/fi';
 
 // Components
 import { Container } from 'ui/styled/Container';
@@ -18,12 +19,14 @@ import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
 import RaffleStartModal from 'ui/components/RaffleStartModal';
+import ContactModal from 'ui/components/ContactModal';
+import CalendarModal from 'ui/components/CalendarModal';
 import ActionButton from 'ui/components/ActionButton';
+import EthStats from 'ui/components/EthStats';
 import { Button } from 'ui/styled/antd/Button';
 
 // Constants
 import { ROUTES } from 'lib/routes';
-import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Hooks
 import { useSounds } from 'lib/hooks/useSounds';
@@ -38,146 +41,12 @@ import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Helpers
 import { mergeRaffleEvent } from 'lib/helpers/api';
-import { isRaffleActive, isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
+import { isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
+// import { * } from 'push-notifications';
 
 // Types
-import { ResultsTable, CompleteRaffle, JoinRaffleValues, Participant, BlockData } from 'lib/types';
-
-const TimeSandIcon = (props: any) => {
-  return (
-    <svg width={46} height={65} viewBox="0 0 46 65" fill="none" {...props}>
-      <path
-        d="M1 1h40m4 0h-4m0 0c3.5 25.5-13.5 29.5-16.5 31M5.16 1c-4 42 38.5 22 36 62.5M1 63.5h3.5m40.5 0H4.5m0 0c-.333-4.333-.3-13.8 2.5-17"
-        stroke="#E05751"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
-
-const PriceIcon = (props: any) => {
-  return (
-    <svg className="price" width={24} height={25} viewBox="0 0 24 25" fill="none" {...props}>
-      <path d="M10 19.5l5.1-5.1m1.9-1.9l-1.9 1.9m0 0c-.867.367-2.9.7-4.1-.9" stroke="#4A9ED8" strokeLinecap="round" />
-      <path d="M13.5 1h10v11L11 24 1 14l8.5-8.5" stroke="#4A9ED8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M22 2.5c-3-.5-4.5 3 0 2.5" stroke="#4A9ED8" strokeLinecap="round" />
-    </svg>
-  );
-};
-
-const BoxIcon = (props: any) => {
-  return (
-    <svg width={69} height={60} viewBox="0 0 69 60" fill="none" {...props}>
-      <path
-        d="M67.5 12.5L34 22m33.5-9.5V48L34 58m33.5-45.5L34 2 1 12.5M34 22v36m0-36L1 12.5M34 58L1 48V25.5m0-13V16"
-        stroke="#4A9ED8"
-        strokeWidth={2}
-      />
-    </svg>
-  );
-};
-
-const EthStatsContainer = styled.div`
-  display: grid;
-  grid-template-rows: 1fr auto;
-  grid-template-columns: 1fr 1fr;
-
-  @media (max-width: ${BREAKPOINTS.sm}) {
-    display: flex;
-    flex-direction: column;
-  }
-
-  background-color: #090909;
-  border-radius: 20px;
-  margin-bottom: 27px;
-  font-family: 'Source Sans Pro', sans-serif;
-
-  svg {
-    margin-right: 22px;
-
-    &.price {
-      margin-right: 12px;
-    }
-  }
-
-  .text-info {
-    color: #10a0de;
-  }
-
-  .text-success {
-    color: #7bcc3a;
-
-    path {
-      stroke: #7bcc3a;
-    }
-  }
-
-  .text-warning {
-    color: #ffd162;
-
-    path {
-      stroke: #ffd162;
-    }
-  }
-
-  .text-orange {
-    color: #ff8a00;
-
-    path {
-      stroke: #ff8a00;
-    }
-  }
-
-  .text-danger {
-    color: #f74b4b;
-
-    path {
-      stroke: #f74b4b;
-    }
-  }
-`;
-
-const EthStatContainer = styled.div`
-  flex: 1;
-  padding: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-
-  display: flex;
-`;
-
-const EthStatTitle = styled.p`
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #aaa;
-  margin-bottom: 12px;
-`;
-
-const EthStatValue = styled.p`
-  font-weight: 300;
-  font-size: 50px;
-  letter-spacing: -1px;
-`;
-
-const GasLimitContainer = styled.div`
-  display: flex;
-  padding: 7px 15px;
-  justify-content: space-between;
-  grid-area: 2 / 1 / 3 / 3;
-
-  > div {
-    display: flex;
-  }
-`;
-
-const GasLimitValue = styled.p`
-  font-size: 16px;
-  font-weight: 300;
-  margin-bottom: 0;
-`;
+import { CompleteRaffle, JoinRaffleValues, Participant } from 'lib/types';
+import { safeGetItem } from '../../../../lib/helpers/localStorage';
 
 const ContactContainer = styled.div`
   margin: 24px auto 24px auto;
@@ -189,162 +58,34 @@ const ContactButton = styled(Button)`
   width: 300px;
 `;
 
-// Utils
-const lastBlockTimeClass = (time: number) => {
-  if (time >= 0 && time < 15) return 'text-success';
-  if (time < 20) return 'text-warning';
-  if (time < 25) return 'text-orange';
-  return 'text-danger';
-};
+const ActionIcons = styled.div`
+  text-align: center;
+  svg {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 5px;
+  }
+`;
 
-type EthStatsProps = {
-  refetchResults: (
-    throwOnError?:
-      | {
-          throwOnError?: boolean | undefined;
-        }
-      | undefined,
-  ) => Promise<ResultsTable>;
-  refetchBlocks: (
-    throwOnError?:
-      | {
-          throwOnError?: boolean | undefined;
-        }
-      | undefined,
-  ) => Promise<BlockData[]>;
-  shouldRefetchResults: boolean;
-  playSound: () => void;
-};
-
-const EthStats = ({ refetchResults, shouldRefetchResults, refetchBlocks, playSound }: EthStatsProps) => {
-  const [gasLimit, setGasLimit] = useState<any>(undefined);
-  const [bestBlock, setBestBlock] = useState<any>(undefined);
-  const [lastBlockTime, setLastBlockTime] = useState<number>(0);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setLastBlockTime((prevLastBlockTime: number) => prevLastBlockTime + 1);
-    }, 1000);
-
-    function getGasLimit() {
-      let lastBlock = 0;
-      let stampIndex = 0;
-      let lastServerTime = 0;
-
-      function run() {
-        const socket = new WebSocket(`wss://ethstats.net/primus/?_primuscb=${+new Date()}-${stampIndex++}`);
-
-        // Init connection
-        socket.onopen = () => {
-          socket.send(
-            JSON.stringify({
-              emit: ['client-pong', { serverTime: lastServerTime, clientTime: +new Date() }],
-            }),
-          );
-
-          socket.send(JSON.stringify({ emit: ['ready'] }));
-        };
-
-        // Listen for messages
-        socket.addEventListener('message', function (event) {
-          const parsedEvent = JSON.parse(event.data);
-
-          if (parsedEvent?.action === 'charts') {
-            lastServerTime = +new Date();
-
-            const gasLimit = last(parsedEvent?.data?.gasLimit);
-            const bestBlock = last(parsedEvent?.data?.height);
-
-            if (bestBlock !== lastBlock) {
-              playSound();
-              setLastBlockTime(0);
-
-              if (shouldRefetchResults) {
-                setTimeout(() => {
-                  refetchResults();
-                  refetchBlocks();
-                }, 6000);
-              }
-
-              lastBlock = Number(bestBlock);
-            }
-
-            setGasLimit(gasLimit);
-            setBestBlock(bestBlock);
-          }
-        });
-      }
-
-      run();
-      return setInterval(run, 50000);
-    }
-
-    const gasLimitIntervalId = getGasLimit();
-
-    return () => {
-      clearInterval(intervalId);
-      clearInterval(gasLimitIntervalId);
-    };
-  }, []); //eslint-disable-line
-
-  return (
-    <EthStatsContainer>
-      <EthStatContainer>
-        <BoxIcon />
-        <div>
-          <EthStatTitle>Best block</EthStatTitle>
-          {bestBlock && (
-            <EthStatValue className="text-info">#{new Intl.NumberFormat('en-US').format(bestBlock)}</EthStatValue>
-          )}
-        </div>
-      </EthStatContainer>
-
-      <EthStatContainer>
-        <TimeSandIcon className={lastBlockTimeClass(lastBlockTime)} />
-        <div>
-          <EthStatTitle>Last block</EthStatTitle>
-          <EthStatValue className={lastBlockTimeClass(lastBlockTime)}>{lastBlockTime}s ago</EthStatValue>
-        </div>
-      </EthStatContainer>
-
-      <GasLimitContainer>
-        <div>
-          <PriceIcon />
-          <EthStatTitle>gas limit</EthStatTitle>
-        </div>
-        {gasLimit && <GasLimitValue className="text-info">{gasLimit} gas</GasLimitValue>}
-      </GasLimitContainer>
-    </EthStatsContainer>
-  );
-};
-
-const ContactModal = ({ id }: { id: number }) => {
-  const { data: raffle } = useRaffle({ id });
-
-  return (
-    <>
-      <p>If you have won, please contact the raffle organizer at:</p>
-      <p>
-        <a href={`mailto:${raffle?.contact}`} target="_blank" rel="noopener noreferrer">
-          {raffle?.contact}
-        </a>
-      </p>
-      <p>If you want to send a proof that you're the address owner, you can sign a mesagge on MyCrypto</p>
-      <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank" rel="noopener noreferrer">
-        Sign message
-      </a>
-    </>
-  );
+const STATUS = {
+  ACTIVE: 'active',
+  ONGOING: 'ongoing',
+  FINISHED: 'finished',
 };
 
 const RaffleDetail: FC = () => {
   // React hooks
+  const [raffleStatus, setRaffleStatus] = useState<string>('');
+  const [actionButtonText, setActionButtonText] = useState<string>('Join Raffle');
+  const [raffleInitialStatus, setInitialRaffleStatus] = useState<string>('');
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
 
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
 
+  const [pollingEnabled, SetPollingEnabled] = useState<boolean>(false);
   const [lastResultsLength, setLastResultsLength] = useState(-1);
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
   const { rafflesInfo, isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
@@ -368,7 +109,10 @@ const RaffleDetail: FC = () => {
   });
 
   // Lib hooks
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  let notifications = safeGetItem('pushs', '[]');
+  const [pushEnabled, setPushEnabled] = useState<boolean>(notifications.indexOf(parseInt(id, 10)) > -1);
+
+  const [soundEnabled, setSoundEnabled] = useState(safeGetItem('sound', 'false') === true);
   const { playBeganRaffle, playBlockPassed, playNewWinner } = useSounds({ soundEnabled });
 
   const { showModal: handleEdit } = useModal({
@@ -409,14 +153,31 @@ const RaffleDetail: FC = () => {
     title: 'Contact organizer',
     id: parseInt(id, 10),
   });
+  const { showModal: handleCalendarAction } = useModal({
+    component: CalendarModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    title: 'Add to calendar',
+    id: parseInt(id, 10),
+  });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
 
   // Effects
   useEffect(() => {
     if (!events || !raffle) return;
     let completeRaffles = mergeRaffleEvent([raffle], events);
-    if (completeRaffles.length > 0) setRaffle(completeRaffles[0]);
+    if (completeRaffles.length > 0) {
+      setRaffle(completeRaffles[0]);
+    }
   }, [raffle, events]); //eslint-disable-line
+
+  useEffect(() => {
+    if (completeRaffle) calculateRaffleStatus(completeRaffle);
+  }, [completeRaffle]); //eslint-disable-line
 
   useEffect(() => {
     if (isConnected && isAccountParticipating()) {
@@ -435,11 +196,44 @@ const RaffleDetail: FC = () => {
   useEffect(() => {
     if (!results) return;
 
-    if (results.entries.length !== lastResultsLength) {
-      playNewWinner();
+    if (results.entries.length !== lastResultsLength && raffleStatus === STATUS.ONGOING) {
       setLastResultsLength((prevLastResultsLength) => prevLastResultsLength + 1);
+      playNewWinner();
     }
   }, [setLastResultsLength, results]); //eslint-disable-line
+
+  useEffect(() => {
+    if (raffleStatus === STATUS.ONGOING) {
+      const interval = setInterval(() => {
+        refetchBlocks();
+        if (completeRaffle?.results_table) refetchResults();
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+    return;
+  }, [pollingEnabled]); //eslint-disable-line
+
+  useEffect(() => {
+    localStorage.setItem('sound', soundEnabled.toString());
+  }, [soundEnabled]); //eslint-disable-line
+
+  useEffect(() => {
+    if (raffleInitialStatus === '') {
+      setInitialRaffleStatus(raffleStatus);
+    } else if (raffleStatus === STATUS.FINISHED) {
+      setShouldTriggerConfetti(true);
+    }
+  }, [raffleStatus]); //eslint-disable-line
+
+  const calculateRaffleStatus = (raffle: CompleteRaffle) => {
+    if (isRaffleFinished(raffle)) {
+      setRaffleStatus(STATUS.FINISHED);
+    } else if (isRaffleOnGoing(raffle)) {
+      setRaffleStatus(STATUS.ONGOING);
+    } else {
+      setRaffleStatus(STATUS.ACTIVE);
+    }
+  };
 
   const isAccountParticipating = () => {
     if (account && participantsData && participantsData.length > 0) {
@@ -464,8 +258,10 @@ const RaffleDetail: FC = () => {
 
     if (raffle && account && !isAccountParticipating() && canAccountParticipate()) {
       setIsSigning(true);
+      setActionButtonText('Please follow instructions on your wallet');
       let typedSignedMessage = await signMessage(raffle);
       setIsSigning(false);
+      setActionButtonText('Joining raffle');
       if (typedSignedMessage.length > 1) {
         if (typedSignedMessage[0] === '') return;
 
@@ -481,54 +277,65 @@ const RaffleDetail: FC = () => {
         await refetchParticipants();
       }
     }
+    setActionButtonText('Join Raffle');
+  };
+
+  const onCountdownEnd = async () => {
+    playBeganRaffle();
+    setTimeout(() => {
+      if (completeRaffle) calculateRaffleStatus(completeRaffle);
+    }, 3000);
+  };
+
+  const onNewBlock = () => {
+    playBlockPassed();
+    if (!pollingEnabled) SetPollingEnabled(true);
+  };
+
+  const toggleNotification = () => {
+    if (!completeRaffle) return;
+
+    let notifications = safeGetItem('pushs', '[]');
+    if (pushEnabled) {
+      // remove from local
+      notifications = notifications.filter((each: number) => each !== completeRaffle.id);
+    } else {
+      // add to local
+      notifications.push(completeRaffle.id);
+    }
+    localStorage.setItem('pushs', JSON.stringify(notifications));
+    setPushEnabled(!pushEnabled);
   };
 
   // Constants
-  const isActive: boolean = completeRaffle ? isRaffleActive(completeRaffle) : false;
-  const isOngoing: boolean = completeRaffle ? isRaffleOnGoing(completeRaffle) : false;
-  const isFinished: boolean = completeRaffle ? isRaffleFinished(completeRaffle) : false;
-
-  const raffleStatus = useMemo(
-    () =>
-      new Proxy(
-        { isActive, isOngoing },
-        {
-          set: function (target, key, value) {
-            const shouldTriggerActionFromIsActive =
-              target['isActive'] === false && key === 'isOngoing' && value === true;
-            const shouldTriggerActionFromIsOngoing =
-              target['isOngoing'] === false && key === 'isActive' && value === true;
-
-            if (shouldTriggerActionFromIsActive || shouldTriggerActionFromIsOngoing) {
-              playBeganRaffle();
-            }
-
-            target[key] = value;
-            return true;
-          },
-        },
-      ),
-    [], //eslint-disable-line
-  );
-
-  useEffect(() => {
-    raffleStatus.isOngoing = isOngoing;
-    raffleStatus.isActive = isActive;
-  }, [isActive, isOngoing]); //eslint-disable-line
-
-  const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.address) ?? [];
+  const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.id) ?? [];
   const activeParticipants: Participant[] =
-    participantsData?.filter((participant: any) => !resultParticipantsAddress.includes(participant.address)) ?? [];
+    participantsData?.filter((participant: any) => !resultParticipantsAddress.includes(participant.id)) ?? [];
 
   const confettiWidth = (document.querySelector('#root') as HTMLElement)?.offsetWidth || 300;
   const confettiHeight = (document.querySelector('#root') as HTMLElement)?.offsetHeight || 200;
 
   // Effects
   useEffect(() => {
-    if (!isOngoing || !results || !participantsData) return;
-    setShouldTriggerConfetti(results?.entries?.length === participantsData.length);
+    if (!results || !participantsData) return;
     refetchRaffle();
-  }, [isOngoing, participantsData, results, refetchRaffle]);
+  }, [participantsData, results, refetchRaffle]);
+
+  const IconsComponent = (
+    <ActionIcons>
+      {pushEnabled ? (
+        <FiBell onClick={toggleNotification} color={'var(--secondary-color)'} />
+      ) : (
+        <FiBellOff onClick={toggleNotification} color={'var(--secondary-color)'} />
+      )}
+      {completeRaffle?.draw_datetime && <FiCalendar onClick={handleCalendarAction} color={'var(--secondary-color)'} />}
+      {soundEnabled ? (
+        <GiSpeaker onClick={() => setSoundEnabled(false)} color={'var(--secondary-color)'} />
+      ) : (
+        <GiSpeakerOff onClick={() => setSoundEnabled(true)} color={'var(--secondary-color)'} />
+      )}
+    </ActionIcons>
+  );
 
   if (!completeRaffle) {
     return (
@@ -538,12 +345,11 @@ const RaffleDetail: FC = () => {
     );
   }
 
-  if (isActive) {
+  if (raffleStatus === STATUS.ACTIVE) {
     return (
       <Container sidePadding thinWidth>
         <TitlePrimary
-          soundEnabled={soundEnabled}
-          handleSoundEnabled={setSoundEnabled}
+          secondaryComponent={IconsComponent}
           title={completeRaffle.name}
           activeTag={'Active'}
           editAction={handleEdit}
@@ -551,7 +357,7 @@ const RaffleDetail: FC = () => {
         {completeRaffle.draw_datetime ? (
           <Countdown
             datetime={completeRaffle.draw_datetime}
-            finishAction={refetchRaffle}
+            finishAction={onCountdownEnd}
             action={rafflesInfo[completeRaffle.id]?.token ? handleCounterAction : undefined}
           />
         ) : (
@@ -561,6 +367,7 @@ const RaffleDetail: FC = () => {
         <RaffleContent raffle={completeRaffle} />
         <ActionButton
           action={join}
+          text={actionButtonText}
           disabled={!canJoinRaffle}
           helpText={joinDisabledReason}
           loading={isJoiningRaffle || isSigning}
@@ -576,16 +383,11 @@ const RaffleDetail: FC = () => {
     );
   }
 
-  if (isOngoing) {
+  if (raffleStatus === STATUS.ONGOING) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary soundEnabled={soundEnabled} handleSoundEnabled={setSoundEnabled} title={completeRaffle.name} />
-        <EthStats
-          playSound={playBlockPassed}
-          refetchResults={refetchResults}
-          refetchBlocks={refetchBlocks}
-          shouldRefetchResults={Boolean(raffle?.results_table)}
-        />
+        <TitlePrimary secondaryComponent={IconsComponent} title={completeRaffle.name} />
+        <EthStats raffle={completeRaffle.id} onBlockAction={onNewBlock} />
 
         <RaffleParticipants
           participants={activeParticipants}
@@ -593,7 +395,12 @@ const RaffleDetail: FC = () => {
           canJoin={canJoinRaffle}
         />
 
-        <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />
+        <RaffleWinners
+          accountAddress={account}
+          winners={results}
+          isLoading={isLoadingResults}
+          prizes={completeRaffle.prizes}
+        />
 
         <RaffleBlocks isLoading={isLoadingBlocks} blocks={blocksData} />
 
@@ -602,18 +409,18 @@ const RaffleDetail: FC = () => {
     );
   }
 
-  if (isFinished) {
+  if (raffleStatus === STATUS.FINISHED) {
     return (
       <Container sidePadding thinWidth>
-        <TitlePrimary
-          soundEnabled={soundEnabled}
-          handleSoundEnabled={setSoundEnabled}
-          title={completeRaffle.name}
-          activeTag={'Finished'}
-        />
+        <TitlePrimary title={completeRaffle.name} activeTag={'Finished'} />
         <RaffleContent raffle={completeRaffle} />
 
-        <RaffleWinners accountAddress={account} winners={results} isLoading={isLoadingResults} />
+        <RaffleWinners
+          accountAddress={account}
+          winners={results}
+          isLoading={isLoadingResults}
+          prizes={completeRaffle.prizes}
+        />
 
         <ContactContainer>
           <ContactButton type="primary" margin onClick={handleContactModal}>

@@ -17,9 +17,7 @@ import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Helpers
-import { endpoints } from 'lib/api';
 import { etherscanLinks } from 'lib/helpers/etherscan';
-import { isMobileOrTablet } from 'lib/helpers/utils';
 
 // Types
 import { UserPoap } from 'lib/types';
@@ -71,6 +69,9 @@ const Nav = styled.nav`
       display: none;
     }
   }
+  .faqs {
+    margin-left: 20px;
+  }
 `;
 const PoapDisplay = styled.div<ScrollerProps>`
   .scroller {
@@ -105,8 +106,7 @@ const PoapDisplay = styled.div<ScrollerProps>`
 `;
 
 const Header: FC = () => {
-  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps, account } = useStateContext();
-  const isMobile = isMobileOrTablet();
+  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps } = useStateContext();
 
   let content = (
     <PoapDisplay grid={!!(poaps && poaps.length > 0)}>
@@ -150,22 +150,18 @@ const Header: FC = () => {
           )}
           {isConnected && !isFetchingPoaps && (
             <>
-              {isMobile && account && (
-                <a href={endpoints.poap.webScan(account)} target={'_blank'} rel="noopener noreferrer">
+              <Popover placement={'bottom'} title={'My POAPs'} content={content} trigger={['hover', 'click']}>
+                <div>
                   <PoapUser />
-                </a>
-              )}
-              {!isMobile && (
-                <Popover placement={'bottom'} title={'My POAPs'} content={content}>
-                  <div>
-                    <PoapUser />
-                  </div>
-                </Popover>
-              )}
+                </div>
+              </Popover>
             </>
           )}
           <NavLink to={ROUTES.raffleCreation} className={'call-to-action'}>
             <Button type="primary">Create Raffle</Button>
+          </NavLink>
+          <NavLink to={ROUTES.faqs} className={'faqs'}>
+            FAQs
           </NavLink>
         </Nav>
       </Container>

@@ -25,11 +25,13 @@ import RaffleCreate from 'modules/raffles/pages/RaffleCreate';
 import RaffleEdit from 'modules/raffles/pages/RaffleEdit';
 import RaffleCreated from 'modules/raffles/pages/RaffleCreated';
 import RafflePage from 'modules/raffles/pages/RafflePage';
+import Faqs from 'modules/raffles/pages/Faqs';
 
 const queryConfig = { mutations: { throwOnError: true } };
 const isDevelopment = process.env.REACT_APP_ENABLE_REACT_QUERY === 'true';
 
 const publicRoutes = [
+  { Component: Faqs, path: ROUTES.faqs },
   { Component: RaffleCreate, path: ROUTES.raffleCreation },
   { Component: RaffleCreated, path: ROUTES.raffleCreated },
   { Component: RaffleEdit, path: ROUTES.raffleEdit },

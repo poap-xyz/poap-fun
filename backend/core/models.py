@@ -142,6 +142,8 @@ class Raffle(TimeStampedModel):
                 task.enabled = False
                 task.save()
 
+        ResultsTable.objects.get_or_create(raffle=self)
+
     def __str__(self):
         return self.name
 
@@ -335,6 +337,7 @@ class BlockData(TimeStampedModel):
 
     # The block nonce may not fit in the DB, save the 64 least significant bits
     gas_limit = models.BigIntegerField(_("gas limit"))
+    timestamp = models.BigIntegerField(_("timestamp"), null=True)
 
     def __str__(self):
         return f"Block data N°{self.order} for {self.raffle}"
