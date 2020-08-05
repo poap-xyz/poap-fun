@@ -46,4 +46,4 @@ nginx/sites-enabled/nginx.conf
 backend/.coverage
 
 # Google Credentials
-service-account-file.json
+serviceAccountKey.json

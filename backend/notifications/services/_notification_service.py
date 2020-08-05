@@ -1,23 +1,36 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import firebase_admin
-from firebase_admin import messaging
+from django.conf import settings
+from django.utils import timezone
+from firebase_admin import credentials, messaging
 
 from notifications.models import Notification, NOTIFICATION_TYPE, NotificationSubscription
 
 
 class NotificationService:
-    firebase_app = None
 
     def __init__(self):
-        self.firebase_app = firebase_admin.initialize_app()
+        # the file is generated in:
+        #    https://console.firebase.google.com/u/1/project/prod-poap-fun/settings/serviceaccounts/adminsdk
+        cred = credentials.Certificate(settings.GOOGLE_APPLICATION_CREDENTIALS)
+        firebase_admin.initialize_app(cred)
 
-    def send_fcm(self, token, msg):
+    def send_fcm(self, token, msg, url):
+        notification = messaging.Notification(
+            title='POAP.fun alert',
+            body=msg
+        )
+
+        webpush =  messaging.WebpushConfig(
+            fcm_options=messaging.WebpushFCMOptions(
+                link=url
+            )
+        )
+
         message = messaging.Message(
-            notification = {
-               "body": msg,
-               "title": msg,
-           },
+            notification=notification,
+            webpush = webpush,
             token=token,
         )
 
@@ -40,7 +53,9 @@ class NotificationService:
         else:
             return None
 
-        response = self.send_fcm(notification_subscription.token, msg)
+        url = f'https://poap.fun/{notification_subscription.raffle.id}'
+
+        response = self.send_fcm(notification_subscription.token, msg, url)
 
         notification = Notification(
             notification_subscription=notification_subscription,
@@ -50,16 +65,16 @@ class NotificationService:
         notification.save()
 
     def send_notifications(self):
-        now = datetime.now()
+        now = timezone.now()
         one_minute = now + timedelta(minutes=1)
         one_hour = now + timedelta(hours=1)
 
         one_minute_raffle_subscriptions = NotificationSubscription.objects\
-            .filter(raffle__draw_datetime=one_minute, is_complete=False)
+            .filter(raffle__draw_datetime__lte=one_minute, is_complete=False)
         one_hour_raffle_subscriptions = NotificationSubscription.objects\
-            .filter(raffle__draw_datetime=one_hour, is_complete=False)
+            .filter(raffle__draw_datetime__lte=one_hour, is_complete=False)
         in_progress_raffle_subscriptions = NotificationSubscription.objects\
-            .filter(raffle__draw_datetime___gte=now, raffle__finalized=False, is_complete=False)
+            .filter(raffle__draw_datetime__lte=now, raffle__finalized=False, is_complete=False)
         finalized_raffle_subscriptions = NotificationSubscription.objects\
             .filter(raffle__finalized=True, is_complete=False)
 

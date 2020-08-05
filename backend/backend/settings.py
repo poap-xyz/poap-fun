@@ -208,7 +208,8 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = True
 
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+from .celery_beat_schedule import beat_schedule
+CELERY_BEAT_SCHEDULE = beat_schedule
 
 # Logging
 from django.utils.log import DEFAULT_LOGGING
@@ -252,3 +253,4 @@ LOGGING = {
 
 # Sengrid
 SENDGRID_KEY = os.getenv('SENDGRID_KEY', '')
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', '')

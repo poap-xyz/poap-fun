@@ -42,13 +42,16 @@ class PrizeViewSet(viewsets.ModelViewSet):
 
 
 class RaffleViewSet(viewsets.ModelViewSet):
-    queryset = Raffle.objects.all()
     serializer_class = RaffleSerializer
     lookup_field = 'id'
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
-    ordering_fields = ['name', 'description', 'contact', 'draw_datetime', 'end_datetime']
     http_method_names = ['get', 'post', 'patch', 'put']
     filter_class = RaffleFilter
+
+    def get_queryset(self):
+        model = self.serializer_class.Meta.model
+        queryset = model.objects.filter().order_by('finalized', 'draw_datetime')
+        return queryset
 
     def list(self, request, **kwargs):
         events = request.query_params.get('events_participated_in', None)
