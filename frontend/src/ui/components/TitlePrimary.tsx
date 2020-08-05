@@ -28,16 +28,6 @@ const Title = styled.div`
     padding: 10px 0 24px;
   }
 
-  .sound-icons {
-    text-align: center;
-    svg {
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      fill: var(--secondary-color);
-    }
-  }
-
   .navigation {
     position: absolute;
     left: -30px;

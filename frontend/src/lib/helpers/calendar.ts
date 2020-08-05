@@ -3,11 +3,6 @@ import moment from 'moment';
 // Types
 import { CalendarEvent } from 'lib/types';
 
-const getRandomKey = () => {
-  let n = Math.floor(Math.random() * 999999999999).toString();
-  return new Date().getTime().toString() + '_' + n;
-};
-
 const formatTime = (date: string) => {
   let formattedDate = moment.utc(date).format('YYYYMMDDTHHmmssZ');
   return formattedDate.replace('+00:00', 'Z');

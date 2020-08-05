@@ -4,7 +4,7 @@ import { generatePath } from 'react-router';
 import styled from '@emotion/styled';
 import Confetti from 'react-confetti';
 import { GiSpeaker, GiSpeakerOff } from 'react-icons/gi';
-import { FaCalendar } from 'react-icons/fa';
+import { FiCalendar, FiBellOff, FiBell } from 'react-icons/fi';
 
 // Components
 import { Container } from 'ui/styled/Container';
@@ -42,6 +42,7 @@ import { useStateContext } from 'lib/hooks/useCustomState';
 // Helpers
 import { mergeRaffleEvent } from 'lib/helpers/api';
 import { isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
+// import { * } from 'push-notifications';
 
 // Types
 import { CompleteRaffle, JoinRaffleValues, Participant } from 'lib/types';
@@ -55,6 +56,16 @@ const ContactContainer = styled.div`
 
 const ContactButton = styled(Button)`
   width: 300px;
+`;
+
+const ActionIcons = styled.div`
+  text-align: center;
+  svg {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 5px;
+  }
 `;
 
 const STATUS = {
@@ -98,6 +109,9 @@ const RaffleDetail: FC = () => {
   });
 
   // Lib hooks
+  let notifications = safeGetItem('pushs', '[]');
+  const [pushEnabled, setPushEnabled] = useState<boolean>(notifications.indexOf(parseInt(id, 10)) > -1);
+
   const [soundEnabled, setSoundEnabled] = useState(safeGetItem('sound', 'false') === true);
   const { playBeganRaffle, playBlockPassed, playNewWinner } = useSounds({ soundEnabled });
 
@@ -278,6 +292,21 @@ const RaffleDetail: FC = () => {
     if (!pollingEnabled) SetPollingEnabled(true);
   };
 
+  const toggleNotification = () => {
+    if (!completeRaffle) return;
+
+    let notifications = safeGetItem('pushs', '[]');
+    if (pushEnabled) {
+      // remove from local
+      notifications = notifications.filter((each: number) => each !== completeRaffle.id);
+    } else {
+      // add to local
+      notifications.push(completeRaffle.id);
+    }
+    localStorage.setItem('pushs', JSON.stringify(notifications));
+    setPushEnabled(!pushEnabled);
+  };
+
   // Constants
   const resultParticipantsAddress = results?.entries?.map((entry: any) => entry.participant.id) ?? [];
   const activeParticipants: Participant[] =
@@ -293,14 +322,19 @@ const RaffleDetail: FC = () => {
   }, [participantsData, results, refetchRaffle]);
 
   const IconsComponent = (
-    <div className="sound-icons">
-      {soundEnabled ? (
-        <GiSpeaker onClick={() => setSoundEnabled(false)} />
+    <ActionIcons>
+      {pushEnabled ? (
+        <FiBell onClick={toggleNotification} color={'var(--secondary-color)'} />
       ) : (
-        <GiSpeakerOff onClick={() => setSoundEnabled(true)} />
+        <FiBellOff onClick={toggleNotification} color={'var(--secondary-color)'} />
       )}
-      {completeRaffle?.draw_datetime && <FaCalendar onClick={handleCalendarAction} />}
-    </div>
+      {completeRaffle?.draw_datetime && <FiCalendar onClick={handleCalendarAction} color={'var(--secondary-color)'} />}
+      {soundEnabled ? (
+        <GiSpeaker onClick={() => setSoundEnabled(false)} color={'var(--secondary-color)'} />
+      ) : (
+        <GiSpeakerOff onClick={() => setSoundEnabled(true)} color={'var(--secondary-color)'} />
+      )}
+    </ActionIcons>
   );
 
   if (!completeRaffle) {
