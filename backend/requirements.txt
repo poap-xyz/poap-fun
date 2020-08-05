@@ -38,3 +38,6 @@ django-celery-beat==2.0.0
 
 # dev requirements
 drf-yasg==1.17.1
+
+# Firebase
+firebase-admin==4.3.0

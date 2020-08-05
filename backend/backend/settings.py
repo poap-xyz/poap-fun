@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     # Basic app
     'core',
+    'notifications',
 
     # Backup
     'django_azure_backup',
