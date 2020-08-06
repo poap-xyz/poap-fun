@@ -7,6 +7,10 @@ import { ModalProvider } from 'react-modal-hook';
 import { ReactQueryDevtools } from 'react-query-devtools';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
 
+// Lib
+import * as serviceWorker from './serviceWorker';
+import { initializeFirebase } from 'lib/push-notifications';
+
 // Constants
 import { theme } from 'lib/constants/theme';
 import { mainStyles } from 'lib/styles/main';
@@ -63,3 +67,5 @@ const PoapFunApp = () => (
 );
 
 ReactDOM.render(<PoapFunApp />, document.getElementById('root'));
+serviceWorker.register();
+initializeFirebase();

@@ -1,5 +1,5 @@
 WEB=`docker-compose ps | grep gunicorn | cut -d\  -f 1 | head -n 1`
-NODE=`docker-compose ps | grep npm | cut -d\  -f 1 | head -n 1`
+NODE=poap-fun-node
 WEBS=`docker-compose ps | grep gunicorn | cut -d\  -f 1 `
 COMPOSE_ENV=override
 BACKUPS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/backups/)
@@ -176,3 +176,10 @@ clean-nginx-conf:
 
 deploy:clean-nginx-conf
 	make clean build up set-django
+
+build-frontend:
+	cd frontend
+	yarn install
+	yarn build
+	cd ..
+

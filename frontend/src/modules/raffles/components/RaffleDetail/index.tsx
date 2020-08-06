@@ -38,15 +38,16 @@ import { useBlocks } from 'lib/hooks/useBlocks';
 import { useJoinRaffle } from 'lib/hooks/useJoinRaffle';
 import { useParticipants } from 'lib/hooks/useParticipants';
 import { useStateContext } from 'lib/hooks/useCustomState';
+import { useSubscribe, useUnsubscribe } from 'lib/hooks/useNotifications';
 
 // Helpers
 import { mergeRaffleEvent } from 'lib/helpers/api';
 import { isRaffleOnGoing, isRaffleFinished } from 'lib/helpers/raffles';
-// import { * } from 'push-notifications';
+import { getToken } from 'lib/push-notifications';
+import { safeGetItem } from 'lib/helpers/localStorage';
 
 // Types
-import { CompleteRaffle, JoinRaffleValues, Participant } from 'lib/types';
-import { safeGetItem } from '../../../../lib/helpers/localStorage';
+import { CompleteRaffle, JoinRaffleValues, Participant, SubscriptionValues } from 'lib/types';
 
 const ContactContainer = styled.div`
   margin: 24px auto 24px auto;
@@ -88,7 +89,17 @@ const RaffleDetail: FC = () => {
   const [pollingEnabled, SetPollingEnabled] = useState<boolean>(false);
   const [lastResultsLength, setLastResultsLength] = useState(-1);
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
-  const { rafflesInfo, isConnected, connectWallet, account, poaps, isFetchingPoaps, signMessage } = useStateContext();
+  const {
+    rafflesInfo,
+    isConnected,
+    connectWallet,
+    account,
+    poaps,
+    isFetchingPoaps,
+    signMessage,
+    token,
+    saveToken,
+  } = useStateContext();
 
   // Router hooks
   const { id } = useParams();
@@ -165,6 +176,10 @@ const RaffleDetail: FC = () => {
     id: parseInt(id, 10),
   });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
+
+  // Notifications
+  const [subscribe] = useSubscribe();
+  const [unsubscribe] = useUnsubscribe();
 
   // Effects
   useEffect(() => {
@@ -292,16 +307,45 @@ const RaffleDetail: FC = () => {
     if (!pollingEnabled) SetPollingEnabled(true);
   };
 
-  const toggleNotification = () => {
+  const toggleNotification = async () => {
     if (!completeRaffle) return;
 
     let notifications = safeGetItem('pushs', '[]');
     if (pushEnabled) {
       // remove from local
       notifications = notifications.filter((each: number) => each !== completeRaffle.id);
+      // remove subscription
+      if (token) {
+        const data: SubscriptionValues = {
+          token,
+          raffle_id: completeRaffle.id,
+        };
+        try {
+          unsubscribe(data);
+        } catch (e) {
+          console.log(e);
+        }
+      }
     } else {
       // add to local
       notifications.push(completeRaffle.id);
+      // subscribe
+      let data: SubscriptionValues = {
+        token: '',
+        raffle_id: completeRaffle.id,
+      };
+      if (!token) {
+        let _token = await getToken();
+        saveToken(_token);
+        data.token = _token;
+      } else {
+        data.token = token;
+      }
+      try {
+        subscribe(data);
+      } catch (e) {
+        console.log(e);
+      }
     }
     localStorage.setItem('pushs', JSON.stringify(notifications));
     setPushEnabled(!pushEnabled);

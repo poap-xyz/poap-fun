@@ -1,19 +1,18 @@
 FROM node:12.13.0
 
-# Create app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-# Install app dependencies
-COPY package.json /usr/src/app/
-RUN npm install -g yarn
-RUN yarn install
-
-# Bundle app source
-COPY . /usr/src/app
+# Install and configure `express`.
+RUN npm install express
 
 # Expose Port
 EXPOSE 3000
 
-# Run command defined in package.json
-CMD [ "yarn", "start:server" ]
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# COPY FILES
+COPY server.js /usr/src/app/server.js
+COPY build /usr/src/app/build
+
+# Run server
+CMD ["node", "server"]

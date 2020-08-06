@@ -24,6 +24,7 @@ type RPCResponse = {
 };
 
 const useCustomState = () => {
+  // Local storage
   let raffleIds = safeGetItem('raffles-created');
   let raffles: RaffleDictionary = {};
   if (raffleIds && Array.isArray(raffleIds)) {
@@ -34,6 +35,8 @@ const useCustomState = () => {
       }
     }
   }
+
+  let _token = localStorage.getItem('fcm-token');
 
   // Web3Modal
   const providerOptions = {
@@ -56,6 +59,7 @@ const useCustomState = () => {
   const [account, setAccount] = useState<string>('');
   const [provider, setProvider] = useState<any>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [token, setToken] = useState<string>(_token ? _token : '');
 
   const { data: poaps, isLoading: isFetchingPoaps } = usePoaps({ account });
 
@@ -174,6 +178,14 @@ const useCustomState = () => {
     return ['', ''];
   };
 
+  // FCM notifications
+  const saveToken = (_token: string) => {
+    if (_token !== '') {
+      setToken(_token);
+      localStorage.setItem('fcm-token', _token);
+    }
+  };
+
   return {
     rafflesInfo,
     saveRaffle,
@@ -185,6 +197,8 @@ const useCustomState = () => {
     poaps,
     isFetchingPoaps,
     signMessage,
+    token,
+    saveToken,
   };
 };
 
