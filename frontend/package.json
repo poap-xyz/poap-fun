@@ -15,6 +15,7 @@
     "copy-to-clipboard": "^3.3.1",
     "emotion-theming": "^10.0.27",
     "express": "^4.17.1",
+    "firebase": "^7.17.1",
     "formik": "^2.1.5",
     "lodash.isempty": "^4.4.0",
     "lodash.last": "^3.0.0",

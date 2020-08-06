@@ -33,9 +33,6 @@ services:
     container_name: poap-fun-node
     environment:
       VIRTUAL_HOST: 'frontend'
-    volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
     expose:
       - "3000"
     stdin_open: true

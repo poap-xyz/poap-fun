@@ -136,3 +136,8 @@ export type CalendarEvent = {
   startTime: string;
   endTime: string;
 };
+
+export type SubscriptionValues = {
+  token: string;
+  raffle_id: number;
+};

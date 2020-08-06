@@ -21,7 +21,7 @@ Provides a simple web proxy to distinguish subdomains and route to appropriate s
 ### Web
 Django application running the API
 ### Node
-Contains Node app serving the React frontend
+Contains Node app serving the React frontend.
 ### postgres
 Contains the database which backs the Django application
 ### redis
@@ -34,6 +34,21 @@ Runs the beat schedule configured by the Django application
 ## Deployment
 ### Prerequisites
 To deploy the project you need both docker and docker compose. Please refer to their respective documentations regarding how to install them.
+
+Also, for testing and production server, make sure `node` 12.x and `yarn` are installed.
+
+```sh
+# Using Ubuntu to update node
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install yarn
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt update
+sudo apt install yarn
+```
+
 ### Deploying the app
 The project comes with a convenience makefile that will help you get up and running quickly.
 
