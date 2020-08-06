@@ -7,6 +7,7 @@ from web3.auto import w3
 from web3.exceptions import BlockNotFound
 
 from core.models import Raffle, Participant, ResultsTable, BlockData, ResultsTableEntry
+from notifications.tasks import send_has_ended_raffle_notifications
 
 
 class RaffleResultsService:
@@ -129,6 +130,7 @@ class RaffleResultsService:
         if not participants or len(participants) == 0:
             results_table.raffle.finalized = True
             results_table.raffle.save()
+            send_has_ended_raffle_notifications.delay(results_table.raffle.id)
             return True
 
         eliminated_participants = cls._split_by_gas_limit(block_data.gas_limit, participants)
@@ -157,6 +159,7 @@ class RaffleResultsService:
             results_table.raffle.finalized = True
             results_table.raffle.end_datetime = datetime.utcnow()
             results_table.raffle.save()
+            send_has_ended_raffle_notifications.delay(results_table.raffle.id)
         return finalized
 
     @classmethod

@@ -1,5 +1,8 @@
 import json
 
+from django.db import models
+from django.db.models import F
+from django.utils import timezone
 from django_filters import rest_framework as filters
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -9,8 +12,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_jwt.views import APIView
 
-from core.filters import UserFilter, ParticipantFilter, RaffleFilter, ResultsTableFilter, BlockDataFilter
-from core.models import User, Raffle, Event, Prize, Participant, ResultsTable, BlockData
+from core.filters import ParticipantFilter, RaffleFilter, ResultsTableFilter, BlockDataFilter
+from core.models import Raffle, Event, Prize, Participant, ResultsTable, BlockData
 from .permissions import RaffleTokenPermission, PrizeRaffleTokenPermission
 from .serializers import RaffleSerializer, TextEditorImageSerializer, EventSerializer, \
     PrizeSerializer, ParticipantSerializer, MultiParticipantSerializer, ResultsTableSerializer, \
@@ -42,13 +45,25 @@ class PrizeViewSet(viewsets.ModelViewSet):
 
 
 class RaffleViewSet(viewsets.ModelViewSet):
-    queryset = Raffle.objects.all()
     serializer_class = RaffleSerializer
     lookup_field = 'id'
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
-    ordering_fields = ['name', 'description', 'contact', 'draw_datetime', 'end_datetime']
     http_method_names = ['get', 'post', 'patch', 'put']
     filter_class = RaffleFilter
+
+    def get_queryset(self):
+        model = self.serializer_class.Meta.model
+        now = timezone.now()
+
+        queryset = model.objects.annotate(
+            timediff=models.Case(
+                models.When(finalized=False, then=F('draw_datetime') - now),
+                models.When(finalized=True, then=now - F('end_datetime')),
+                output_field=models.DurationField(),
+            )
+        ).order_by('finalized', 'timediff')
+
+        return queryset
 
     def list(self, request, **kwargs):
         events = request.query_params.get('events_participated_in', None)

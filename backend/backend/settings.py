@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     # Basic app
     'core',
+    'notifications',
 
     # Backup
     'django_azure_backup',
@@ -251,3 +252,4 @@ LOGGING = {
 
 # Sengrid
 SENDGRID_KEY = os.getenv('SENDGRID_KEY', '')
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', '')

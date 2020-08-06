@@ -2,7 +2,7 @@ import json
 import random
 import logging
 from collections import deque
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import models
 from django.utils import timezone
@@ -118,6 +118,7 @@ class Raffle(TimeStampedModel):
 
         super().save(**kwargs)
 
+
         task_name = f'generating_results_for_raffle_{self.id}'
         task = PeriodicTask.objects.filter(name=task_name).first()
         if self.draw_datetime and not self.finalized:
@@ -137,6 +138,44 @@ class Raffle(TimeStampedModel):
 
             task.enabled = True
             task.save()
+
+            # Notifications
+            from notifications.models import NOTIFICATION_TYPE
+            now = timezone.now()
+            task, _ = PeriodicTask.objects.get_or_create(
+                name=f'program_notification_on_raffle_{self.id}_type_{NOTIFICATION_TYPE.ONE_HOUR}',
+                interval=schedule,
+                one_off=True,
+                task="notifications.tasks.send_one_hour_raffle_notifications",
+                args=json.dumps([self.id]),
+            )
+            task.start_time = self.draw_datetime - timedelta(hours=1)
+            if task.start_time < now:
+                task.enabled = False
+            task.save()
+
+            task, _ = PeriodicTask.objects.get_or_create(
+                name=f'program_notification_on_raffle_{self.id}_type_{NOTIFICATION_TYPE.ONE_MINUTE}',
+                interval=schedule,
+                one_off=True,
+                task="notifications.tasks.send_one_minute_raffle_notifications",
+                args=json.dumps([self.id]),
+            )
+            task.start_time = self.draw_datetime - timedelta(minutes=1)
+            if task.start_time < now:
+                task.enabled = False
+            task.save()
+
+            task, _ = PeriodicTask.objects.get_or_create(
+                name=f'program_notification_on_raffle_{self.id}_type_{NOTIFICATION_TYPE.HAS_STARTED}',
+                interval=schedule,
+                one_off=True,
+                task="notifications.tasks.send_has_started_raffle_notifications",
+                args=json.dumps([self.id]),
+            )
+            task.start_time = self.draw_datetime
+            task.save()
+
         elif task:
             if task:
                 task.enabled = False
