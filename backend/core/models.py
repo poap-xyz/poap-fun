@@ -141,6 +141,7 @@ class Raffle(TimeStampedModel):
 
             # Notifications
             from notifications.models import NOTIFICATION_TYPE
+            now = timezone.now()
             task, _ = PeriodicTask.objects.get_or_create(
                 name=f'program_notification_on_raffle_{self.id}_type_{NOTIFICATION_TYPE.ONE_HOUR}',
                 interval=schedule,
@@ -151,6 +152,9 @@ class Raffle(TimeStampedModel):
             task.start_time = self.draw_datetime - timedelta(hours=1)
             task.save()
 
+            if task.start_time < now:
+                task.delete()
+
             task, _ = PeriodicTask.objects.get_or_create(
                 name=f'program_notification_on_raffle_{self.id}_type_{NOTIFICATION_TYPE.ONE_MINUTE}',
                 interval=schedule,
@@ -160,6 +164,9 @@ class Raffle(TimeStampedModel):
             )
             task.start_time = self.draw_datetime - timedelta(minutes=1)
             task.save()
+
+            if task.start_time < now:
+                task.delete()
 
             task, _ = PeriodicTask.objects.get_or_create(
                 name=f'program_notification_on_raffle_{self.id}_type_{NOTIFICATION_TYPE.HAS_STARTED}',
