@@ -150,10 +150,9 @@ class Raffle(TimeStampedModel):
                 args=json.dumps([self.id]),
             )
             task.start_time = self.draw_datetime - timedelta(hours=1)
-            task.save()
-
             if task.start_time < now:
-                task.delete()
+                task.enabled = False
+            task.save()
 
             task, _ = PeriodicTask.objects.get_or_create(
                 name=f'program_notification_on_raffle_{self.id}_type_{NOTIFICATION_TYPE.ONE_MINUTE}',
@@ -163,10 +162,9 @@ class Raffle(TimeStampedModel):
                 args=json.dumps([self.id]),
             )
             task.start_time = self.draw_datetime - timedelta(minutes=1)
-            task.save()
-
             if task.start_time < now:
-                task.delete()
+                task.enabled = False
+            task.save()
 
             task, _ = PeriodicTask.objects.get_or_create(
                 name=f'program_notification_on_raffle_{self.id}_type_{NOTIFICATION_TYPE.HAS_STARTED}',
