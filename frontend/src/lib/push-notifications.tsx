@@ -31,7 +31,7 @@ export const initializeFirebase = () => {
     const info: ReactNode = (
       <>
         {payload.notification.body}{' '}
-        <a href={payload.fcmOptions.link} target={'_blank'}>
+        <a href={payload.fcmOptions.link} target={'_blank'} rel="noopener noreferrer">
           {payload.fcmOptions.link}
         </a>
       </>
