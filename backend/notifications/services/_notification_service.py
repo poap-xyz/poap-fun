@@ -64,30 +64,11 @@ class NotificationService:
         )
         notification.save()
 
-    def send_notifications(self):
-        now = timezone.now()
-        one_minute = now + timedelta(minutes=1)
-        one_hour = now + timedelta(hours=1)
+    def send_raffle_notifications(self, raffle, type):
+        notification_subscriptions = NotificationSubscription.objects.filter(raffle=raffle)
 
-        one_minute_raffle_subscriptions = NotificationSubscription.objects\
-            .filter(raffle__draw_datetime__lte=one_minute, is_complete=False)
-        one_hour_raffle_subscriptions = NotificationSubscription.objects\
-            .filter(raffle__draw_datetime__lte=one_hour, is_complete=False)
-        in_progress_raffle_subscriptions = NotificationSubscription.objects\
-            .filter(raffle__draw_datetime__lte=now, raffle__finalized=False, is_complete=False)
-        finalized_raffle_subscriptions = NotificationSubscription.objects\
-            .filter(raffle__finalized=True, is_complete=False)
-
-        for notification_subscription in one_minute_raffle_subscriptions:
-            self.send_notification(notification_subscription, NOTIFICATION_TYPE.ONE_MINUTE)
-
-        for notification_subscription in one_hour_raffle_subscriptions:
-            self.send_notification(notification_subscription, NOTIFICATION_TYPE.ONE_HOUR)
-
-        for notification_subscription in in_progress_raffle_subscriptions:
-            self.send_notification(notification_subscription, NOTIFICATION_TYPE.HAS_STARTED)
-
-        for notification_subscription in finalized_raffle_subscriptions:
-            self.send_notification(notification_subscription, NOTIFICATION_TYPE.HAS_ENDED)
-            notification_subscription.is_complete = True
-            notification_subscription.save()
+        for notification_subscription in notification_subscriptions:
+            self.send_notification(notification_subscription, type)
+            if type == NOTIFICATION_TYPE.HAS_ENDED:
+                notification_subscription.is_complete = True
+                notification_subscription.save()
