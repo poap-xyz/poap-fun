@@ -96,6 +96,7 @@ export type CreateRaffleValues = {
 export type Participant = {
   id: number;
   address: string;
+  ens_name: string | null;
   poap_id: number;
   event_id: string;
 };
@@ -125,4 +126,13 @@ export type BlockData = {
   order: number;
   block_number: number;
   gas_limit: number;
+  timestamp: number;
+};
+
+export type CalendarEvent = {
+  title: string;
+  description: string;
+  location: string;
+  startTime: string;
+  endTime: string;
 };

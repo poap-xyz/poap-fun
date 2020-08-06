@@ -226,7 +226,7 @@ const RaffleCreateForm: FC = () => {
   const handleEditorChange = (content: string, editor: any) => setDescription(content);
 
   const handleSubmitClick = () => submitForm();
-  console.log(values);
+
   return (
     <Container sidePadding thinWidth>
       <TitlePrimary title={'Create New Raffle'} />

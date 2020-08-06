@@ -1,14 +1,14 @@
 import useSound from 'use-sound';
 
 // Assets
-const casinoTone = require('assets/sounds/casino-tone.mp3');
-const casinoWheels = require('assets/sounds/casino-wheels.mp3');
-const casinoToneTwo = require('assets/sounds/casino-tone-2.mp3');
+const startSound = require('assets/sounds/start-raffle.mp3');
+const winnerSound = require('assets/sounds/winner.mp3');
+const blockSound = require('assets/sounds/new-block.mp3');
 
 export const useSounds = ({ soundEnabled = true }: { soundEnabled?: boolean } = {}) => {
-  const [playBeganRaffle] = useSound(casinoTone, { soundEnabled });
-  const [playNewWinner] = useSound(casinoWheels, { soundEnabled });
-  const [playBlockPassed] = useSound(casinoToneTwo, { soundEnabled });
+  const [playBeganRaffle] = useSound(startSound, { soundEnabled });
+  const [playNewWinner] = useSound(winnerSound, { soundEnabled });
+  const [playBlockPassed] = useSound(blockSound, { soundEnabled });
 
   return { playBeganRaffle, playBlockPassed, playNewWinner };
 };

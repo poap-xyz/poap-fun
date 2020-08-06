@@ -473,4 +473,12 @@ export const antdStyles = css`
       border-bottom: 0;
     }
   }
+
+  /* Tooltip */
+  .ant-tooltip {
+    max-width: 700px;
+    @media (max-width: 1200px) {
+      max-width: 300px;
+    }
+  }
 `;

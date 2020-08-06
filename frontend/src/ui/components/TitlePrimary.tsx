@@ -1,7 +1,6 @@
-import React, { FC, Dispatch, SetStateAction } from 'react';
+import React, { FC, ReactNode } from 'react';
 import styled from '@emotion/styled';
 import { FiEdit3 } from 'react-icons/fi';
-import { GiSpeaker, GiSpeakerOff } from 'react-icons/gi';
 
 // Components
 import StatusTag from 'ui/components/StatusTag';
@@ -14,8 +13,7 @@ type TitlePrimaryProps = {
   title: string;
   activeTag?: string;
   editAction?: () => void;
-  soundEnabled?: boolean;
-  handleSoundEnabled?: Dispatch<SetStateAction<boolean>>;
+  secondaryComponent?: ReactNode | null;
 };
 
 // Styled component
@@ -28,13 +26,6 @@ const Title = styled.div`
 
   @media (max-width: ${BREAKPOINTS.xs}) {
     padding: 10px 0 24px;
-  }
-
-  .sound-icons svg {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    fill: var(--secondary-color);
   }
 
   .navigation {
@@ -85,6 +76,7 @@ const Title = styled.div`
       font-size: 18px;
       line-height: 20px;
       margin-top: 10px;
+      min-width: 90px;
     }
     .tag {
       margin: 5px 0;
@@ -95,7 +87,7 @@ const Title = styled.div`
   }
 `;
 
-const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag, soundEnabled, handleSoundEnabled }) => {
+const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag, secondaryComponent = null }) => {
   return (
     <Title>
       <div className={'navigation'}>
@@ -117,29 +109,8 @@ const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag, sou
                 Edit raffle <FiEdit3 color={'var(--secondary-color)'} />
               </div>
             )}
+            {secondaryComponent}
           </div>
-        </div>
-        <div>
-          {activeTag && <StatusTag text={'active'} className={'tag'} />}
-
-          {handleSoundEnabled && (
-            <div className="sound-icons">
-              {soundEnabled ? (
-                <GiSpeaker onClick={() => handleSoundEnabled(false)} />
-              ) : (
-                <GiSpeakerOff onClick={() => handleSoundEnabled(true)} />
-              )}
-            </div>
-          )}
-          {handleSoundEnabled && (
-            <div className="sound-icons">
-              {soundEnabled ? (
-                <GiSpeaker onClick={() => handleSoundEnabled(false)} />
-              ) : (
-                <GiSpeakerOff onClick={() => handleSoundEnabled(true)} />
-              )}
-            </div>
-          )}
         </div>
       </div>
     </Title>
