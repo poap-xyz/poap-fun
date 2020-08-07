@@ -310,6 +310,8 @@ const RaffleDetail: FC = () => {
   const toggleNotification = async () => {
     if (!completeRaffle) return;
 
+    setPushEnabled(!pushEnabled);
+
     let notifications = safeGetItem('pushs', '[]');
     if (pushEnabled) {
       // remove from local
@@ -342,13 +344,12 @@ const RaffleDetail: FC = () => {
         data.token = token;
       }
       try {
-        subscribe(data);
+        if (data.token) subscribe(data);
       } catch (e) {
         console.log(e);
       }
     }
     localStorage.setItem('pushs', JSON.stringify(notifications));
-    setPushEnabled(!pushEnabled);
   };
 
   // Constants

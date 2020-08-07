@@ -178,8 +178,6 @@ deploy:clean-nginx-conf
 	make clean build up set-django
 
 build-frontend:
-	cd frontend
-	yarn install
-	yarn build
-	cd ..
+	yarn --cwd ./frontend install
+	yarn --cwd ./frontend build
 
