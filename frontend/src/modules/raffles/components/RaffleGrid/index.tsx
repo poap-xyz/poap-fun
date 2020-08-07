@@ -85,7 +85,7 @@ const RaffleGrid: FC = () => {
     <Container sidePadding>
       <TitleSecondary title={'POAP raffles'} />
       <SearchForm>
-        <Form onSubmit={() => {}}>
+        <Form onSubmit={(ev) => ev.preventDefault()}>
           <Input
             errors={errors}
             handleChange={handleChange}

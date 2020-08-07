@@ -19,7 +19,7 @@ jobs:
           port: ${{ secrets.TESTING_PORT }}
           script: |
             cd ~/poap-fun
-            docker system prune -f
+            docker image prune -f
             git pull origin development
             make build-frontend
             make deploy COMPOSE_ENV=testing
