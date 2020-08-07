@@ -142,12 +142,7 @@ migrate:
 makemigrations:
 	docker exec $(WEB) /bin/sh -c "python manage.py makemigrations"
 
-compilemessages:
-	@echo $(shell for container in $(WEBS); do\
-		docker exec $$container /bin/sh -c "python manage.py compilemessages" ;\
-	done)
-
-set-django: collectstatic migrate compilemessages
+set-django: collectstatic migrate
 	@echo "Django environment setup complete."
 
 #########

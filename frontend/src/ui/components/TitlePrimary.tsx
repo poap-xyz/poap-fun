@@ -93,7 +93,7 @@ const TitlePrimary: FC<TitlePrimaryProps> = ({ title, editAction, activeTag, sec
       <div className={'navigation'}>
         {activeTag && (
           <div className={'tag'}>
-            <StatusTag text={'active'} />
+            <StatusTag text={activeTag} className={'tag'} />
           </div>
         )}
       </div>

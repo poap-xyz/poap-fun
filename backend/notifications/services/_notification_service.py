@@ -1,8 +1,5 @@
-from datetime import timedelta
-
 import firebase_admin
 from django.conf import settings
-from django.utils import timezone
 from firebase_admin import credentials, messaging
 
 from notifications.models import Notification, NOTIFICATION_TYPE, NotificationSubscription
@@ -17,12 +14,22 @@ class NotificationService:
         firebase_admin.initialize_app(cred)
 
     def send_fcm(self, token, msg, url):
+        title = 'POAP.fun alert'
+        poap_badge = 'https://poap.fun/favicons/favicon-96x96.png'
         notification = messaging.Notification(
-            title='POAP.fun alert',
-            body=msg
+            title=title,
+            body=msg,
+            image=poap_badge
         )
 
         webpush =  messaging.WebpushConfig(
+            notification=messaging.WebpushNotification(
+                title=title,
+                body=msg,
+                icon=poap_badge,
+                badge=poap_badge,
+                image=poap_badge,
+            ),
             fcm_options=messaging.WebpushFCMOptions(
                 link=url
             )

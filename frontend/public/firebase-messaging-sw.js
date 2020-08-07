@@ -27,7 +27,7 @@ messaging.setBackgroundMessageHandler(function (payload) {
   // Customize notification here
   const notificationTitle = 'POAP.fun';
   const notificationOptions = {
-    body: 'Background Message body.',
+    body: 'New raffle alert!',
     icon: '/og-image.jpg',
   };
 

@@ -149,6 +149,7 @@ class Raffle(TimeStampedModel):
                 task="notifications.tasks.send_one_hour_raffle_notifications",
                 args=json.dumps([self.id]),
             )
+            task.enabled = True
             task.start_time = self.draw_datetime - timedelta(hours=1)
             if task.start_time < now:
                 task.enabled = False
@@ -162,6 +163,7 @@ class Raffle(TimeStampedModel):
                 args=json.dumps([self.id]),
             )
             task.start_time = self.draw_datetime - timedelta(minutes=1)
+            task.enabled = True
             if task.start_time < now:
                 task.enabled = False
             task.save()
@@ -173,7 +175,12 @@ class Raffle(TimeStampedModel):
                 task="notifications.tasks.send_has_started_raffle_notifications",
                 args=json.dumps([self.id]),
             )
-            task.start_time = self.draw_datetime
+            if self.draw_datetime > timezone.now():
+                task.start_time = self.draw_datetime
+            else:
+                task.start_time = timezone.now()
+
+            task.enabled = True
             task.save()
 
         elif task:

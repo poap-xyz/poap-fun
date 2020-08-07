@@ -3,6 +3,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import { generatePath } from 'react-router';
 import styled from '@emotion/styled';
 import Confetti from 'react-confetti';
+import { Tooltip } from 'antd';
 import { GiSpeaker, GiSpeakerOff } from 'react-icons/gi';
 import { FiCalendar, FiBellOff, FiBell } from 'react-icons/fi';
 
@@ -27,6 +28,7 @@ import { Button } from 'ui/styled/antd/Button';
 
 // Constants
 import { ROUTES } from 'lib/routes';
+import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Hooks
 import { useSounds } from 'lib/hooks/useSounds';
@@ -61,11 +63,20 @@ const ContactButton = styled(Button)`
 
 const ActionIcons = styled.div`
   text-align: center;
+  @media (max-width: ${BREAKPOINTS.sm}) {
+    padding: 10px 0;
+  }
   svg {
     width: 20px;
     height: 20px;
     cursor: pointer;
     margin: 5px;
+
+    @media (max-width: ${BREAKPOINTS.sm}) {
+      width: 30px;
+      height: 30px;
+      margin: 5px 10px;
+    }
   }
 `;
 
@@ -104,6 +115,8 @@ const RaffleDetail: FC = () => {
   // Router hooks
   const { id } = useParams();
   const { push } = useHistory();
+
+  if (isNaN(id)) push(ROUTES.home);
 
   // Query hooks
   const { data: events } = useEvents();
@@ -366,18 +379,35 @@ const RaffleDetail: FC = () => {
     refetchRaffle();
   }, [participantsData, results, refetchRaffle]);
 
+  const hasPushApi = 'PushManager' in window;
   const IconsComponent = (
     <ActionIcons>
-      {pushEnabled ? (
-        <FiBell onClick={toggleNotification} color={'var(--secondary-color)'} />
-      ) : (
-        <FiBellOff onClick={toggleNotification} color={'var(--secondary-color)'} />
+      {hasPushApi && (
+        <>
+          {pushEnabled ? (
+            <Tooltip title={'Disable push notifications'}>
+              <FiBell onClick={toggleNotification} color={'var(--secondary-color)'} />
+            </Tooltip>
+          ) : (
+            <Tooltip title={'Enable push notifications'}>
+              <FiBellOff onClick={toggleNotification} color={'var(--secondary-color)'} />
+            </Tooltip>
+          )}
+        </>
       )}
-      {completeRaffle?.draw_datetime && <FiCalendar onClick={handleCalendarAction} color={'var(--secondary-color)'} />}
+      {completeRaffle?.draw_datetime && raffleStatus === STATUS.ACTIVE && (
+        <Tooltip title={'Add to calendar'}>
+          <FiCalendar onClick={handleCalendarAction} color={'var(--secondary-color)'} />
+        </Tooltip>
+      )}
       {soundEnabled ? (
-        <GiSpeaker onClick={() => setSoundEnabled(false)} color={'var(--secondary-color)'} />
+        <Tooltip title={'Mute raffle sounds'}>
+          <GiSpeaker onClick={() => setSoundEnabled(false)} color={'var(--secondary-color)'} />
+        </Tooltip>
       ) : (
-        <GiSpeakerOff onClick={() => setSoundEnabled(true)} color={'var(--secondary-color)'} />
+        <Tooltip title={'Turn on raffle sounds!'}>
+          <GiSpeakerOff onClick={() => setSoundEnabled(true)} color={'var(--secondary-color)'} />
+        </Tooltip>
       )}
     </ActionIcons>
   );

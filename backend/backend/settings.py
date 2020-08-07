@@ -160,16 +160,7 @@ JWT_AUTH = {
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.11/topics/i18n/
-
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, "locale"),
-)
-
-LANGUAGE_CODE = 'es'
-LANGUAGES = (
-    ('es', 'Español'),
-)
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
