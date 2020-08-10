@@ -7,6 +7,7 @@ import { Button } from 'ui/styled/antd/Button';
 
 // Constants
 import { ROUTES } from 'lib/routes';
+import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Assets
 import Berlin from 'assets/img/cities/berlin.jpg';
@@ -22,6 +23,9 @@ const HeroWrap = styled.div`
   .title {
     text-align: center;
     padding: 100px 24px 300px;
+    @media (max-width: ${BREAKPOINTS.sm}) {
+      padding-bottom: 60px;
+    }
 
     h1 {
     }
@@ -48,17 +52,19 @@ const Background = styled.img`
   top: 0;
   z-index: -1;
 
-  &.berlin {
-    top: -120px;
-  }
-  &.gibraltar {
-    top: -20px;
-  }
-  &.london {
-    top: -170px;
-  }
-  &.pittsburg {
-    top: -120px;
+  @media (min-width: ${BREAKPOINTS.sm}) {
+    &.berlin {
+      top: -120px;
+    }
+    &.gibraltar {
+      top: -20px;
+    }
+    &.london {
+      top: -170px;
+    }
+    &.pittsburg {
+      top: -120px;
+    }
   }
 `;
 
