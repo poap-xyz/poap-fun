@@ -161,7 +161,7 @@ const Header: FC = () => {
             <Button type="primary">Create Raffle</Button>
           </NavLink>
           <NavLink to={ROUTES.faqs} className={'faqs'}>
-            FAQs
+            FAQ
           </NavLink>
         </Nav>
       </Container>

@@ -9,7 +9,10 @@ import { Button } from 'ui/styled/antd/Button';
 import { ROUTES } from 'lib/routes';
 
 // Assets
-import BackgroundImage from 'assets/img/background.jpg';
+import Berlin from 'assets/img/cities/berlin.jpg';
+import Gibraltar from 'assets/img/cities/gibraltar.jpg';
+import London from 'assets/img/cities/london.jpg';
+import Pittsburg from 'assets/img/cities/pittsburg.jpg';
 
 const HeroWrap = styled.div`
   width: 100%;
@@ -18,7 +21,7 @@ const HeroWrap = styled.div`
 
   .title {
     text-align: center;
-    padding: 100px 24px 60px;
+    padding: 100px 24px 300px;
 
     h1 {
     }
@@ -44,19 +47,41 @@ const Background = styled.img`
   position: absolute;
   top: 0;
   z-index: -1;
+
+  &.berlin {
+    top: -120px;
+  }
+  &.gibraltar {
+    top: -20px;
+  }
+  &.london {
+    top: -170px;
+  }
+  &.pittsburg {
+    top: -120px;
+  }
 `;
 
-const Hero: FC = () => (
-  <HeroWrap>
-    <div className={'title'}>
-      <h1>What is POAP Fun all about?</h1>
-      <h2>Create raflle for event participants!</h2>
-      <NavLink to={ROUTES.raffleCreation}>
-        <Button type="primary">Create Raffle</Button>
-      </NavLink>
-    </div>
-    <Background alt="POAP Fun" src={BackgroundImage} />
-  </HeroWrap>
-);
+const Hero: FC = () => {
+  const backgrounds = [
+    { image: Berlin, className: 'berlin' },
+    { image: Gibraltar, className: 'gibraltar' },
+    { image: London, className: 'london' },
+    { image: Pittsburg, className: 'pittsburg' },
+  ];
+  const background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+  return (
+    <HeroWrap>
+      <div className={'title'}>
+        <h1>What is POAP Fun all about?</h1>
+        <h2>Create raffle for event participants!</h2>
+        <NavLink to={ROUTES.raffleCreation}>
+          <Button type="primary">Create Raffle</Button>
+        </NavLink>
+      </div>
+      <Background alt={background.className.toUpperCase()} src={background.image} className={background.className} />
+    </HeroWrap>
+  );
+};
 
 export default Hero;

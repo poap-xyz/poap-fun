@@ -33,17 +33,17 @@ const Content = styled.div`
     grid-template-columns: 1fr;
     margin: auto;
     max-width: 500px;
+    overflow-y: auto;
 
-    @media (max-width: ${BREAKPOINTS.xs}) {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    div {
-      text-align: center;
-      color: var(--primary-color);
-      font-size: 14px;
-      line-height: 24px;
-      padding: 3px 0;
+    .scrollable-content {
+      max-height: 250px;
+      div {
+        text-align: center;
+        color: var(--primary-color);
+        font-size: 14px;
+        line-height: 24px;
+        padding: 3px 0;
+      }
     }
   }
 `;
@@ -84,26 +84,28 @@ const RaffleWinners: FC<RaffleWinnersProps> = ({ winners, isLoading, accountAddr
       <Content>
         <Title>Leaderboard</Title>
         <div className={'participant-box'}>
-          {winners?.entries
-            ?.sort((b: any, a: any) => b.order - a.order)
-            ?.map(({ id, order, participant }: any) => {
-              let prize = prizes.find((prize) => prize.order === order + 1);
-              return (
-                <div key={id}>
-                  <WinnerText isWinner={participant.address === accountAddress}>
-                    {order + 1}º - POAP{' '}
-                    <a href={etherscanLinks.poap(participant.poap_id)} target={'_blank'} rel="noopener noreferrer">
-                      #{participant.poap_id.toString().padStart(5, '0')}
-                    </a>{' '}
-                    -{' '}
-                    <a href={etherscanLinks.address(participant.address)} target={'_blank'} rel="noopener noreferrer">
-                      {participant.ens_name ? participant.ens_name : shortAddress(participant.address)}
-                    </a>
-                    {prize && <PrizeInfo>🎖{prize.name}</PrizeInfo>}
-                  </WinnerText>
-                </div>
-              );
-            })}
+          <div className={'scrollable-content'}>
+            {winners?.entries
+              ?.sort((b: any, a: any) => b.order - a.order)
+              ?.map(({ id, order, participant }: any) => {
+                let prize = prizes.find((prize) => prize.order === order + 1);
+                return (
+                  <div key={id}>
+                    <WinnerText isWinner={participant.address === accountAddress}>
+                      {order + 1}º - POAP{' '}
+                      <a href={etherscanLinks.poap(participant.poap_id)} target={'_blank'} rel="noopener noreferrer">
+                        #{participant.poap_id.toString().padStart(5, '0')}
+                      </a>{' '}
+                      -{' '}
+                      <a href={etherscanLinks.address(participant.address)} target={'_blank'} rel="noopener noreferrer">
+                        {participant.ens_name ? participant.ens_name : shortAddress(participant.address)}
+                      </a>
+                      {prize && <PrizeInfo>🎖{prize.name}</PrizeInfo>}
+                    </WinnerText>
+                  </div>
+                );
+              })}
+          </div>
         </div>
       </Content>
     </Spin>

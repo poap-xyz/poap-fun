@@ -499,7 +499,7 @@ const RaffleDetail: FC = () => {
 
         <ContactContainer>
           <ContactButton type="primary" margin onClick={handleContactModal}>
-            Contact Event Organizer
+            Winner? Contact raffle organizer
           </ContactButton>
         </ContactContainer>
         <Confetti run={shouldTriggerConfetti} width={confettiWidth} height={confettiHeight} />

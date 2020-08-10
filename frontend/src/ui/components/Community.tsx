@@ -1,6 +1,9 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
 
+// Constants
+import { BREAKPOINTS } from 'lib/constants/theme';
+
 // Assets
 import twitter from 'assets/img/twitter.svg';
 import github from 'assets/img/github.svg';
@@ -22,10 +25,19 @@ const CommunityWrapper = styled.div`
     justify-content: space-around;
     max-width: 200px;
     margin: 0 auto;
+    @media (max-width: ${BREAKPOINTS.xs}) {
+      max-width: 100%;
+      justify-content: space-evenly;
+      margin: 0;
+      padding-top: 10px;
+    }
     .network {
       margin: 0 5px;
       img {
         width: 24px;
+        @media (max-width: ${BREAKPOINTS.xs}) {
+          width: 40px;
+        }
       }
     }
   }

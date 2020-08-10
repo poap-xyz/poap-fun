@@ -41,7 +41,7 @@ const Content = styled.div`
       img {
         width: 60px;
         height: 60px;
-        border-radius: 20px;
+        border-radius: 30px;
         margin-bottom: 6px;
       }
     }

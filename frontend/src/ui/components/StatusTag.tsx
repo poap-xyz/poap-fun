@@ -37,7 +37,7 @@ const Tag = styled.div`
 const StatusTag: FC<StatusTagProps> = ({ raffle, className = '', text = '' }) => {
   if (raffle) {
     if (isRaffleActive(raffle)) text = 'Active';
-    if (isRaffleOnGoing(raffle)) text = 'On Going';
+    if (isRaffleOnGoing(raffle)) text = 'Ongoing';
     if (isRaffleFinished(raffle)) text = 'Finished';
   }
   return <Tag className={`${text.toLowerCase()} ${className}`}>{text}</Tag>;
