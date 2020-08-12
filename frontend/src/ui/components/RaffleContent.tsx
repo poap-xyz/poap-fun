@@ -90,7 +90,7 @@ const RaffleContent: FC<RaffleContentProps> = ({ raffle }) => {
         <CardContent>
           <div>
             <Share onClick={handleShare}>
-              Get sharable link <FiLink />
+              Get shareable link <FiLink />
             </Share>
             <InputTitle>Prize{prizes.length > 1 && `s`}</InputTitle>
             <div>
