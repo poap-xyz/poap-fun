@@ -34,6 +34,10 @@ const CardContent = styled.div`
   width: 100%;
   .description {
     padding: 20px 0;
+    img {
+      height: auto;
+      max-width: 100%;
+    }
   }
   .poaps {
     p {

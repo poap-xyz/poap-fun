@@ -1,6 +1,10 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { Spin, Tooltip } from 'antd';
+import { Popover, Spin, Tooltip } from 'antd';
+import { FiExternalLink } from 'react-icons/fi';
+
+// Lib
+import { endpoints } from 'lib/api';
 
 // Constants
 import { BREAKPOINTS } from 'lib/constants/theme';
@@ -21,6 +25,13 @@ type RaffleParticipantsProps = {
   canJoin: boolean;
 };
 
+type ParticipantWithEvent = Participant & { event: PoapEvent };
+
+type ParticipantNumbersProps = {
+  participants: ParticipantWithEvent[];
+};
+
+// Styled components
 const Content = styled.div`
   padding: 30px 0;
 
@@ -60,6 +71,7 @@ const Content = styled.div`
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
       margin: auto;
       max-width: 500px;
+      cursor: pointer;
 
       @media (max-width: ${BREAKPOINTS.xs}) {
         grid-template-columns: 1fr 1fr 1fr;
@@ -71,6 +83,13 @@ const Content = styled.div`
         font-size: 14px;
         line-height: 24px;
         padding: 3px 0;
+
+        span {
+          font-size: 12px;
+          svg {
+            padding-top: 3px;
+          }
+        }
       }
     }
   }
@@ -85,7 +104,47 @@ const Title = styled.h3`
   padding: 20px 0;
 `;
 
-type ParticipantWithEvent = Participant & { event: PoapEvent };
+const PopoverContent = styled.div`
+  text-align: center;
+`;
+
+const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
+  const generateLinks = (token: number) => {
+    return (
+      <PopoverContent>
+        <div>
+          <a href={etherscanLinks.poap(token)} target="_blank" rel="noopener noreferrer">
+            View on Etherscan <FiExternalLink />
+          </a>
+        </div>
+        <div>
+          <a href={endpoints.poap.token(token)} target="_blank" rel="noopener noreferrer">
+            View on POAP <FiExternalLink />
+          </a>
+        </div>
+      </PopoverContent>
+    );
+  };
+
+  return (
+    <div className={'ticket-holder'}>
+      {participants.map((each) => {
+        return (
+          <Tooltip title={each.event.name} key={each.id}>
+            <Popover placement={'bottom'} title={''} content={generateLinks(each.poap_id)} trigger={['click']}>
+              <div className="number-container">
+                <img src={each.event.image_url} alt={each.event.name} />
+                <span>
+                  #{each.poap_id.toString().padStart(5, '0')} <FiExternalLink />{' '}
+                </span>
+              </div>
+            </Popover>
+          </Tooltip>
+        );
+      })}
+    </div>
+  );
+};
 
 const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoading, canJoin }) => {
   // Custom hooks
@@ -133,39 +192,13 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
           {accountTickets.length > 0 && (
             <div>
               <div className={'box-title'}>Your POAP{accountTickets.length > 1 ? 's' : ''}:</div>
-              <div className={'ticket-holder'}>
-                {accountTickets.map((each) => {
-                  return (
-                    <Tooltip title={each.event.name} placement="bottom">
-                      <div key={each.id} className="number-container">
-                        <a href={etherscanLinks.poap(each.poap_id)} target="_blank" rel="noopener noreferrer">
-                          <img src={each.event.image_url} alt={each.event.name} />
-                          <span>#{each.poap_id.toString().padStart(5, '0')}</span>
-                        </a>
-                      </div>
-                    </Tooltip>
-                  );
-                })}
-              </div>
+              <ParticipantNumbers participants={accountTickets} />
             </div>
           )}
           {accountTickets.length > 0 && otherTickets.length > 0 && (
             <div className={'box-title upper'}>Other POAP{otherTickets.length > 1 ? 's' : ''}:</div>
           )}
-          <div className={'ticket-holder'}>
-            {otherTickets.map((each) => {
-              return (
-                <Tooltip title={each.event.name} placement="bottom">
-                  <div key={each.id} className="number-container">
-                    <a href={etherscanLinks.poap(each.poap_id)} target="_blank" rel="noopener noreferrer">
-                      <img src={each.event.image_url} alt={each.event.name} />
-                      <span>#{each.poap_id.toString().padStart(5, '0')}</span>
-                    </a>
-                  </div>
-                </Tooltip>
-              );
-            })}
-          </div>
+          <ParticipantNumbers participants={otherTickets} />
         </div>
       </Content>
     </Spin>

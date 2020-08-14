@@ -15,7 +15,7 @@ export const endpoints = {
     events: `${REACT_APP_API_POAP}/events`,
     scan: (address: string) => `${REACT_APP_API_POAP}/actions/scan/${address}`,
     webScan: (address: string) => `${REACT_APP_POAP_APP}/scan/${address}`,
-    token: (token: string) => `${REACT_APP_POAP_APP}/token/${token}`,
+    token: (token: number) => `${REACT_APP_POAP_APP}/token/${token}`,
   },
   fun: {
     raffles: {

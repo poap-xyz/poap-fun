@@ -106,7 +106,7 @@ const PoapDisplay = styled.div<ScrollerProps>`
 `;
 
 const Header: FC = () => {
-  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps } = useStateContext();
+  const { isConnected, connectWallet, disconnectWallet, poaps, isFetchingPoaps, account } = useStateContext();
 
   let content = (
     <PoapDisplay grid={!!(poaps && poaps.length > 0)}>
@@ -115,7 +115,7 @@ const Header: FC = () => {
           <>
             {poaps.map((poap: UserPoap) => (
               <a
-                href={etherscanLinks.poap(poap.tokenId)}
+                href={etherscanLinks.addressPoapInventory(account)}
                 target={'_blank'}
                 key={poap.tokenId}
                 rel="noopener noreferrer"
