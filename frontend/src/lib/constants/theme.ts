@@ -5,6 +5,7 @@ export const BREAKPOINTS = {
   sm: '48em',
   md: '62em',
   lg: '80em',
+  xl: '92em',
 };
 
 export const DATETIMEFORMAT = 'DD-MMM-YYYY HH:mm';
