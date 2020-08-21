@@ -59,6 +59,10 @@ const UserWrapper = styled.div`
     width: 90px;
     flex-direction: row;
 
+    @media (max-width: ${BREAKPOINTS.xs}) {
+      display: none;
+    }
+
     .badge {
       background: white;
       height: 26px;

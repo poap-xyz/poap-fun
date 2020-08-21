@@ -6,6 +6,7 @@ import { Col, Row } from 'antd';
 import { Container } from 'ui/styled/Container';
 
 // Constants
+import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Assets
@@ -78,21 +79,10 @@ const FrecuentlyAskedQuestions: FC = () => (
           </Col>
           <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }}>
             <div className={'faq-text'}>
-              <h2 className={'faq-title'}>What is POAP again?</h2>
+              <h2 className={'faq-title'}>What is POAP fun?</h2>
               <p>
-                It's a system that event organizers can easily use to distribute attendance crypto-badges to people that
-                show up, a tool for attendees to display and share the badges they have obtained and an open standard
-                for Dapp developers to build on top of.
-              </p>
-
-              <p>
-                If you have 5 whole minutes, you can watch{' '}
-                <a href={'https://twitter.com/gomox_ar'} target={'_blank'} rel="noopener noreferrer">
-                  @gomox_ar
-                </a>{' '}
-                <a href={'https://www.youtube.com/watch?v=VZlmQjhz3ko'} target={'_blank'} rel="noopener noreferrer">
-                  explain POAP at an EthCC Lightning Talk in March 2019
-                </a>
+                POAP.fun it’s a website part of the POAP ecosystem that gives anyone the ability to easily create
+                raffles between POAP token holders.
               </p>
             </div>
           </Col>
@@ -100,18 +90,9 @@ const FrecuentlyAskedQuestions: FC = () => (
         <Row gutter={24} className={'odd-row'}>
           <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }}>
             <div className={'faq-text'}>
-              <h2 className={'faq-title'}>Why would I want to get badges?</h2>
-              <p>Here are some things that could happen when you obtain POAP badges:</p>
-              <ul>
-                <li>&bull; Collect cool badges</li>
-                <li>&bull; Impress your crypto buddies(*)</li>
-                <li>&bull; Enter a Lambo giveaway(*)</li>
-              </ul>
+              <h2 className={'faq-title'}>How do I create a raffle?</h2>
               <p>
-                <small>
-                  (*) Results not guaranteed. Any expectations of recognition, prizes, privileges or earnings are your
-                  own.
-                </small>
+                Anyone can create a raffle starting at: <a href={ROUTES.faqs}>https://www.poap.fun/raffle/new</a>
               </p>
             </div>
           </Col>
@@ -129,21 +110,11 @@ const FrecuentlyAskedQuestions: FC = () => (
           </Col>
           <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }}>
             <div className={'faq-text'}>
-              <h2 className={'faq-title'}>How are POAP badges implemented?</h2>
+              <h2 className={'faq-title'}>How do participants know the results are not rigged?</h2>
               <p>
-                POAP badges are ERC-721 tokens. Once minted, they can be viewed on{' '}
-                <a href={'https://app.poap.xyz/'} target={'_blank'} rel="noopener noreferrer">
-                  POAP scan
-                </a>{' '}
-                or any NFT-enabled interface (
-                <a href={'https://etherscan.io/'} target={'_blank'} rel="noopener noreferrer">
-                  Etherscan
-                </a>
-                ,{' '}
-                <a href={'https://opensea.io/'} target={'_blank'} rel="noopener noreferrer">
-                  OpenSea
-                </a>
-                ) and most mobile wallets.
+                POAP.fun uses an elimination system based on the POAP token ID and the gas usage of ethereum blocks. The
+                last number of the gas spent on the block the raffle starts is used to eliminate all the POAPs with an
+                ID terminating on that digit. Results are fully auditable using easy to operate open source tools.
               </p>
             </div>
           </Col>
@@ -151,26 +122,10 @@ const FrecuentlyAskedQuestions: FC = () => (
         <Row gutter={24} className={'odd-row'}>
           <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }}>
             <div className={'faq-text'}>
-              <h2 className={'faq-title'}>How do I get badges?</h2>
+              <h2 className={'faq-title'}>Do I have to remain attentive to the raffle draw?</h2>
               <p>
-                How you actually get the badges depends on the alternative(s) chosen by the event organizer to attest
-                your presence.
-              </p>
-              <p>Current options include:</p>
-              <p>
-                <span className={'bold-p'}>Batch delivery of badges</span>
-                <br />
-                (if you gave a wallet address when you signed up, an organizer can airdrop you a badge)
-              </p>
-              <p>
-                <span className={'bold-p'}>Manual sending</span>
-                <br />
-                (an organizer can scan your wallet address and send you a badge on the spot)
-              </p>
-              <p>
-                <span className={'bold-p'}>Self service claim</span>
-                <br />
-                (an intranet-only Dapp that is available within the event's WiFi will give you your badge)
+                No! Once you signed up by signing a message, you are participating. You can visit the website during the
+                raffle to see the elimination on real time, but it’s not a requirement.
               </p>
             </div>
           </Col>
@@ -188,23 +143,19 @@ const FrecuentlyAskedQuestions: FC = () => (
           </Col>
         </Row>
         <Row gutter={24}>
-          <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }}>
+          <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 14 }}>
             <div className={'faq-text'}>
-              <h2 className={'faq-title'}>How can I use POAP for my event?</h2>
+              <h2 className={'faq-title'}>Do the amounts of POAP increase my chances of winning?</h2>
               <p>
-                If you want to use POAP to distribute attendance badges at your event,{' '}
-                <a href={'https://www.poap.xyz/#contact'} target={'_blank'} rel="noopener noreferrer">
-                  contact us
-                </a>{' '}
-                so we can hook you up. All you need to provide is a badge design and some event metadata (event name,
-                location, date).
+                The raffle creator can decide if participants can have a single chance with their whole collection of
+                POAPs or if each tokens means one chance
               </p>
             </div>
           </Col>
-          <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 12 }}>
+          <Col xs={{ offset: 0, span: 24 }} md={{ offset: 0, span: 10 }}>
             <div className={'faq-text'}>
-              <h2 className={'faq-title'}>How much does POAP cost?</h2>
-              <p>POAP is free! It's an open source community initiative.</p>
+              <h2 className={'faq-title'}>How much does POAP.fun cost?</h2>
+              <p>POAP.fun is free! It's an open source community initiative.</p>
             </div>
           </Col>
         </Row>
