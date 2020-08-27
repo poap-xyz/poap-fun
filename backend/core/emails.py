@@ -17,4 +17,6 @@ def send_raffle_created_email(raffle):
         'raffle_draw_datetime': f'{raffle.draw_datetime.strftime("%d-%b-%Y %H:%M")} UTC' if raffle.draw_datetime else 'TBD'
     }
     service.set_data(data)
+    if config.new_raffle_bcc_email:
+        service.set_bcc(config.new_raffle_bcc_email)
     service.send_email()

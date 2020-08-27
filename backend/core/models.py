@@ -404,6 +404,7 @@ class EmailConfiguration(SingletonModel):
     sender = models.CharField(max_length=255, null=True, blank=True)
     welcome_template = models.CharField(max_length=255, null=True, blank=True)
     raffle_created_template = models.CharField(max_length=255, null=True, blank=True)
+    new_raffle_bcc_email = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return _("Email Configuration")

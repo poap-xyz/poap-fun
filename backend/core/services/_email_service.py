@@ -35,6 +35,9 @@ class EmailService(object):
     def set_template(self, template):
         self._message.template_id = template
 
+    def set_bcc(self, bcc_email):
+        self._message.add_bcc(bcc_email)
+
     def set_data(self, data):
         self._message.dynamic_template_data = data
 
