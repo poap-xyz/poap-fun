@@ -128,9 +128,8 @@ class RaffleSerializer(serializers.ModelSerializer):
         events_data = validated_data.pop("events")
         raffle = Raffle.objects.create(**validated_data)
 
-        # Send contact the edit information
-        if raffle._token:
-            send_raffle_created_email(raffle)
+        # Update token
+        token = raffle._token
 
         for prize_data in prizes_data:
             Prize.objects.create(raffle=raffle, **prize_data)
@@ -143,6 +142,11 @@ class RaffleSerializer(serializers.ModelSerializer):
                 event.name = event_data["name"]
                 event.save(update_fields=["name"])
             RaffleEvent.objects.create(event=event, raffle=raffle)
+
+        # Send contact the edit information
+        if token:
+            send_raffle_created_email(raffle, token)
+
         return raffle
 
     def update(self, instance, validated_data):
