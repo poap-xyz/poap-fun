@@ -48,4 +48,5 @@ class EmailService(object):
         except Exception as e:
             logger.info('Sendgrid > ERROR > Send email ')
             logger.info(e)
+            logger.info(self._message.get())
         return False

@@ -8,7 +8,7 @@
     "@emotion/styled": "^10.0.27",
     "@tinymce/tinymce-react": "^3.6.0",
     "@types/lodash.isempty": "^4.4.6",
-    "@walletconnect/web3-provider": "^1.0.18",
+    "@walletconnect/web3-provider": "^1.2.2",
     "antd": "^4.5.2",
     "clean-deep": "^3.3.0",
     "constate": "^2.0.0",
