@@ -174,6 +174,9 @@ const useCustomState = () => {
     } catch (e) {
       console.log('Error >> EIP712 signature');
       console.log(e);
+      if (e.message.toLowerCase().indexOf('not supported on this device') > -1) {
+        return [`unsupported-signature-${localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER')}`, data];
+      }
     }
     return ['', ''];
   };

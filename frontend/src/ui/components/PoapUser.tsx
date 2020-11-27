@@ -56,8 +56,19 @@ const UserWrapper = styled.div`
     display: flex;
     align-items: center;
     position: relative;
-    width: 90px;
     flex-direction: row;
+    &.long {
+      width: 90px;
+    }
+    &.short1 {
+      width: 45px;
+    }
+    &.short2 {
+      width: 55px;
+    }
+    &.short3 {
+      width: 65px;
+    }
 
     @media (max-width: ${BREAKPOINTS.xs}) {
       display: none;
@@ -114,7 +125,7 @@ const PoapUser: FC = () => {
         <span className={'short-address'}>{shortAddress(account)}</span>
       </div>
       {poaps && poaps.length > 0 && (
-        <div className={'poaps'}>
+        <div className={`poaps ${poaps.length <= 3 ? `short${poaps.length}` : 'long'}`}>
           {poaps.slice(0, 3).map((poap) => {
             return (
               <div className={'badge'} key={poap.tokenId}>
