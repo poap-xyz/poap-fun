@@ -10,7 +10,7 @@ django-cors-headers==3.4.0
 django-import-export==2.2.0
 
 # Rest framework
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 djangorestframework-jwt==1.11.0
 
 # Sentry
