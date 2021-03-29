@@ -51,7 +51,7 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Raffle)
 class RaffleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'id', 'draw_datetime', 'end_datetime', 'finalized')
+    list_display = ('name', 'id', 'draw_datetime', 'end_datetime', 'email_required', 'finalized')
     list_filter = ('finalized',)
 
 
@@ -67,7 +67,7 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
-    list_display = ('address', 'raffle', 'poap_id', 'event_id')
+    list_display = ('address', 'raffle', 'poap_id', 'event_id', 'email')
 
 
 @admin.register(ResultsTable)

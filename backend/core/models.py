@@ -79,6 +79,7 @@ class Raffle(TimeStampedModel):
     # if true, no matter how many poaps the address has, it counts as one vote.
     # if false, each of the address's poaps counts as a vote
     one_address_one_vote = models.BooleanField(_("one address one vote"))
+    email_required = models.BooleanField(_("email required"), default=False)
     events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
     # marked as true when all results have been generated for the raffle
     finalized = models.BooleanField(_("finalized"), default=False)
@@ -258,7 +259,7 @@ class RaffleEvent(TimeStampedModel):
 
 class ParticipantManager(models.Manager):
 
-    def create_from_address(self, address, signature, raffle, message):
+    def create_from_address(self, address, signature, raffle, message, email):
         user_poaps = get_poaps_for_address(address)
         if not len(user_poaps) > 0:
             return ValidationError("could not get poaps for address")
@@ -278,6 +279,7 @@ class ParticipantManager(models.Manager):
                 poap_id=each['poap'],
                 event_id=each['event'],
                 message=message,
+                email=email,
                 raffle=raffle
             )
             participants.append(participant)
@@ -303,6 +305,7 @@ class Participant(TimeStampedModel):
     event_id = models.CharField(_("event id"), max_length=100)
     signature = models.CharField(_("signature"), max_length=255)
     message = models.TextField(_("message"), null=True, blank=True)
+    email = models.EmailField(_("email"), max_length=255, null=True, blank=True)
 
     objects = ParticipantManager()
 
@@ -404,6 +407,7 @@ class EmailConfiguration(SingletonModel):
     sender = models.CharField(max_length=255, null=True, blank=True)
     welcome_template = models.CharField(max_length=255, null=True, blank=True)
     raffle_created_template = models.CharField(max_length=255, null=True, blank=True)
+    raffle_results_template = models.CharField(max_length=255, null=True, blank=True)
     new_raffle_bcc_email = models.CharField(
         max_length=255, null=True, blank=True,
         help_text='BCC recipients separated by comma of new raffle email'

@@ -45,6 +45,7 @@ export type Raffle = {
   start_date_helper: string;
   end_datetime: string | null;
   one_address_one_vote: boolean;
+  email_required: boolean;
   token?: string;
   prizes: Prize[];
   events: SimpleEvent[];
@@ -89,6 +90,7 @@ export type CreateRaffleValues = {
   draw_datetime: string | null;
   start_date_helper: string;
   one_address_one_vote: boolean;
+  email_required: boolean;
   prizes: CreatePrize[];
   events: CreateEvent[];
 };
@@ -117,6 +119,7 @@ export type JoinRaffleValues = {
   signature: string;
   message: string;
   address: string;
+  email: string;
   raffle_id: number;
 };
 

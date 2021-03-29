@@ -160,6 +160,8 @@ class RaffleResultsService:
             results_table.raffle.end_datetime = datetime.utcnow()
             results_table.raffle.save()
             send_has_ended_raffle_notifications.delay(results_table.raffle.id)
+            from core.emails import send_raffle_results_email
+            send_raffle_results_email(results_table.raffle)
         return finalized
 
     @classmethod

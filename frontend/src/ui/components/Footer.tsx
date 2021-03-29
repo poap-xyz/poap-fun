@@ -5,7 +5,6 @@ import styled from '@emotion/styled';
 // Components
 import BuiltOnEth from 'ui/components/BuiltOnEth';
 import Community from 'ui/components/Community';
-import Credits from 'ui/components/Credits';
 import Logo from 'ui/components/Logo';
 import { Container } from 'ui/styled/Container';
 
@@ -46,11 +45,6 @@ const FooterWrap = styled.div`
   }
 `;
 
-const CreditsWrap = styled.div`
-  width: 100%;
-  text-align: center;
-`;
-
 const Footer: FC = () => (
   <FooterWrap>
     <Container>
@@ -65,9 +59,6 @@ const Footer: FC = () => (
           <Community />
         </div>
       </div>
-      <CreditsWrap>
-        <Credits />
-      </CreditsWrap>
     </Container>
   </FooterWrap>
 );
