@@ -89,6 +89,7 @@ export type CreateRaffleValues = {
   draw_datetime: string | null;
   start_date_helper: string;
   one_address_one_vote: boolean;
+  email_required: boolean;
   prizes: CreatePrize[];
   events: CreateEvent[];
 };

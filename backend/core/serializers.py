@@ -108,7 +108,7 @@ class RaffleSerializer(serializers.ModelSerializer):
         model = Raffle
         fields = [
             "id", "name", "description", "contact", "draw_datetime", "end_datetime", "start_date_helper",
-            "one_address_one_vote", "prizes", "events", "token", "results_table", "finalized"
+            "one_address_one_vote", "prizes", "events", "token", "results_table", "finalized", "email_required"
         ]
 
         extra_kwargs = {

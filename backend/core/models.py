@@ -79,6 +79,7 @@ class Raffle(TimeStampedModel):
     # if true, no matter how many poaps the address has, it counts as one vote.
     # if false, each of the address's poaps counts as a vote
     one_address_one_vote = models.BooleanField(_("one address one vote"))
+    email_required = models.BooleanField(_("email required"), default=False)
     events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
     # marked as true when all results have been generated for the raffle
     finalized = models.BooleanField(_("finalized"), default=False)
@@ -303,6 +304,7 @@ class Participant(TimeStampedModel):
     event_id = models.CharField(_("event id"), max_length=100)
     signature = models.CharField(_("signature"), max_length=255)
     message = models.TextField(_("message"), null=True, blank=True)
+    email = models.EmailField(_("email"), max_length=255, null=True, blank=True)
 
     objects = ParticipantManager()
 
