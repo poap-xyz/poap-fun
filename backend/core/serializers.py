@@ -176,6 +176,7 @@ class MultiParticipantSerializer(serializers.Serializer):
     """
     address = serializers.CharField(max_length=50)
     signature = serializers.CharField(max_length=255)
+    email = serializers.EmailField(max_length=255, required=False, allow_blank=True)
     message = serializers.CharField()
     raffle_id = serializers.IntegerField()
 
@@ -200,6 +201,11 @@ class MultiParticipantSerializer(serializers.Serializer):
             raise ValidationError(
                 "This address is already participating"
             )
+
+        if raffle.email_required and not attrs['email']:
+            raise ValidationError(
+                "An email is required for raffle registration"
+            )
         return attrs
 
     def update(self, instance, validated_data):
@@ -209,12 +215,14 @@ class MultiParticipantSerializer(serializers.Serializer):
         address = validated_data.get("address")
         signature = validated_data.get("signature")
         message = validated_data.get("message")
+        email = validated_data.get("email")
         raffle = Raffle.objects.filter(id=validated_data.get("raffle_id")).first()
         Participant.objects.create_from_address(
             address=address,
             signature=signature,
             message=message,
-            raffle=raffle
+            raffle=raffle,
+            email=email
         )
         return Participant.objects.filter(raffle=raffle, address=address.lower())
 

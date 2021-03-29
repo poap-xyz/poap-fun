@@ -67,7 +67,7 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
-    list_display = ('address', 'raffle', 'poap_id', 'event_id')
+    list_display = ('address', 'raffle', 'poap_id', 'event_id', 'email')
 
 
 @admin.register(ResultsTable)

@@ -259,7 +259,7 @@ class RaffleEvent(TimeStampedModel):
 
 class ParticipantManager(models.Manager):
 
-    def create_from_address(self, address, signature, raffle, message):
+    def create_from_address(self, address, signature, raffle, message, email):
         user_poaps = get_poaps_for_address(address)
         if not len(user_poaps) > 0:
             return ValidationError("could not get poaps for address")
@@ -279,6 +279,7 @@ class ParticipantManager(models.Manager):
                 poap_id=each['poap'],
                 event_id=each['event'],
                 message=message,
+                email=email,
                 raffle=raffle
             )
             participants.append(participant)

@@ -19,6 +19,7 @@ import RaffleBlocks from 'ui/components/RaffleBlocks';
 import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
+import RaffleParticipantEmailModal from 'ui/components/RaffleParticipantEmailModal';
 import RaffleStartModal from 'ui/components/RaffleStartModal';
 import ContactModal from 'ui/components/ContactModal';
 import CalendarModal from 'ui/components/CalendarModal';
@@ -93,6 +94,7 @@ const RaffleDetail: FC = () => {
   const [raffleInitialStatus, setInitialRaffleStatus] = useState<string>('');
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
+  const [participantEmail, setParticipantEmail] = useState<string>('');
 
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
@@ -188,6 +190,19 @@ const RaffleDetail: FC = () => {
     title: 'Add to calendar',
     id: parseInt(id, 10),
   });
+  const { showModal: handleParticipantEmail, hideModal: hideParticipantEmailModal } = useModal({
+    component: RaffleParticipantEmailModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    id: parseInt(id, 10),
+    onSuccess: (email: any) => {
+      setParticipantEmail(email as string);
+    },
+  });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
 
   // Notifications
@@ -206,6 +221,13 @@ const RaffleDetail: FC = () => {
   useEffect(() => {
     if (completeRaffle) calculateRaffleStatus(completeRaffle);
   }, [completeRaffle]); //eslint-disable-line
+
+  useEffect(() => {
+    if (participantEmail) {
+      hideParticipantEmailModal();
+      join();
+    }
+  }, [participantEmail]); //eslint-disable-line
 
   useEffect(() => {
     if (isConnected && isAccountParticipating()) {
@@ -285,6 +307,11 @@ const RaffleDetail: FC = () => {
     }
 
     if (raffle && account && !isAccountParticipating() && canAccountParticipate()) {
+      if (raffle.email_required && !participantEmail) {
+        handleParticipantEmail();
+        return;
+      }
+
       setIsSigning(true);
       setActionButtonText('Please follow instructions on your wallet');
       let typedSignedMessage = await signMessage(raffle);
@@ -298,6 +325,7 @@ const RaffleDetail: FC = () => {
           message: typedSignedMessage[1],
           address: account,
           raffle_id: raffle.id,
+          email: participantEmail,
         };
         try {
           await joinRaffle(participant);
