@@ -62,7 +62,7 @@ def send_raffle_results_email(raffle):
     if not table: return
 
     entries = ResultsTableEntry.objects.filter(results_table=table).order_by('order')
-    results = [['Position', 'Address', 'ENS', 'POAP Id', 'Email'],]
+    results = [['Position', 'Address', 'ENS', 'POAP Id', 'Email', 'Signature validated?'],]
 
     for entry in entries:
         results.append([
@@ -70,7 +70,8 @@ def send_raffle_results_email(raffle):
             entry.participant.address,
             entry.participant.ens_name,
             entry.participant.poap_id,
-            entry.participant.email
+            entry.participant.email,
+            "Yes" if entry.participant.signature.startswith('0x') else "No"
         ])
 
     output_file = StringIO()
