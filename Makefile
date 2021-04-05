@@ -1,5 +1,4 @@
 WEB=`docker-compose ps | grep gunicorn | cut -d\  -f 1 | head -n 1`
-NODE=poap-fun-node
 WEBS=`docker-compose ps | grep gunicorn | cut -d\  -f 1 `
 COMPOSE_ENV=override
 BACKUPS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/backups/)
@@ -50,9 +49,6 @@ shell-web:
 shell-db:
 	docker exec -ti poap-fun-postgres bash
 
-shell-node:
-	docker exec -ti $(NODE) bash
-
 shell-celeryw:
 	docker exec -ti poap-fun-celeryworker bash
 
@@ -71,12 +67,6 @@ log-web:
 
 log-web-live:
 	docker logs --tail 50 --follow --timestamps $(WEB)
-
-log-node:
-	docker-compose logs node
-
-log-node-live:
-	docker logs --tail 50 --follow --timestamps $(NODE)
 
 log-db:
 	docker-compose logs db
@@ -115,12 +105,6 @@ test-all:
 	docker exec $(WEB) /bin/sh -c "coverage run --source='.' manage.py test"
 	docker exec $(WEB) /bin/sh -c "pylint *"
 	docker exec $(WEB) /bin/sh -c "coverage report -m"
-	@echo "Running all tests in frontend"
-	docker exec $(NODE) /bin/sh -c "./node_modules/.bin/eslint ."
-
-eslint:
-	@echo "Running eslint"
-	docker exec $(NODE) /bin/sh -c "./node_modules/.bin/eslint ."
 
 coverage:
 	docker exec $(WEB) /bin/sh -c "coverage report -m"

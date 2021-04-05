@@ -95,23 +95,6 @@ server {
     }
 }
 
-server {
-    listen 80;
-    server_name {{ $react_default_host }} www.{{ $react_default_host }};
-    charset utf-8;
-
-    location / {
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto http;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_redirect off;
-
-        proxy_pass http://frontend;
-    }
-}
-
 {{ if eq $api_default_host "api.poap.fun" }}
 server {
     listen 80 default_server;

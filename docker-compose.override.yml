@@ -4,12 +4,6 @@ services:
   web:
     environment:
       DEBUG: 'true'
-  node:
-    build: ./frontend
-    command: ["npm", "start"]
-    volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
   nginx:
     environment:
       REACT_DEFAULT_HOST: 'localhost'

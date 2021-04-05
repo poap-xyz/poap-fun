@@ -5,14 +5,6 @@ services:
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-  node:
-    build:
-      context: ./frontend
-      dockerfile: DockerfileProduction
-    environment:
-      REACT_APP_ENABLE_REACT_QUERY: 'false'
-    volumes:
-      - ./frontend/build:/usr/src/app/build
   nginx:
     environment:
       REACT_DEFAULT_HOST: 'fun.xivis.com'
