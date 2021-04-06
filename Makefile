@@ -32,10 +32,6 @@ clean: stop
 restart: clean build up ps
 	@echo "Restarted all containers"
 
-reboot-db:
-	docker exec poap-fun-postgres /bin/sh -c "dropdb -U postgres postgres"
-	docker exec poap-fun-postgres /bin/sh -c "createdb -U postgres postgres"
-
 ########
 #SHELLS#
 ########
@@ -45,9 +41,6 @@ shell-nginx:
 
 shell-web:
 	docker exec -ti $(WEB) bash
-
-shell-db:
-	docker exec -ti poap-fun-postgres bash
 
 shell-celeryw:
 	docker exec -ti poap-fun-celeryworker bash
@@ -67,9 +60,6 @@ log-web:
 
 log-web-live:
 	docker logs --tail 50 --follow --timestamps $(WEB)
-
-log-db:
-	docker-compose logs db
 
 log-celeryw:
 	docker-compose logs celeryworker
@@ -133,18 +123,11 @@ set-django: collectstatic migrate
 #BACKUPS#
 #########
 
-backup-db:
-	if [ ! -d $(BACKUPS_DIR) ] ; then mkdir $(BACKUPS_DIR) ; fi
-	$(eval DUMP_NAME = $(BACKUPS_DIR)/`date +%Y%m%d`$(ENV_STAGE)_db_dump_.gz)
-	docker exec -t poap-fun-postgres pg_dumpall -c -U postgres | gzip > $(DUMP_NAME)
 
 azure-backup:
 	docker exec $(WEB) /bin/sh -c "python manage.py azure_backup_process"
 
-clean-backups:
-	find $(BACKUPS_DIR)/*.gz -mtime +2 -type f -delete
-
-daily-backup-process: backup-db azure-backup clean-backups
+daily-backup-process: azure-backup
 
 ############
 #DEPLOYMENT#

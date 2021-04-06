@@ -84,12 +84,16 @@ const useCustomState = () => {
 
       // TODO - review why _web3.eth.getAccounts() is not working
       let _account = '';
-      if (_provider.selectedAddress) {
+      if (_provider && _provider.selectedAddress) {
         _account = _provider.selectedAddress;
         setAccount(_account);
       }
-      if (_provider.accounts) {
+      if (!_account && _provider && _provider.accounts) {
         _account = _provider.accounts[0];
+        setAccount(_account);
+      }
+      if (!account && _provider && _provider.address) {
+        _account = _provider.address;
         setAccount(_account);
       }
     } catch (e) {
@@ -175,6 +179,9 @@ const useCustomState = () => {
       console.log('Error >> EIP712 signature');
       console.log(e);
       if (e.message.toLowerCase().indexOf('not supported on this device') > -1) {
+        return [`unsupported-signature-${localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER')}`, data];
+      }
+      if (e.message.toLowerCase().indexOf('eth_signtypeddata') > -1) {
         return [`unsupported-signature-${localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER')}`, data];
       }
     }

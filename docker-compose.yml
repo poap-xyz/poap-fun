@@ -9,7 +9,6 @@ services:
     expose:
       - "8000"
     links:
-      - postgres:postgres
       - redis:redis
       - celeryworker:celeryworker
       - celerybeat:celerybeat
@@ -47,15 +46,6 @@ services:
     networks:
       - api-tier
 
-  postgres:
-    restart: always
-    image: postgres:10.7
-    container_name: poap-fun-postgres
-    volumes:
-      - pgdata:/var/lib/postgresql/data/
-    networks:
-      - back-tier
-
   redis:
     restart: always
     image: redis:latest
@@ -81,7 +71,6 @@ services:
     environment:
       C_FORCE_ROOT: 'yes'
     depends_on:
-      - postgres
       - redis
     networks:
       - back-tier
@@ -99,14 +88,12 @@ services:
     environment:
       C_FORCE_ROOT: 'yes'
     depends_on:
-      - postgres
       - redis
     command: celery beat --app=backend -s /tmp/celerybeat-schedule --pidfile=/tmp/celery.pid --loglevel=INFO
     networks:
       - back-tier
 
 volumes:
-  pgdata:
   mediadata:
   redisdata:
 
