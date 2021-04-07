@@ -126,9 +126,11 @@ const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
     );
   };
 
+  let _participants = participants.length > 100 ? participants.slice(0, 100) : participants;
+
   return (
     <div className={'ticket-holder'}>
-      {participants.map((each) => {
+      {_participants.map((each) => {
         return (
           <Tooltip title={each.event.name} key={each.id}>
             <Popover placement={'bottom'} title={''} content={generateLinks(each.poap_id)} trigger={['click']}>
