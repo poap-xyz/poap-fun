@@ -85,5 +85,9 @@ class ResultsTableEntryAdmin(admin.ModelAdmin):
 class BlockDataAdmin(admin.ModelAdmin):
     list_display = ('order', 'raffle', 'block_number', 'gas_limit')
 
+@admin.register(RaffleLock)
+class RaffleLockAdmin(admin.ModelAdmin):
+    list_display = ('raffle', 'locked', 'modified_at')
+
 
 admin.site.register(EmailConfiguration, SingletonModelAdmin)
