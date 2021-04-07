@@ -184,7 +184,6 @@ const useCustomState = () => {
       if (e.message.toLowerCase().indexOf('eth_signtypeddata') > -1) {
         return [`unsupported-signature-${localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER')}`, data];
       }
-      alert(JSON.stringify(e));
     }
     return ['', ''];
   };

@@ -108,6 +108,17 @@ const PopoverContent = styled.div`
   text-align: center;
 `;
 
+const OtherParticipants = styled.div`
+  width: 100%;
+  text-align: center;
+  font-family: var(--alt-font);
+  color: var(--primary-color);
+  font-size: 16px;
+  padding: 10px 0;
+`;
+
+const maxParticipantsAmount = 200;
+
 const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
   const generateLinks = (token: number) => {
     return (
@@ -126,25 +137,31 @@ const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
     );
   };
 
-  let _participants = participants.length > 100 ? participants.slice(0, 100) : participants;
+  let _participants =
+    participants.length > maxParticipantsAmount ? participants.slice(0, maxParticipantsAmount) : participants;
 
   return (
-    <div className={'ticket-holder'}>
-      {_participants.map((each) => {
-        return (
-          <Tooltip title={each.event.name} key={each.id}>
-            <Popover placement={'bottom'} title={''} content={generateLinks(each.poap_id)} trigger={['click']}>
-              <div className="number-container">
-                <img src={each.event.image_url} alt={each.event.name} />
-                <span>
-                  #{each.poap_id.toString().padStart(5, '0')} <FiExternalLink />{' '}
-                </span>
-              </div>
-            </Popover>
-          </Tooltip>
-        );
-      })}
-    </div>
+    <>
+      <div className={'ticket-holder'}>
+        {_participants.map((each) => {
+          return (
+            <Tooltip title={each.event.name} key={each.id}>
+              <Popover placement={'bottom'} title={''} content={generateLinks(each.poap_id)} trigger={['click']}>
+                <div className="number-container">
+                  <img src={each.event.image_url} alt={each.event.name} />
+                  <span>
+                    #{each.poap_id.toString().padStart(5, '0')} <FiExternalLink />{' '}
+                  </span>
+                </div>
+              </Popover>
+            </Tooltip>
+          );
+        })}
+      </div>
+      {participants.length > maxParticipantsAmount && (
+        <OtherParticipants>And {participants.length - maxParticipantsAmount} more!</OtherParticipants>
+      )}
+    </>
   );
 };
 

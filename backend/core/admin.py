@@ -78,6 +78,7 @@ class ResultsTabletAdmin(admin.ModelAdmin):
 @admin.register(ResultsTableEntry)
 class ResultsTableEntryAdmin(admin.ModelAdmin):
     list_display = ('order', 'participant', 'results_table')
+    list_filter = ('results_table',)
 
 
 @admin.register(BlockData)

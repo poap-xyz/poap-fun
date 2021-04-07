@@ -183,7 +183,7 @@ const EthStats: FC<EthStatsProps> = ({ raffle, onBlockAction }) => {
       setLastBlockTime((prevLastBlockTime: number) => prevLastBlockTime + 1);
     }, 1000);
 
-    const intervalBlocks = setInterval(refetchBlocks, 3000);
+    const intervalBlocks = setInterval(refetchBlocks, 5000);
 
     return () => {
       clearInterval(intervalId);
