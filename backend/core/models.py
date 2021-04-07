@@ -418,3 +418,30 @@ class EmailConfiguration(SingletonModel):
 
     class Meta:
         verbose_name = _("Email Configuration")
+
+
+class RaffleLock(TimeStampedModel):
+    """
+    Represents a DB lock for the raffle
+    """
+
+    class Meta:
+        verbose_name = _("raffle lock")
+        verbose_name_plural = _("raffle locks")
+
+    raffle = models.OneToOneField(Raffle, verbose_name=_("raffle"), on_delete=models.PROTECT, unique=True)
+    locked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Raffle lock for {self.raffle}"
+
+    def __repr__(self):
+        return f"RaffleLock(raffle.id: {self.raffle.id})"
+
+    def lock(self):
+        self.locked = True
+        self.save()
+
+    def unlock(self):
+        self.locked = False
+        self.save()

@@ -257,7 +257,7 @@ const RaffleDetail: FC = () => {
       const interval = setInterval(() => {
         refetchBlocks();
         if (completeRaffle?.results_table) refetchResults();
-      }, 1000);
+      }, 5000);
       return () => clearInterval(interval);
     }
     return;

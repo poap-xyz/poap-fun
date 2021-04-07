@@ -181,13 +181,24 @@ class RaffleResultsService:
         except BlockNotFound:
             return None
 
+        next_block_number = raw_block_data.get("number")
+        next_block_timestamps = raw_block_data.get("timestamp")
+        next_gas_limit = raw_block_data.get("gasLimit")
+        q = BlockData.objects.filter(
+            raffle=raffle,
+            block_number=next_block_number,
+            timestamp=next_block_timestamps,
+            gas_limit=next_gas_limit
+        )
+        if q.exists():
+            return None
+
         order = prev_block.order + 1 if prev_block else 0
-        gas_limit = raw_block_data.get("gasLimit")
         block_data = BlockData(
             raffle=raffle,
-            gas_limit=gas_limit,
-            block_number=raw_block_data.get("number"),
-            timestamp=raw_block_data.get("timestamp"),
+            gas_limit=next_gas_limit,
+            block_number=next_block_number,
+            timestamp=next_block_timestamps,
             order=order
         )
 
