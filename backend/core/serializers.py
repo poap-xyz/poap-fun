@@ -202,7 +202,7 @@ class MultiParticipantSerializer(serializers.Serializer):
                 "This address is already participating"
             )
 
-        if raffle.email_required and not attrs['email']:
+        if raffle.email_required and 'email' not in attrs:
             raise ValidationError(
                 "An email is required for raffle registration"
             )
