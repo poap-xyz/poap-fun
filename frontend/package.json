@@ -8,7 +8,7 @@
     "@emotion/styled": "^10.0.27",
     "@tinymce/tinymce-react": "^3.6.0",
     "@types/lodash.isempty": "^4.4.6",
-    "@walletconnect/web3-provider": "^1.2.2",
+    "@walletconnect/web3-provider": "^1.4.1",
     "antd": "^4.5.2",
     "clean-deep": "^3.3.0",
     "constate": "^2.0.0",
@@ -36,7 +36,7 @@
     "use-debounce": "^3.4.3",
     "use-sound": "^1.0.2",
     "web3": "^1.2.11",
-    "web3modal": "^1.8.0",
+    "web3modal": "^1.9.3",
     "wretch": "^1.7.2",
     "yup": "^0.29.1"
   },
