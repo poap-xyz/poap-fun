@@ -27,6 +27,8 @@ $RECYCLE.BIN/
 
 # Env variables
 .env
+.env.dev
+.env.prod
 
 ## Project
 

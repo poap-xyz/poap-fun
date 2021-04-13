@@ -11,7 +11,6 @@ ENV_STAGE = ``
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.$(COMPOSE_ENV).yml build
 
-
 up:
 	docker-compose -f docker-compose.yml -f docker-compose.$(COMPOSE_ENV).yml up -d
 
@@ -116,7 +115,10 @@ migrate:
 makemigrations:
 	docker exec $(WEB) /bin/sh -c "python manage.py makemigrations"
 
-set-django: collectstatic migrate
+clear-cache:
+	docker exec $(WEB) /bin/sh -c "python manage.py invalidate all"
+
+set-django: collectstatic migrate clear-cache
 	@echo "Django environment setup complete."
 
 #########

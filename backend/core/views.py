@@ -55,7 +55,7 @@ class RaffleViewSet(viewsets.ModelViewSet):
         model = self.serializer_class.Meta.model
         now = timezone.now()
 
-        queryset = model.objects.annotate(
+        queryset = model.objects.filter(published=True).annotate(
             timediff=models.Case(
                 models.When(finalized=False, then=F('draw_datetime') - now),
                 models.When(finalized=True, then=now - F('end_datetime')),

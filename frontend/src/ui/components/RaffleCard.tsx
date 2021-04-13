@@ -14,6 +14,9 @@ import { DATETIMEFORMAT } from 'lib/constants/theme';
 // Helpers
 import { createRaffleLink } from 'lib/helpers/raffles';
 
+// Assets
+import poapBadge from 'assets/img/POAP.svg';
+
 // Types
 import { CompleteRaffle, PoapEvent } from 'lib/types';
 type RaffleCardProps = {
@@ -159,7 +162,7 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
                     return (
                       <div key={badge.id} className={'badge-event'}>
                         <Tooltip title={badge.name}>
-                          <img src={badge.image_url} alt={badge.name} />
+                          <img src={badge.image_url !== '' ? badge.image_url : poapBadge} alt={badge.name} />
                         </Tooltip>
                       </div>
                     );

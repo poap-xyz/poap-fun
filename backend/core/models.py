@@ -15,6 +15,8 @@ from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
 from solo.models import SingletonModel
 
+from cacheops import invalidate_model
+
 from core.utils import generate_unique_filename, get_poaps_for_address, get_address_name
 from core.validators import validate_image_size
 
@@ -83,6 +85,8 @@ class Raffle(TimeStampedModel):
     events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
     # marked as true when all results have been generated for the raffle
     finalized = models.BooleanField(_("finalized"), default=False)
+    # marked as true when all results have been generated for the raffle
+    published = models.BooleanField(_("published"), default=True)
     # used to store raw token to return after creation
     _token = ''
 
@@ -119,7 +123,6 @@ class Raffle(TimeStampedModel):
 
         super().save(**kwargs)
 
-
         task_name = f'generating_results_for_raffle_{self.id}'
         task = PeriodicTask.objects.filter(name=task_name).first()
         if self.draw_datetime and not self.finalized:
@@ -137,7 +140,7 @@ class Raffle(TimeStampedModel):
             else:
                 task.start_time = timezone.now()
 
-            task.enabled = True
+            task.enabled = self.published
             task.save()
 
             # Notifications
@@ -152,7 +155,7 @@ class Raffle(TimeStampedModel):
             )
             task.enabled = True
             task.start_time = self.draw_datetime - timedelta(hours=1)
-            if task.start_time < now:
+            if task.start_time < now or not self.published:
                 task.enabled = False
             task.save()
 
@@ -165,7 +168,7 @@ class Raffle(TimeStampedModel):
             )
             task.start_time = self.draw_datetime - timedelta(minutes=1)
             task.enabled = True
-            if task.start_time < now:
+            if task.start_time < now or not self.published:
                 task.enabled = False
             task.save()
 
@@ -181,7 +184,7 @@ class Raffle(TimeStampedModel):
             else:
                 task.start_time = timezone.now()
 
-            task.enabled = True
+            task.enabled = self.published
             task.save()
 
         elif task:
@@ -190,6 +193,8 @@ class Raffle(TimeStampedModel):
                 task.save()
 
         ResultsTable.objects.get_or_create(raffle=self)
+
+        invalidate_model(Raffle)
 
     def __str__(self):
         return self.name
@@ -309,6 +314,10 @@ class Participant(TimeStampedModel):
 
     objects = ParticipantManager()
 
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        invalidate_model(Participant)
+
     def __str__(self):
         return self.address
 
@@ -328,6 +337,10 @@ class ResultsTable(TimeStampedModel):
     raffle = models.OneToOneField(
         Raffle, verbose_name=_("raffle"), related_name="results_table", on_delete=models.PROTECT, unique=True
     )
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        invalidate_model(ResultsTable)
 
     def __str__(self):
         return f"Results table for raffle {self.raffle}"
@@ -355,6 +368,10 @@ class ResultsTableEntry(TimeStampedModel):
     # The order for the table entry in which it was selected for
     # the raffle. eg, 1 for first place, 2 for 2nd place etc...
     order = models.IntegerField(_("order"))
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        invalidate_model(ResultsTableEntry)
 
     def __str__(self):
         return f"{self.order}º - {self.results_table.raffle} - {self.participant}"
@@ -387,6 +404,10 @@ class BlockData(TimeStampedModel):
     # The block nonce may not fit in the DB, save the 64 least significant bits
     gas_limit = models.BigIntegerField(_("gas limit"))
     timestamp = models.BigIntegerField(_("timestamp"), null=True)
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        invalidate_model(BlockData)
 
     def __str__(self):
         return f"Block data N°{self.order} for {self.raffle}"

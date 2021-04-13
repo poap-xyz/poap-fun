@@ -12,7 +12,6 @@ import { etherscanLinks } from 'lib/helpers/etherscan';
 import { BlockData } from 'lib/types';
 
 type RaffleWinnersProps = {
-  isLoading: boolean;
   blocks?: BlockData[];
 };
 
@@ -61,7 +60,7 @@ const Title = styled.h3`
   padding: 20px 0;
 `;
 
-const RaffleBlocks: FC<RaffleWinnersProps> = ({ blocks, isLoading }) => {
+const RaffleBlocks: FC<RaffleWinnersProps> = ({ blocks }) => {
   if (!blocks || blocks?.length === 0) {
     return (
       <Content>
@@ -71,26 +70,24 @@ const RaffleBlocks: FC<RaffleWinnersProps> = ({ blocks, isLoading }) => {
   }
 
   return (
-    <Spin spinning={isLoading} tip="Loading blocks">
-      <Content>
-        <Title>Last Blocks used</Title>
-        <div className={'box'}>
-          {blocks
-            .sort((a: BlockData, b: BlockData) => b.order - a.order)
-            .map((block) => {
-              return (
-                <div key={block.id}>
-                  {block.order + 1}º -{' '}
-                  <a href={etherscanLinks.blocks(block.block_number)} target={'_blank'} rel="noopener noreferrer">
-                    #{block.block_number}
-                  </a>{' '}
-                  - Gas Limit: {block.gas_limit}
-                </div>
-              );
-            })}
-        </div>
-      </Content>
-    </Spin>
+    <Content>
+      <Title>Last Blocks used</Title>
+      <div className={'box'}>
+        {blocks
+          .sort((a: BlockData, b: BlockData) => b.order - a.order)
+          .map((block) => {
+            return (
+              <div key={block.id}>
+                {block.order + 1}º -{' '}
+                <a href={etherscanLinks.blocks(block.block_number)} target={'_blank'} rel="noopener noreferrer">
+                  #{block.block_number}
+                </a>{' '}
+                - Gas Limit: {block.gas_limit}
+              </div>
+            );
+          })}
+      </div>
+    </Content>
   );
 };
 

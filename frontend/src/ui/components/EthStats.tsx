@@ -6,6 +6,7 @@ import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Hooks
 import { useBlocks } from 'lib/hooks/useBlocks';
+import { BlockData } from '../../lib/types';
 
 // Styled Components
 
@@ -155,7 +156,7 @@ const lastBlockTimeClass = (time: number) => {
 
 type EthStatsProps = {
   raffle: number;
-  onBlockAction: () => void;
+  onBlockAction: (blocks: BlockData[]) => void;
 };
 
 const EthStats: FC<EthStatsProps> = ({ raffle, onBlockAction }) => {
@@ -173,7 +174,7 @@ const EthStats: FC<EthStatsProps> = ({ raffle, onBlockAction }) => {
         const timeSinceLastBlock = 0;
         setLastBlockTime(timeSinceLastBlock);
         setBestBlock(lastBlock);
-        onBlockAction();
+        onBlockAction(blocksData);
       }
     }
   }, [blocksData]); //eslint-disable-line

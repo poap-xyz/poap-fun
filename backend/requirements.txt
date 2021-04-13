@@ -41,3 +41,8 @@ drf-yasg==1.17.1
 
 # Firebase
 firebase-admin==4.3.0
+
+# Redis
+django-redis-cache==3.0.0
+django-redisboard==4.1.1
+django-cacheops==5.1
