@@ -21,7 +21,6 @@ jobs:
             cd ~/poap-fun
             docker image prune -f
             git pull origin master
-            make build-frontend
             make deploy COMPOSE_ENV=production
       - name: Slack Notify
         uses: rtCamp/action-slack-notify@master
