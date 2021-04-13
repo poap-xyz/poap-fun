@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { Spin } from 'antd';
 
 // Constants
 import { BREAKPOINTS } from 'lib/constants/theme';
