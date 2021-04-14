@@ -22,6 +22,7 @@ export const Select = styled(SelectAntd)`
       .content {
         img {
           width: 26px;
+          height: 26px;
           border-radius: 26px;
           margin: 0;
         }

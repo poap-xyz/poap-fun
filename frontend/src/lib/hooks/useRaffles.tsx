@@ -14,7 +14,7 @@ type FetchRafflesValues = {
 export const useRaffles = ({ page, query }: FetchRafflesValues) => {
   const fetchRaffles = (key: string, page: number, query: string): Promise<FetchResponseRaffle> =>
     api()
-      .url(endpoints.fun.raffles.all)
+      .url(endpoints.fun.raffles.all(true))
       .query(cleanDeep({ page, name__icontains: query }))
       .get()
       .json();
