@@ -248,7 +248,7 @@ SENDGRID_KEY = os.getenv('SENDGRID_KEY', '')
 GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', '')
 
 # CACHEOPS SECTION
-CACHEOPS_REDIS = "redis://redis:6379/0"
+CACHEOPS_REDIS = os.getenv('REDIS_CONNECTION_STRING', 'redis://redis:6379/0')
 CACHEOPS = {
     'core.blockdata': {'ops': 'all', 'timeout': 5*60},
     'core.resultstable': {'ops': 'all', 'timeout': 5*60},
