@@ -10,8 +10,6 @@ services:
       - "8000"
     links:
       - redis:redis
-      - celeryworker:celeryworker
-      - celerybeat:celerybeat
     volumes:
       - ./backend:/usr/src/app
       - ./backups:/usr/src/backups
@@ -54,42 +52,6 @@ services:
       - "6382:6379"
     volumes:
       - redisdata:/data
-    networks:
-      - back-tier
-
-  celeryworker:
-    restart: always
-    build: ./backend
-    image: webworkerimage
-    working_dir: /usr/src/app
-    command: celery worker --app=backend --maxtasksperchild 10 -E --loglevel=INFO
-    container_name: poap-fun-celeryworker
-    volumes:
-      - mediadata:/usr/src/app/media
-      - ./backend:/usr/src/app
-    env_file: .env
-    environment:
-      C_FORCE_ROOT: 'yes'
-    depends_on:
-      - redis
-    networks:
-      - back-tier
-
-  celerybeat:
-    restart: always
-    build: ./backend
-    image: webworkerimage
-    working_dir: /usr/src/app
-    container_name: poap-fun-celerybeat
-    volumes:
-      - ./backend:/usr/src/app
-      - mediadata:/usr/src/app/media
-    env_file: .env
-    environment:
-      C_FORCE_ROOT: 'yes'
-    depends_on:
-      - redis
-    command: celery beat --app=backend -s /tmp/celerybeat-schedule --pidfile=/tmp/celery.pid --loglevel=INFO
     networks:
       - back-tier
 

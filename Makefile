@@ -41,12 +41,6 @@ shell-nginx:
 shell-web:
 	docker exec -ti $(WEB) bash
 
-shell-celeryw:
-	docker exec -ti poap-fun-celeryworker bash
-
-shell-celeryb:
-	docker exec -ti poap-fun-celerybeat bash
-
 ######
 #LOGS#
 ######
@@ -59,18 +53,6 @@ log-web:
 
 log-web-live:
 	docker logs --tail 50 --follow --timestamps $(WEB)
-
-log-celeryw:
-	docker-compose logs celeryworker
-
-log-celeryb:
-	docker-compose logs celerybeat
-
-log-celeryw-live:
-	docker-compose logs --tail 50 --follow --timestamps celeryworker
-
-log-celeryb-live:
-	docker-compose logs --tail 50 --follow --timestamps celerybeat
 
 #######
 #Tests#

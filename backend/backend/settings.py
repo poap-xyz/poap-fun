@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'import_export',
     'django_filters',
     'solo',
-    'celery',
     'drf_yasg',
     'django_celery_beat',
     'cacheops',
@@ -193,15 +192,6 @@ AUTHENTICATION_BACKENDS = (
 HIJACK_LOGIN_REDIRECT_URL = '/'
 HIJACK_LOGOUT_REDIRECT_URL = '/'
 HIJACK_ALLOW_GET_REQUESTS = True
-
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_ENABLE_UTC = True
-
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # Logging
 from django.utils.log import DEFAULT_LOGGING
