@@ -7,8 +7,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
   nginx:
     environment:
-      REACT_DEFAULT_HOST: 'poap.fun'
-      API_DEFAULT_HOST: 'api.poap.fun'
+      API_DEFAULT_HOST: 'api-ro.poap.fun'
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
