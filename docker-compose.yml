@@ -8,8 +8,6 @@ services:
     working_dir: /usr/src/app
     expose:
       - "8000"
-    links:
-      - redis:redis
     volumes:
       - ./backend:/usr/src/app
       - ./backups:/usr/src/backups
