@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import wretch, { WretcherError } from 'wretch';
 
 // env
-const { REACT_APP_API_FUN, REACT_APP_API_POAP, REACT_APP_POAP_APP } = process.env;
+const { REACT_APP_API_FUN, REACT_APP_API_FUN_READ_ONLY, REACT_APP_API_POAP, REACT_APP_POAP_APP } = process.env;
 
 export type Params = {
   [key: string]: string | number | boolean | undefined;
@@ -19,27 +19,25 @@ export const endpoints = {
   },
   fun: {
     raffles: {
-      all: `${REACT_APP_API_FUN}/api/v1/raffles/`,
-      detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/raffles/${id}/`,
+      all: (read: boolean) => `${read ? REACT_APP_API_FUN_READ_ONLY : REACT_APP_API_FUN}/api/v1/raffles/`,
+      detail: (id: number, read: boolean) =>
+        `${read ? REACT_APP_API_FUN_READ_ONLY : REACT_APP_API_FUN}/api/v1/raffles/${id}/`,
       images: `${REACT_APP_API_FUN}/api/v1/raffles/text-editor-image/`,
       join: `${REACT_APP_API_FUN}/api/v1/participants/signup_address/`,
       subscribe: `${REACT_APP_API_FUN}/api/v1/notification-subscriptions/`,
       unsubscribe: `${REACT_APP_API_FUN}/api/v1/notification-unsubscriptions/`,
     },
     prizes: {
-      all: `${REACT_APP_API_FUN}/api/v1/prizes/`,
       detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/prizes/${id}/`,
     },
     results: {
-      all: `${REACT_APP_API_FUN}/api/v1/results/`,
       detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/results/${id}/`,
     },
     participants: {
-      all: (params: Params) => `${REACT_APP_API_FUN}/api/v1/participants/?${queryString.stringify(params)}`,
-      detail: (id: number) => `${REACT_APP_API_FUN}/api/v1/participants/${id}/`,
+      all: (params: Params) => `${REACT_APP_API_FUN_READ_ONLY}/api/v1/participants/?${queryString.stringify(params)}`,
     },
     blocks: {
-      all: (params: Params) => `${REACT_APP_API_FUN}/api/v1/blocks/?${queryString.stringify(params)}`,
+      all: (params: Params) => `${REACT_APP_API_FUN_READ_ONLY}/api/v1/blocks/?${queryString.stringify(params)}`,
     },
   },
 };

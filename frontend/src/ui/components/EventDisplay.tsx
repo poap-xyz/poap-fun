@@ -24,6 +24,7 @@ const PoapContainer = styled.div`
       width: 60px;
       height: 60px;
       border-radius: 60px;
+      object-fit: cover;
     }
   }
 `;
