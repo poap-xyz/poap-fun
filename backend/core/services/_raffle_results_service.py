@@ -77,7 +77,7 @@ class RaffleResultsService:
                 else:
                     remaining_participants.append(participant)
 
-                if prev_iteration_digit and prev_iteration_digit != poap_id_cmp_digit:
+                if prev_iteration_digit is not None and prev_iteration_digit != poap_id_cmp_digit:
                     comparing_digits_identical = False
                 prev_iteration_digit = poap_id_cmp_digit
 
@@ -235,4 +235,3 @@ class RaffleResultsService:
         )
 
         return finished
-
