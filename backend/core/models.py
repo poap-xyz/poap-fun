@@ -80,7 +80,7 @@ class Raffle(TimeStampedModel):
     end_datetime = models.DateTimeField(_("raffle's end date and time"), null=True, blank=True)
     # if true, no matter how many poaps the address has, it counts as one vote.
     # if false, each of the address's poaps counts as a vote
-    one_address_one_vote = models.BooleanField(_("one address one vote"))
+    one_address_one_vote = models.BooleanField(_("weighted chance"))
     email_required = models.BooleanField(_("email required"), default=False)
     events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
     # marked as true when all results have been generated for the raffle
