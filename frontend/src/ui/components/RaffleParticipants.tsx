@@ -120,7 +120,7 @@ const OtherParticipants = styled.div`
 const maxParticipantsAmount = 200;
 
 const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
-  const generateLinks = (token: number) => {
+  const generateLinks = (token: number, address: string) => {
     return (
       <PopoverContent>
         <div>
@@ -131,6 +131,11 @@ const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
         <div>
           <a href={endpoints.poap.token(token)} target="_blank" rel="noopener noreferrer">
             View on POAP <FiExternalLink />
+          </a>
+        </div>
+        <div>
+          <a href={endpoints.poap.webScan(address)} target="_blank" rel="noopener noreferrer">
+            View POAP collection <FiExternalLink />
           </a>
         </div>
       </PopoverContent>
@@ -146,7 +151,12 @@ const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
         {_participants.map((each) => {
           return (
             <Tooltip title={each.event.name} key={each.id}>
-              <Popover placement={'bottom'} title={''} content={generateLinks(each.poap_id)} trigger={['click']}>
+              <Popover
+                placement={'bottom'}
+                title={''}
+                content={generateLinks(each.poap_id, each.address)}
+                trigger={['click']}
+              >
                 <div className="number-container">
                   <img src={each.event.image_url} alt={each.event.name} />
                   <span>
@@ -206,7 +216,7 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
   return (
     <Spin spinning={isLoading} tip="Loading participants">
       <Content>
-        <Title>Participating POAPs</Title>
+        <Title>Participating POAPs - {accountTickets.length + otherTickets.length}</Title>
         <div className={'participant-box'}>
           {accountTickets.length > 0 && (
             <div>
