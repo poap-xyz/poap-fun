@@ -24,7 +24,9 @@ export const mainStyles = css`
     --system-white: #ffffff;
     --system-black: #000000;
     --system-gray: #eaedf4;
+    --system-grey: #f7f7f7;
     --font-color: #4d5680;
+    --footer-font-color: #8492ce;
     --separator-color: #e4ecf2;
     --btn-disabled: #f3f5f9;
     --label-input: #131d66;
@@ -92,19 +94,6 @@ export const mainStyles = css`
 
     /* elevation */
     --elevation-1: 0px 10px 30px 0px rgba(55, 136, 176, 0.2);
-
-    /* Schedule */
-    --schedule-primary: var(--badge-success);
-    --schedule-secondary: #b5f5ec;
-    --schedule-font: #43b5b1;
-    --schedule-border: #21bcaf;
-    --schedule-border-list: #f0f0f0;
-
-    /* Card: colors */
-    --card-color1: var(--badge-success);
-    --card-color2: var(--schedule-secondary);
-    --card-color3: var(--schedule-font);
-    --card-color4: #2e8f8f;
 
     /* BoxShadow */
     --box-shadow: 0px 0px 16px rgba(130, 151, 173, 0.16);
