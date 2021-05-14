@@ -37,7 +37,6 @@ import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffle } from 'lib/hooks/useRaffle';
 import { useModal } from 'lib/hooks/useModal';
 import { useResults } from 'lib/hooks/useResults';
-import { useJoinRaffle } from 'lib/hooks/useJoinRaffle';
 import { useParticipants } from 'lib/hooks/useParticipants';
 import { useStateContext } from 'lib/hooks/useCustomState';
 import { useSubscribe, useUnsubscribe } from 'lib/hooks/useNotifications';
@@ -92,26 +91,16 @@ const RaffleDetail: FC = () => {
   const [actionButtonText, setActionButtonText] = useState<string>('Join Raffle');
   const [raffleInitialStatus, setInitialRaffleStatus] = useState<string>('');
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
-  const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
+  const [canJoinRaffle] = useState<boolean>(true);
   const [participantEmail, setParticipantEmail] = useState<string>('');
 
   const [isSigning, setIsSigning] = useState<boolean>(false);
-  const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
+  const [joinDisabledReason] = useState<string>('');
 
   const [blocksData, setBlocksData] = useState<BlockData[]>([]);
   const [lastResultsLength, setLastResultsLength] = useState(-1);
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
-  const {
-    rafflesInfo,
-    isConnected,
-    connectWallet,
-    account,
-    poaps,
-    isFetchingPoaps,
-    signMessage,
-    token,
-    saveToken,
-  } = useStateContext();
+  const { rafflesInfo, isConnected, connectWallet, account, signMessage, token, saveToken } = useStateContext();
 
   // Router hooks
   const { id } = useParams();
@@ -126,7 +115,7 @@ const RaffleDetail: FC = () => {
   const { data: results, isLoading: isLoadingResults, refetch: refetchResults } = useResults({
     id: raffle?.results_table,
   });
-  const { data: participantsData, isLoading: isLoadingParticipants, refetch: refetchParticipants } = useParticipants({
+  const { data: participantsData, isLoading: isLoadingParticipants } = useParticipants({
     raffle: id,
   });
 
@@ -199,7 +188,6 @@ const RaffleDetail: FC = () => {
       setParticipantEmail(email as string);
     },
   });
-  const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
 
   // Notifications
   const [subscribe] = useSubscribe();
@@ -224,20 +212,6 @@ const RaffleDetail: FC = () => {
       join();
     }
   }, [participantEmail]); //eslint-disable-line
-
-  useEffect(() => {
-    if (isConnected && isAccountParticipating()) {
-      setJoinDisabledReason('You are already participating in this raffle');
-      setCanJoinRaffle(false);
-    }
-  }, [account, participantsData]); //eslint-disable-line
-
-  useEffect(() => {
-    if (raffle && isConnected && !isFetchingPoaps && !canAccountParticipate()) {
-      setJoinDisabledReason(`You don't have any eligible POAP${raffle.events.length > 1 ? 's' : ''}`);
-      setCanJoinRaffle(false);
-    }
-  }, [poaps, raffle]); //eslint-disable-line
 
   useEffect(() => {
     if (!results) return;
@@ -270,33 +244,17 @@ const RaffleDetail: FC = () => {
     }
   };
 
-  const isAccountParticipating = () => {
-    if (account && participantsData && participantsData.length > 0) {
-      return !!participantsData.find((each) => each.address.toLowerCase() === account.toLowerCase());
-    }
-    return false;
-  };
-
-  const canAccountParticipate = () => {
-    if (raffle && poaps) {
-      let events = raffle.events.map((event) => event.event_id);
-      return poaps.filter((each) => events.includes(each.event.id.toString())).length > 0;
-    }
-    return false;
-  };
-
   const join = async () => {
     if (!isConnected) {
       await connectWallet();
       return;
     }
 
-    if (raffle && account && !isAccountParticipating() && canAccountParticipate()) {
+    if (raffle && account) {
       if (raffle.email_required && !participantEmail) {
         handleParticipantEmail();
         return;
       }
-
       setIsSigning(true);
       setActionButtonText('Please follow instructions on your wallet');
       let typedSignedMessage = await signMessage(raffle);
@@ -312,10 +270,9 @@ const RaffleDetail: FC = () => {
           raffle_id: raffle.id,
           email: participantEmail,
         };
-        try {
-          await joinRaffle(participant);
-        } catch (e) {}
-        await refetchParticipants();
+
+        console.log('Participant');
+        console.log(participant);
       }
     }
     setActionButtonText('Join Raffle');
@@ -459,7 +416,7 @@ const RaffleDetail: FC = () => {
           text={actionButtonText}
           disabled={!canJoinRaffle}
           helpText={joinDisabledReason}
-          loading={isJoiningRaffle || isSigning}
+          loading={isSigning}
         />
 
         <RaffleParticipants
