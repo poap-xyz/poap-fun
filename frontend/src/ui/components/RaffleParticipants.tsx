@@ -36,7 +36,7 @@ const Content = styled.div`
   padding: 30px 0;
 
   @media (min-width: ${BREAKPOINTS.sm}) {
-    padding: 30px 100px;
+    padding: 30px 50px;
   }
 
   .participant-box {
@@ -48,6 +48,7 @@ const Content = styled.div`
       display: flex;
       align-items: center;
       flex-direction: column;
+      margin-bottom: 10px;
 
       img {
         width: 60px;
@@ -73,8 +74,12 @@ const Content = styled.div`
       max-width: 500px;
       cursor: pointer;
 
+      @media (max-width: ${BREAKPOINTS.sm}) {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+
       @media (max-width: ${BREAKPOINTS.xs}) {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
       }
 
       div {
@@ -119,6 +124,10 @@ const OtherParticipants = styled.div`
 
 const maxParticipantsAmount = 200;
 
+// Utils
+const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+const shortEns = (ens: string) => `${ens.length > 15 ? ens.substr(0, 14) + '...' : ens}`;
+
 const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
   const generateLinks = (token: number, address: string) => {
     return (
@@ -159,6 +168,7 @@ const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
               >
                 <div className="number-container">
                   <img src={each.event.image_url} alt={each.event.name} />
+                  <span>{each.ens_name ? shortEns(each.ens_name) : shortAddress(each.address)}</span>
                   <span>
                     #{each.poap_id.toString().padStart(5, '0')} <FiExternalLink />{' '}
                   </span>
