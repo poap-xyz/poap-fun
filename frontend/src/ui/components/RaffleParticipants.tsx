@@ -79,6 +79,10 @@ const Content = styled.div`
       }
 
       @media (max-width: ${BREAKPOINTS.xs}) {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      @media (max-width: ${BREAKPOINTS.xxs}) {
         grid-template-columns: 1fr 1fr;
       }
 
@@ -91,6 +95,7 @@ const Content = styled.div`
 
         span {
           font-size: 12px;
+          line-height: 16px;
           svg {
             padding-top: 3px;
           }

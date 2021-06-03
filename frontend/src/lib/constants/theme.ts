@@ -1,6 +1,7 @@
 import { colors } from './colors';
 
 export const BREAKPOINTS = {
+  xxs: '20em',
   xs: '30em',
   sm: '48em',
   md: '62em',
