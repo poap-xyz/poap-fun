@@ -1,4 +1,3 @@
-import time
 import logging
 
 from backend.celery import app

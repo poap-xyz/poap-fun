@@ -113,3 +113,13 @@ a:link, a:visited {
     color: #6534FF;
     font-weight: bold;
 }
+
+.custom-secondary-menu {
+    padding: 10px 0 25px;
+}
+
+.custom-secondary-menu a {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #6534FF;
+}

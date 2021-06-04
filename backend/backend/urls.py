@@ -20,6 +20,9 @@ urlpatterns = [
 
     # Notifications
     url(r'api/v1/', include('notifications.urls')),
+
+    # Backoffice
+    url(r'backoffice/', include('backoffice.urls')),
 ]
 
 if 'rosetta' in settings.INSTALLED_APPS:
