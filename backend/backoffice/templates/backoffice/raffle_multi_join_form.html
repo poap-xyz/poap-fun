@@ -1,0 +1,46 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+
+
+{% block styles %}
+<style>
+    .main {
+        padding: 50px 0;
+    }
+    h1 {
+        font-family: 'Comfortaa', cursive;
+    }
+    .invalid-feedback {
+        display: block !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+    <h1>Raffle join form</h1>
+    <p>Complete the form below to include all participants in the raffle.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.raffle.id_for_label }}">Raffle:</label>
+            {{ form.raffle }}
+            {% if form.raffle.errors %}
+                <div class="invalid-feedback">
+                    {{ form.raffle.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.addresses.id_for_label }}">Addresses / ENS:</label>
+            {{ form.addresses }}
+            {% if form.addresses.errors %}
+                <div class="invalid-feedback">
+                    {{ form.addresses.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

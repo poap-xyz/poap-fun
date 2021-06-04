@@ -12,6 +12,9 @@
 
 {% block content %}
     <div id="content-main">
+        <div class="custom-secondary-menu">
+            <a href="{% url 'raffle-join' %}">Backoffice</a>
+        </div>
         {% if app_list %}
             {% for app in app_list %}
                 <div class="app-{{ app.app_label }} module">

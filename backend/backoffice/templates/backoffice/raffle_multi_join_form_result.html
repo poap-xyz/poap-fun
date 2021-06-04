@@ -1,0 +1,48 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+
+
+{% block styles %}
+<style>
+    .main {
+        padding: 50px 0;
+    }
+    h1 {
+        font-family: 'Comfortaa', cursive;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+    <h1>Raffle join results</h1>
+    <div class="jumbotron">
+        <h3>Status: {{ task.state }}</h3>
+
+        {% if task.state == 'ERROR' %}
+        <p>The task finished with the following errors:</p>
+        <pre>{{ formatted_results | pprint }}</pre>
+
+
+        {% elif task.state == 'COMPLETE' %}
+            {% if task.result != '' %}
+        <p>The task finished, but encounter the following problems:</p>
+        <pre>{{ formatted_results | pprint }}</pre>
+            {% else %}
+        <p>The task finished without issues!</p>
+            {% endif %}
+
+        {% else %}
+        <p>The task did not finished yet, the page will soon reload and check again.</p>
+        <script>
+            setTimeout(function() {
+                window.location.reload();
+            }, 5000);
+        </script>
+        {% endif %}
+    </div>
+    <div class="text-center">
+        <a href="/admin">Go back to the admin</a>
+    </div>
+</div>
+{% endblock %}
