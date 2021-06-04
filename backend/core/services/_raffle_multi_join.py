@@ -31,13 +31,12 @@ class RaffleMultipleJoinService:
         results = []
 
         for each in addresses:
-            print('Starting', each)
             try:
                 address = each.strip().lower()
                 if not Web3.isAddress(address):
                     resolved_address = w3.ens.address(address)
                     if not resolved_address or not Web3.isAddress(resolved_address):
-                        error_msg = 'Could not join participant: {} > Invalid address/ENS'.format(address)
+                        error_msg = f'Could not join participant: {address} > Invalid address/ENS'
                         results.append(error_msg)
                         continue
                     else:
@@ -56,14 +55,14 @@ class RaffleMultipleJoinService:
                         serializer.save()
                         continue
 
-                error_msg = 'Could not join participant: {}'.format(each)
+                error_msg = f'Could not join participant: {address}'
                 results.append(error_msg)
             except Exception as e:
-                error_msg = 'Could not join participant: {}'.format(each)
+                error_msg = f'Error while joining participant: {each}'
                 print('Error joining participant >> {} >> {}'.format(each, e))
                 results.append(error_msg)
 
-        return json.dumps(results)
+        return json.dumps(results) if len(results) > 0 else ''
 
     def process(self, task):
 
