@@ -145,7 +145,7 @@ const RaffleCard: FC<RaffleCardProps> = ({ raffle }) => {
           </div>
           <div className={'card-bottom-row'}>
             <div>
-              <div className={'bottom-title'}>Inscription deadline</div>
+              <div className={'bottom-title'}>Registration deadline</div>
               <div className={'bottom-data'}>
                 <div className={'deadline'}>
                   {raffle.draw_datetime
