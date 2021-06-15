@@ -52,7 +52,7 @@ class CustomUserAdmin(UserAdmin):
 @admin.register(Raffle)
 class RaffleAdmin(admin.ModelAdmin):
     list_display = ('name', 'id', 'draw_datetime', 'end_datetime', 'email_required', 'finalized')
-    list_filter = ('finalized',)
+    list_filter = ('finalized', 'published')
 
 
 @admin.register(Prize)
