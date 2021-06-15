@@ -61,7 +61,7 @@ class RaffleViewSet(viewsets.ModelViewSet):
                 models.When(finalized=True, then=now - F('end_datetime')),
                 output_field=models.DurationField(),
             )
-        ).order_by('finalized', 'timediff')
+        ).order_by('finalized', 'timediff', '-id')
 
         return queryset
 
