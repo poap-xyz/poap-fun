@@ -55,6 +55,11 @@ class RaffleAdmin(admin.ModelAdmin):
     list_filter = ('finalized', 'published')
 
 
+@admin.register(RaffleEvent)
+class RaffleEventAdmin(admin.ModelAdmin):
+    list_display = ('raffle', 'event')
+
+
 @admin.register(Prize)
 class PrizeAdmin(admin.ModelAdmin):
     list_display = ('name', 'order', 'raffle')
