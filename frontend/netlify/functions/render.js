@@ -50,6 +50,7 @@ const getRaffle = async (id) => {
 const router = express.Router();
 router.get('/', async (req, res) => {
   const isBot = dectectBot(req.headers['user-agent']);
+  console.log(req.baseUrl.split('/'));
   const eventId = req.baseUrl.split('/')[2];
 
   if (isBot && !isNaN(eventId)) {
