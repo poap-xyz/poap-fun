@@ -70,8 +70,8 @@ router.get('/', async (req, res) => {
             <meta property="og:title" content="${name}">
             <meta property="og:description" content="${description}">
             <meta property="og:image" content="https://poap.fun/og-image.png">
-            <meta property="og:image:height" content="200">
-            <meta property="og:image:width" content="200">
+            <meta property="og:image:height" content="500">
+            <meta property="og:image:width" content="500">
             <meta property="twitter:card" content="summary">
             <meta property="twitter:site" content="@poapxyz">
             <meta property="twitter:title" content="${name}">
