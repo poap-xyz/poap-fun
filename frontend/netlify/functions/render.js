@@ -57,7 +57,7 @@ router.get('/', async (req, res) => {
 
     const { description, name } = raffle;
 
-    if (data) {
+    if (description && name) {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.write(`
       <!doctype html>
