@@ -55,9 +55,10 @@ router.get('/', async (req, res) => {
   if (isBot) {
     const raffle = await getRaffle(eventId);
 
-    const { description, name } = raffle;
+    const { data } = raffle;
+    const { description, name } = data;
 
-    if (description && name) {
+    if (data) {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.write(`
       <!doctype html>
