@@ -50,12 +50,12 @@ const PoapFunApp = () => (
         <ModalProvider>
           <Router>
             <Switch>
+              <Redirect from={ROUTES.raffleDetail} to={ROUTES.raffleMetaDetail} />
               {publicRoutes.map(({ Component, path }) => (
                 <PublicRoute key={path} path={path}>
                   <Component />
                 </PublicRoute>
               ))}
-              <Redirect from={ROUTES.raffleDetail} to={ROUTES.raffleMetaDetail} />
             </Switch>
           </Router>
           <Global styles={mainStyles} />
