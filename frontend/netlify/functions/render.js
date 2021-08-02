@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
   const isBot = dectectBot(req.headers['user-agent']);
   const eventId = req.baseUrl.split('/')[4];
 
-  if (isBot) {
+  if (isBot && !isNaN(eventId)) {
     const raffle = await getRaffle(eventId);
 
     const { data } = raffle;
