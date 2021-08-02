@@ -1,5 +1,5 @@
 [[redirects]]
-  from = "/fun/*"
+  from = "/raffle/*"
   to = "https://fun-prerender.netlify.app/.netlify/functions/render/:route"
   status = 200
   force = true
