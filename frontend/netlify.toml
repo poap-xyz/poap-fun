@@ -1,6 +1,6 @@
 [[redirects]]
   from = "/fun/*"
-  to = "https://poap-webapp-prerender.netlify.app/.netlify/functions/render/:route"
+  to = "https://trusting-hermann-ed5953.netlify.app/.netlify/functions/render/:route"
   status = 200
   force = true
 
