@@ -50,7 +50,7 @@ const getRaffle = async (id) => {
 const router = express.Router();
 router.get('/', async (req, res) => {
   const isBot = dectectBot(req.headers['user-agent']);
-  const eventId = req.baseUrl.split('/')[2];
+  const eventId = req.baseUrl.split('/')[4];
 
   if (isBot) {
     const raffle = await getRaffle(eventId);
