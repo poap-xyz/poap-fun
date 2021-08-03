@@ -21,7 +21,7 @@ function dectectBot(userAgent) {
     'vkShare',
     'facebot',
     'outbrain',
-    'W3C_Validator',
+    'w3c_validator',
     'whatsapp',
     'telegrambot',
     'discordbot'
