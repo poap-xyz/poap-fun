@@ -1,0 +1,11 @@
+[[redirects]]
+  from = "/raffle/*"
+  to = "https://fun-prerender.netlify.app/.netlify/functions/render/:route"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
