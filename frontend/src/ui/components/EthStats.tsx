@@ -129,7 +129,7 @@ const EthStatValue = styled.p`
   letter-spacing: -1px;
 `;
 
-const GasLimitContainer = styled.div`
+const GasUsedContainer = styled.div`
   display: flex;
   padding: 7px 15px;
   justify-content: space-between;
@@ -140,7 +140,7 @@ const GasLimitContainer = styled.div`
   }
 `;
 
-const GasLimitValue = styled.p`
+const GasUsedValue = styled.p`
   font-size: 16px;
   font-weight: 300;
   margin-bottom: 0;
@@ -214,13 +214,13 @@ const EthStats: FC<EthStatsProps> = ({ raffle, onBlockAction }) => {
         </div>
       </EthStatContainer>
 
-      <GasLimitContainer>
+      <GasUsedContainer>
         <div>
           <PriceIcon />
-          <EthStatTitle>gas limit</EthStatTitle>
+          <EthStatTitle>gas used</EthStatTitle>
         </div>
-        <GasLimitValue className="text-info">{blocksData[0].gas_limit} gas</GasLimitValue>
-      </GasLimitContainer>
+        <GasUsedValue className="text-info">{blocksData[0].gas_used} gas</GasUsedValue>
+      </GasUsedContainer>
     </EthStatsContainer>
   );
 };
