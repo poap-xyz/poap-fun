@@ -81,7 +81,7 @@ const RaffleBlocks: FC<RaffleWinnersProps> = ({ blocks }) => {
                 <a href={etherscanLinks.blocks(block.block_number)} target={'_blank'} rel="noopener noreferrer">
                   #{block.block_number}
                 </a>{' '}
-                - Gas Limit: {block.gas_limit}
+                - Gas Used: {block.gas_used}
               </div>
             );
           })}

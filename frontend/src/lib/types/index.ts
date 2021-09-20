@@ -128,7 +128,7 @@ export type BlockData = {
   raffle: number;
   order: number;
   block_number: number;
-  gas_limit: number;
+  gas_used: number;
   timestamp: number;
 };
 
