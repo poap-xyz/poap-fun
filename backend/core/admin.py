@@ -83,7 +83,7 @@ class ResultsTableEntryAdmin(admin.ModelAdmin):
 
 @admin.register(BlockData)
 class BlockDataAdmin(admin.ModelAdmin):
-    list_display = ('order', 'raffle', 'block_number', 'gas_limit')
+    list_display = ('order', 'raffle', 'block_number', 'gas_used')
 
 @admin.register(RaffleLock)
 class RaffleLockAdmin(admin.ModelAdmin):

@@ -253,4 +253,4 @@ class BlockDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlockData
-        fields = ["id", "raffle", "order", "block_number", "gas_limit", "timestamp"]
+        fields = ["id", "raffle", "order", "block_number", "gas_used", "timestamp"]

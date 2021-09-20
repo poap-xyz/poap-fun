@@ -402,7 +402,7 @@ class BlockData(TimeStampedModel):
     block_number = models.BigIntegerField(_("block number"))
 
     # The block nonce may not fit in the DB, save the 64 least significant bits
-    gas_limit = models.BigIntegerField(_("gas limit"))
+    gas_used = models.BigIntegerField(_("gas used"))
     timestamp = models.BigIntegerField(_("timestamp"), null=True)
 
     def save(self, **kwargs):

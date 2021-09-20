@@ -88,7 +88,7 @@ class TestRaffleResultsService:
 
         participants = [participant_1, participant_2, participant_3, participant_4, participant_5]
 
-        block_data = baker.make("core.BlockData", gas_limit=109)
+        block_data = baker.make("core.BlockData", gas_used=109)
         raffle_results_service._save_new_results_table_entries(
             raffle.results_table, participants, block_data=block_data
         )
@@ -116,7 +116,7 @@ class TestRaffleResultsService:
 
         participants = [participant_1, participant_2]
 
-        block_data = baker.make("core.BlockData", gas_limit=109)
+        block_data = baker.make("core.BlockData", gas_used=109)
         raffle_results_service._save_new_results_table_entries(
             raffle.results_table, participants, block_data=block_data
         )
@@ -139,7 +139,7 @@ class TestRaffleResultsService:
 
         participants = [participant_1, participant_2, participant_3]
 
-        block_data = baker.make("core.BlockData", gas_limit=105)
+        block_data = baker.make("core.BlockData", gas_used=105)
         raffle_results_service._save_new_results_table_entries(
             raffle.results_table, participants, block_data=block_data
         )
