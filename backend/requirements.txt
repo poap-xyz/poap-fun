@@ -20,7 +20,7 @@ sentry-sdk==0.16.0
 git+https://github.com/Xivis/django-azure-backup.git@master#egg=django_azure_backup==0.0.2
 
 # Celery
-celery==4.4.6
+celery==5.2.2
 
 # Linters and tests
 pytest==5.4.3
