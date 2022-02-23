@@ -20,6 +20,7 @@ import DatePicker from 'ui/components/DatePicker';
 import TimePicker from 'ui/components/TimePicker';
 import SelectEvent from 'ui/components/SelectEvent';
 import Editor from 'ui/components/Editor';
+import HelpText from 'ui/styled/HelpText'
 
 // Helpers
 import { mergeRaffleDatetime } from 'lib/helpers/api';
@@ -375,6 +376,14 @@ const RaffleCreateForm: FC = () => {
                 values={values}
               />
             </Col>
+
+            { /*Legal requirements */ }
+            <Col span={24}>
+              <HelpText>
+                Raffles must be conducted by you in compliance with all laws and may not be used for gambling or illegal lotteries. Issuer is solely responsible for ensuring that its raffle complies with all applicable laws, including all prizes, descriptions and for making all necessary disclosures to users.  Your use of this service is subject to the POAP Terms of Service as found on poap.xyz.
+              </HelpText>
+            </Col>
+
           </Row>
         </Form>
       </Card>
