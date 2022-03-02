@@ -137,7 +137,7 @@ const RaffleCreateForm: FC = () => {
     }
 
     if (!acceptedLegal) {
-      return setFieldError('acceptedLegal', 'Accepting the terms and conditions is required');
+      return alert('Accepting the terms and conditions is required');
     }
 
     try {
