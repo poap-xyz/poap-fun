@@ -20,7 +20,7 @@ import DatePicker from 'ui/components/DatePicker';
 import TimePicker from 'ui/components/TimePicker';
 import SelectEvent from 'ui/components/SelectEvent';
 import Editor from 'ui/components/Editor';
-import HelpText from 'ui/styled/HelpText'
+import { HelpText } from 'ui/styled/HelpText';
 
 // Helpers
 import { mergeRaffleDatetime } from 'lib/helpers/api';
@@ -49,6 +49,7 @@ export type RaffleCreateFormValue = {
   eligibleEvents: number[];
   raffleDate: moment.Moment | undefined;
   raffleTime: moment.Moment | undefined;
+  acceptedLegal: boolean;
 };
 
 const PrizeContainer = styled.div`
@@ -100,6 +101,7 @@ const RaffleCreateForm: FC = () => {
     weightedVote: false,
     emailRequired: false,
     undefinedDrawDateTime: false,
+    acceptedLegal: false,
     startDateHelper: '',
     raffleDate: undefined,
     raffleTime: undefined,
@@ -127,11 +129,16 @@ const RaffleCreateForm: FC = () => {
       eligibleEvents,
       startDateHelper,
       undefinedDrawDateTime,
+      acceptedLegal,
     }: RaffleCreateFormValue,
     { setFieldError }: any,
   ) => {
     if (!prizes.length) {
       return setFieldError('prize', 'You should have at least one prize');
+    }
+
+    if (!acceptedLegal) {
+      return setFieldError('acceptedLegal', 'Accepting the terms and conditions is required');
     }
 
     try {
@@ -377,13 +384,16 @@ const RaffleCreateForm: FC = () => {
               />
             </Col>
 
-            { /*Legal requirements */ }
+            {/*Legal requirements */}
             <Col span={24}>
-              <HelpText>
-                Raffles must be conducted by you in compliance with all laws and may not be used for gambling or illegal lotteries. Issuer is solely responsible for ensuring that its raffle complies with all applicable laws, including all prizes, descriptions and for making all necessary disclosures to users.  Your use of this service is subject to the POAP Terms of Service as found on poap.xyz.
-              </HelpText>
+              <Checkbox
+                handleChange={handleChange}
+                name="acceptedLegal"
+                sideText="Accept terms of service and privacy policy"
+                helpText="Raffles must be conducted by you in compliance with all laws and may not be used for gambling or illegal lotteries. Issuer is solely responsible for ensuring that its raffle complies with all applicable laws, including all prizes, descriptions and for making all necessary disclosures to users.  Your use of this service is subject to the POAP Terms of Service and Privacy Policy as found on poap.xyz."
+                values={values}
+              />
             </Col>
-
           </Row>
         </Form>
       </Card>
