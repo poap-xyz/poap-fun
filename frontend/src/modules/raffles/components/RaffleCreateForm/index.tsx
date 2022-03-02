@@ -20,7 +20,6 @@ import DatePicker from 'ui/components/DatePicker';
 import TimePicker from 'ui/components/TimePicker';
 import SelectEvent from 'ui/components/SelectEvent';
 import Editor from 'ui/components/Editor';
-import { HelpText } from 'ui/styled/HelpText';
 
 // Helpers
 import { mergeRaffleDatetime } from 'lib/helpers/api';
