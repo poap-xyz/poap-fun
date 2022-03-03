@@ -9,6 +9,7 @@ export default yup.object().shape({
   startDateHelper: yup.string().test('Undefined date', 'This field is required', function (value) {
     return !this.parent.undefinedDrawDateTime || (this.parent.undefinedDrawDateTime && value);
   }),
+  acceptedLegal: yup.boolean(),
   raffleDate: yup
     .date()
     .test('Defined date', 'This field is required', function (value) {
