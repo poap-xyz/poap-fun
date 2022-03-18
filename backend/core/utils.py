@@ -49,7 +49,7 @@ def get_poaps_for_address(address):
     if not address:
         return None
 
-    request_url = f"https://api.poap.xyz/actions/scan/{address}"
+    request_url = f"https://api.poap.tech/actions/scan/{address}"
     response = requests.get(request_url)
 
     if not response.ok:
