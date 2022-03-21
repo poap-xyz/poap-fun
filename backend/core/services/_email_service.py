@@ -1,9 +1,10 @@
+import base64
 import logging
 
 from django.conf import settings
 
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 
 from core.models import EmailConfiguration
 
@@ -40,6 +41,17 @@ class EmailService(object):
 
     def set_data(self, data):
         self._message.dynamic_template_data = data
+
+    def add_attachment(self, data, file_name, file_type):
+        encoded_file = base64.b64encode(data).decode()
+
+        attached_file = Attachment(
+            FileContent(encoded_file),
+            FileName(file_name),
+            FileType(file_type),
+            Disposition('attachment')
+        )
+        self._message.attachment = attached_file
 
     def send_email(self):
         try:

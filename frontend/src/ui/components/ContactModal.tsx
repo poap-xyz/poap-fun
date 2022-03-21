@@ -15,7 +15,7 @@ const ContactModal = ({ id }: { id: number }) => {
         </a>
       </p>
       <p>
-        If you want to send a proof that you're the address owner, you can sign a mesagge{' '}
+        If you want to send a proof that you're the address owner, you can sign a message{' '}
         <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank" rel="noopener noreferrer">
           here
         </a>

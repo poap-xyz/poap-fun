@@ -9,7 +9,7 @@ import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffles } from 'lib/hooks/useRaffles';
 
 // Helpers
-import { mergeRaffleEvent } from 'lib/helpers/api';
+import { mergeRaffleEvent, regenerateRaffleEvents } from 'lib/helpers/api';
 
 // Components
 import Input from 'ui/components/Input';
@@ -75,11 +75,17 @@ const RaffleGrid: FC = () => {
   }, [debouncedSearchTerm]); //eslint-disable-line
 
   useEffect(() => {
-    if (!events || !apiRaffles) return;
+    if (!apiRaffles) return;
+    let _events = events && events.length > 0 ? events : [];
 
-    setRaffles((prevRaffles) => [...prevRaffles, ...mergeRaffleEvent(apiRaffles.results, events)]);
+    setRaffles((prevRaffles) => [...prevRaffles, ...mergeRaffleEvent(apiRaffles.results, _events)]);
     setTotalPages(Math.ceil(apiRaffles.count / API_PAGE_SIZE));
   }, [apiRaffles, events]); //eslint-disable-line
+
+  useEffect(() => {
+    if (!raffles || !events) return;
+    setRaffles(regenerateRaffleEvents(raffles, events));
+  }, [events]); //eslint-disable-line
 
   return (
     <Container sidePadding>

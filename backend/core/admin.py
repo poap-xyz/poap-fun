@@ -51,8 +51,13 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Raffle)
 class RaffleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'id', 'draw_datetime', 'end_datetime', 'finalized')
-    list_filter = ('finalized',)
+    list_display = ('name', 'id', 'draw_datetime', 'end_datetime', 'email_required', 'finalized')
+    list_filter = ('finalized', 'published')
+
+
+@admin.register(RaffleEvent)
+class RaffleEventAdmin(admin.ModelAdmin):
+    list_display = ('raffle', 'event')
 
 
 @admin.register(Prize)
@@ -67,7 +72,7 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
-    list_display = ('address', 'raffle', 'poap_id', 'event_id')
+    list_display = ('address', 'raffle', 'poap_id', 'event_id', 'email')
 
 
 @admin.register(ResultsTable)
@@ -78,11 +83,16 @@ class ResultsTabletAdmin(admin.ModelAdmin):
 @admin.register(ResultsTableEntry)
 class ResultsTableEntryAdmin(admin.ModelAdmin):
     list_display = ('order', 'participant', 'results_table')
+    list_filter = ('results_table',)
 
 
 @admin.register(BlockData)
 class BlockDataAdmin(admin.ModelAdmin):
-    list_display = ('order', 'raffle', 'block_number', 'gas_limit')
+    list_display = ('order', 'raffle', 'block_number', 'gas_used')
+
+@admin.register(RaffleLock)
+class RaffleLockAdmin(admin.ModelAdmin):
+    list_display = ('raffle', 'locked', 'modified_at')
 
 
 admin.site.register(EmailConfiguration, SingletonModelAdmin)

@@ -5,7 +5,7 @@ import { Global } from '@emotion/core';
 import { ThemeProvider } from 'emotion-theming';
 import { ModalProvider } from 'react-modal-hook';
 import { ReactQueryDevtools } from 'react-query-devtools';
-import { BrowserRouter as Router, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Redirect, Route } from 'react-router-dom';
 
 // Lib
 import * as serviceWorker from './serviceWorker';
@@ -39,8 +39,7 @@ const publicRoutes = [
   { Component: RaffleCreate, path: ROUTES.raffleCreation },
   { Component: RaffleCreated, path: ROUTES.raffleCreated },
   { Component: RaffleEdit, path: ROUTES.raffleEdit },
-  { Component: RafflePage, path: ROUTES.raffleDetail },
-  { Component: Home, path: ROUTES.home },
+  { Component: RafflePage, path: ROUTES.raffleMetaDetail },
 ];
 
 const PoapFunApp = () => (
@@ -55,6 +54,8 @@ const PoapFunApp = () => (
                   <Component />
                 </PublicRoute>
               ))}
+              <Redirect from={ROUTES.raffleDetail} to={ROUTES.raffleMetaDetail} />
+              <Route path={ROUTES.home} component={Home} />
             </Switch>
           </Router>
           <Global styles={mainStyles} />

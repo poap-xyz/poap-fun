@@ -70,6 +70,9 @@ class PoapIntegrationService:
             s = '0x' + signature[64: 128]
             v = int(signature[128: 130], 16)
 
+            if v == 0 or v == 1:
+                v = v + 27
+
             signer = contract.functions.verify([Web3.toChecksumAddress(address.lower()), raffle_id], r, s, v).call()
             logger.info(f"INFO >> Signature validation >> Comparing: {signer.lower()} vs {address.lower()}")
             return address.lower() == signer.lower()

@@ -24,7 +24,7 @@ export const Layout = styled(AntdLayout, {
     }
 
     &-footer {
-      padding: 0 24px 24px;
+      padding: 0;
       background: var(--system-white);
     }
 

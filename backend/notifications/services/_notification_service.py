@@ -1,8 +1,11 @@
+import logging
 import firebase_admin
 from django.conf import settings
 from firebase_admin import credentials, messaging
 
 from notifications.models import Notification, NOTIFICATION_TYPE, NotificationSubscription
+
+logger = logging.getLogger("app")
 
 
 class NotificationService:
@@ -75,7 +78,11 @@ class NotificationService:
         notification_subscriptions = NotificationSubscription.objects.filter(raffle=raffle)
 
         for notification_subscription in notification_subscriptions:
-            self.send_notification(notification_subscription, type)
-            if type == NOTIFICATION_TYPE.HAS_ENDED:
-                notification_subscription.is_complete = True
-                notification_subscription.save()
+            try:
+                self.send_notification(notification_subscription, type)
+                if type == NOTIFICATION_TYPE.HAS_ENDED:
+                    notification_subscription.is_complete = True
+                    notification_subscription.save()
+            except Exception as e:
+                logger.warning(f"Notification error >> Subscription {notification_subscription.id}")
+                logger.warning(e)

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import constate from 'constate';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
+import { message } from 'antd';
 // @ts-ignore
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { SmartWalletUtils } from '@argent/smartwallet-utils';
@@ -38,6 +39,8 @@ const useCustomState = () => {
 
   let _token = localStorage.getItem('fcm-token');
 
+  const requiredNetworkId = 1;
+
   // Web3Modal
   const providerOptions = {
     walletconnect: {
@@ -57,6 +60,7 @@ const useCustomState = () => {
   const [rafflesInfo, setRafflesInfo] = useState<RaffleDictionary>(raffles);
   const [web3, setWeb3] = useState<Web3 | null>(null);
   const [account, setAccount] = useState<string>('');
+  const [network, setNetwork] = useState<number>(0);
   const [provider, setProvider] = useState<any>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [token, setToken] = useState<string>(_token ? _token : '');
@@ -69,6 +73,27 @@ const useCustomState = () => {
       connectWallet();
     }
   }, [isConnected]); //eslint-disable-line
+  useEffect(() => {
+    const intervalNetwork = setInterval(function () {
+      if (web3) {
+        web3.eth.net.getId((err, currentNet) => {
+          // No error and change in network
+          if (!err && network > 0 && currentNet !== network) {
+            if (currentNet === requiredNetworkId) {
+              window.location.reload();
+            } else if (network === requiredNetworkId) {
+              showNetworkErrorMessage();
+            }
+            setNetwork(currentNet);
+          }
+        });
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalNetwork);
+    };
+  }, [network]); //eslint-disable-line
 
   // Functions
   const saveRaffle = (raffle: Raffle) => {
@@ -84,14 +109,22 @@ const useCustomState = () => {
 
       // TODO - review why _web3.eth.getAccounts() is not working
       let _account = '';
-      if (_provider.selectedAddress) {
+      if (_provider && _provider.selectedAddress) {
         _account = _provider.selectedAddress;
         setAccount(_account);
       }
-      if (_provider.accounts) {
+      if (!_account && _provider && _provider.accounts) {
         _account = _provider.accounts[0];
         setAccount(_account);
       }
+      if (!account && _provider && _provider.address) {
+        _account = _provider.address;
+        setAccount(_account);
+      }
+
+      let netId = await _web3.eth.net.getId();
+      setNetwork(netId);
+      if (requiredNetworkId !== netId) showNetworkErrorMessage();
     } catch (e) {
       console.log('Error > Connecting wallet');
       console.log(e);
@@ -138,7 +171,7 @@ const useCustomState = () => {
     const domainData = {
       name: 'POAP.fun',
       version: '1',
-      chainId: 1,
+      chainId: requiredNetworkId,
       salt: process.env.REACT_APP_SIGNATURE_SALT,
     };
     const message = {
@@ -174,6 +207,12 @@ const useCustomState = () => {
     } catch (e) {
       console.log('Error >> EIP712 signature');
       console.log(e);
+      if (e.message.toLowerCase().indexOf('not supported on this device') > -1) {
+        return [`unsupported-signature-${localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER')}`, data];
+      }
+      if (e.message.toLowerCase().indexOf('eth_signtypeddata') > -1) {
+        return [`unsupported-signature-${localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER')}`, data];
+      }
     }
     return ['', ''];
   };
@@ -184,6 +223,11 @@ const useCustomState = () => {
       setToken(_token);
       localStorage.setItem('fcm-token', _token);
     }
+  };
+
+  // Network monitoring
+  const showNetworkErrorMessage = () => {
+    message.error('Please, switch to the Ethereum main network to join raffles!', 0);
   };
 
   return {

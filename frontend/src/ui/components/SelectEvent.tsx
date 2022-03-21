@@ -37,8 +37,10 @@ const Content = styled.div`
   .content {
     img {
       width: 40px;
+      height: 40px;
       border-radius: 40px;
       margin: 5px;
+      object-fit: cover;
     }
     &.event-data {
       width: 100%;

@@ -100,7 +100,7 @@ const Countdown: FC<CountdownProps> = ({ datetime, finishAction, action }) => {
         {action && (
           <ButtonWrapper>
             <Button onClick={action} type={'primary'}>
-              Start raffle now!
+              Start Draw!
             </Button>
           </ButtonWrapper>
         )}

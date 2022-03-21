@@ -42,6 +42,7 @@ export type RaffleCreateFormValue = {
   prize: string;
   contact: string;
   weightedVote: boolean;
+  emailRequired: boolean;
   undefinedDrawDateTime: boolean;
   startDateHelper: string;
   eligibleEvents: number[];
@@ -96,6 +97,7 @@ const RaffleCreateForm: FC = () => {
     prize: '',
     eligibleEvents: [],
     weightedVote: false,
+    emailRequired: false,
     undefinedDrawDateTime: false,
     startDateHelper: '',
     raffleDate: undefined,
@@ -118,6 +120,7 @@ const RaffleCreateForm: FC = () => {
       name,
       contact,
       weightedVote,
+      emailRequired,
       raffleDate,
       raffleTime,
       eligibleEvents,
@@ -149,6 +152,7 @@ const RaffleCreateForm: FC = () => {
         start_date_helper: startDateHelper,
         draw_datetime: undefinedDrawDateTime ? null : raffleDatetime,
         one_address_one_vote: !weightedVote,
+        email_required: emailRequired,
         prizes: submitPrizes,
         events: submitEvents,
       };
@@ -358,6 +362,16 @@ const RaffleCreateForm: FC = () => {
                 name="contact"
                 placeholder="Enter your email so the winners can get in touch"
                 touched={touched}
+                values={values}
+              />
+            </Col>
+
+            <Col span={24}>
+              <Checkbox
+                handleChange={handleChange}
+                name="emailRequired"
+                sideText="Email required for participants"
+                helpText="Users will have to submit an email when registering for this raffle"
                 values={values}
               />
             </Col>

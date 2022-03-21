@@ -1,11 +1,12 @@
 import { colors } from './colors';
 
 export const BREAKPOINTS = {
-  xs: '30em',
-  sm: '48em',
-  md: '62em',
-  lg: '80em',
-  xl: '92em',
+  xxs: '20em', //320px
+  xs: '30em', // 480px
+  sm: '48em', // 768px
+  md: '62em', // 992px
+  lg: '80em', // 1280px
+  xl: '92em', // 1472px
 };
 
 export const DATETIMEFORMAT = 'DD-MMM-YYYY HH:mm';

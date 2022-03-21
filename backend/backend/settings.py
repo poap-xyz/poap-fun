@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # Basic app
     'core',
     'notifications',
+    'backoffice',
 
     # Backup
     'django_azure_backup',
@@ -63,6 +64,8 @@ INSTALLED_APPS = [
     'celery',
     'drf_yasg',
     'django_celery_beat',
+    'cacheops',
+    'redisboard',
 ]
 
 if DEBUG:
@@ -244,3 +247,13 @@ LOGGING = {
 # Sengrid
 SENDGRID_KEY = os.getenv('SENDGRID_KEY', '')
 GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', '')
+
+# CACHEOPS SECTION
+CACHEOPS_REDIS = os.getenv('REDIS_CONNECTION_STRING', 'redis://redis:6379/0')
+CACHEOPS = {
+    'core.blockdata': {'ops': 'all', 'timeout': 5*60},
+    'core.resultstable': {'ops': 'all', 'timeout': 5*60},
+    'core.resultstableentry': {'ops': 'all', 'timeout': 5*60},
+    'core.participant': {'ops': 'all', 'timeout': 5*60},
+    'core.raffle': {'ops': 'all', 'timeout': 10*60},
+}

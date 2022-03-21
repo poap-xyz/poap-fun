@@ -15,6 +15,8 @@ from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
 from solo.models import SingletonModel
 
+from cacheops import invalidate_model
+
 from core.utils import generate_unique_filename, get_poaps_for_address, get_address_name
 from core.validators import validate_image_size
 
@@ -78,10 +80,13 @@ class Raffle(TimeStampedModel):
     end_datetime = models.DateTimeField(_("raffle's end date and time"), null=True, blank=True)
     # if true, no matter how many poaps the address has, it counts as one vote.
     # if false, each of the address's poaps counts as a vote
-    one_address_one_vote = models.BooleanField(_("one address one vote"))
+    one_address_one_vote = models.BooleanField(_("weighted chance"))
+    email_required = models.BooleanField(_("email required"), default=False)
     events = models.ManyToManyField(Event, through="RaffleEvent", related_name="raffles", verbose_name="events")
     # marked as true when all results have been generated for the raffle
     finalized = models.BooleanField(_("finalized"), default=False)
+    # marked as true when all results have been generated for the raffle
+    published = models.BooleanField(_("published"), default=True)
     # used to store raw token to return after creation
     _token = ''
 
@@ -118,7 +123,6 @@ class Raffle(TimeStampedModel):
 
         super().save(**kwargs)
 
-
         task_name = f'generating_results_for_raffle_{self.id}'
         task = PeriodicTask.objects.filter(name=task_name).first()
         if self.draw_datetime and not self.finalized:
@@ -136,7 +140,7 @@ class Raffle(TimeStampedModel):
             else:
                 task.start_time = timezone.now()
 
-            task.enabled = True
+            task.enabled = self.published
             task.save()
 
             # Notifications
@@ -151,7 +155,7 @@ class Raffle(TimeStampedModel):
             )
             task.enabled = True
             task.start_time = self.draw_datetime - timedelta(hours=1)
-            if task.start_time < now:
+            if task.start_time < now or not self.published:
                 task.enabled = False
             task.save()
 
@@ -164,7 +168,7 @@ class Raffle(TimeStampedModel):
             )
             task.start_time = self.draw_datetime - timedelta(minutes=1)
             task.enabled = True
-            if task.start_time < now:
+            if task.start_time < now or not self.published:
                 task.enabled = False
             task.save()
 
@@ -180,7 +184,7 @@ class Raffle(TimeStampedModel):
             else:
                 task.start_time = timezone.now()
 
-            task.enabled = True
+            task.enabled = self.published
             task.save()
 
         elif task:
@@ -189,6 +193,8 @@ class Raffle(TimeStampedModel):
                 task.save()
 
         ResultsTable.objects.get_or_create(raffle=self)
+
+        invalidate_model(Raffle)
 
     def __str__(self):
         return self.name
@@ -258,7 +264,7 @@ class RaffleEvent(TimeStampedModel):
 
 class ParticipantManager(models.Manager):
 
-    def create_from_address(self, address, signature, raffle, message):
+    def create_from_address(self, address, signature, raffle, message, email):
         user_poaps = get_poaps_for_address(address)
         if not len(user_poaps) > 0:
             return ValidationError("could not get poaps for address")
@@ -278,6 +284,7 @@ class ParticipantManager(models.Manager):
                 poap_id=each['poap'],
                 event_id=each['event'],
                 message=message,
+                email=email,
                 raffle=raffle
             )
             participants.append(participant)
@@ -303,8 +310,13 @@ class Participant(TimeStampedModel):
     event_id = models.CharField(_("event id"), max_length=100)
     signature = models.CharField(_("signature"), max_length=255)
     message = models.TextField(_("message"), null=True, blank=True)
+    email = models.EmailField(_("email"), max_length=255, null=True, blank=True)
 
     objects = ParticipantManager()
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        invalidate_model(Participant)
 
     def __str__(self):
         return self.address
@@ -325,6 +337,10 @@ class ResultsTable(TimeStampedModel):
     raffle = models.OneToOneField(
         Raffle, verbose_name=_("raffle"), related_name="results_table", on_delete=models.PROTECT, unique=True
     )
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        invalidate_model(ResultsTable)
 
     def __str__(self):
         return f"Results table for raffle {self.raffle}"
@@ -352,6 +368,10 @@ class ResultsTableEntry(TimeStampedModel):
     # The order for the table entry in which it was selected for
     # the raffle. eg, 1 for first place, 2 for 2nd place etc...
     order = models.IntegerField(_("order"))
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        invalidate_model(ResultsTableEntry)
 
     def __str__(self):
         return f"{self.order}º - {self.results_table.raffle} - {self.participant}"
@@ -382,8 +402,12 @@ class BlockData(TimeStampedModel):
     block_number = models.BigIntegerField(_("block number"))
 
     # The block nonce may not fit in the DB, save the 64 least significant bits
-    gas_limit = models.BigIntegerField(_("gas limit"))
+    gas_used = models.BigIntegerField(_("gas used"))
     timestamp = models.BigIntegerField(_("timestamp"), null=True)
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        invalidate_model(BlockData)
 
     def __str__(self):
         return f"Block data N°{self.order} for {self.raffle}"
@@ -404,6 +428,7 @@ class EmailConfiguration(SingletonModel):
     sender = models.CharField(max_length=255, null=True, blank=True)
     welcome_template = models.CharField(max_length=255, null=True, blank=True)
     raffle_created_template = models.CharField(max_length=255, null=True, blank=True)
+    raffle_results_template = models.CharField(max_length=255, null=True, blank=True)
     new_raffle_bcc_email = models.CharField(
         max_length=255, null=True, blank=True,
         help_text='BCC recipients separated by comma of new raffle email'
@@ -414,3 +439,30 @@ class EmailConfiguration(SingletonModel):
 
     class Meta:
         verbose_name = _("Email Configuration")
+
+
+class RaffleLock(TimeStampedModel):
+    """
+    Represents a DB lock for the raffle
+    """
+
+    class Meta:
+        verbose_name = _("raffle lock")
+        verbose_name_plural = _("raffle locks")
+
+    raffle = models.OneToOneField(Raffle, verbose_name=_("raffle"), on_delete=models.PROTECT, unique=True)
+    locked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Raffle lock for {self.raffle}"
+
+    def __repr__(self):
+        return f"RaffleLock(raffle.id: {self.raffle.id})"
+
+    def lock(self):
+        self.locked = True
+        self.save()
+
+    def unlock(self):
+        self.locked = False
+        self.save()

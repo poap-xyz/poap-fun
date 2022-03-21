@@ -9,7 +9,6 @@ services:
     expose:
       - "8000"
     links:
-      - postgres:postgres
       - redis:redis
       - celeryworker:celeryworker
       - celerybeat:celerybeat
@@ -28,18 +27,6 @@ services:
       - api-tier
       - back-tier
 
-  node:
-    restart: always
-    container_name: poap-fun-node
-    environment:
-      VIRTUAL_HOST: 'frontend'
-    expose:
-      - "3000"
-    stdin_open: true
-    tty: true
-    networks:
-      - front-tier
-
   nginx:
     restart: always
     build: ./nginx
@@ -52,25 +39,12 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     volumes_from:
       - web
-      - node
     depends_on:
       - web
-      - node
     links:
       - web
-      - node
     networks:
-      - front-tier
       - api-tier
-
-  postgres:
-    restart: always
-    image: postgres:10.7
-    container_name: poap-fun-postgres
-    volumes:
-      - pgdata:/var/lib/postgresql/data/
-    networks:
-      - back-tier
 
   redis:
     restart: always
@@ -97,7 +71,6 @@ services:
     environment:
       C_FORCE_ROOT: 'yes'
     depends_on:
-      - postgres
       - redis
     networks:
       - back-tier
@@ -115,20 +88,16 @@ services:
     environment:
       C_FORCE_ROOT: 'yes'
     depends_on:
-      - postgres
       - redis
     command: celery beat --app=backend -s /tmp/celerybeat-schedule --pidfile=/tmp/celery.pid --loglevel=INFO
     networks:
       - back-tier
 
 volumes:
-  pgdata:
   mediadata:
   redisdata:
 
 networks:
-  front-tier:
-    driver: bridge
   api-tier:
     driver: bridge
   back-tier:

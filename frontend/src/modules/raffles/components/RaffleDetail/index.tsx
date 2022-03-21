@@ -19,6 +19,7 @@ import RaffleBlocks from 'ui/components/RaffleBlocks';
 import RaffleParticipants from 'ui/components/RaffleParticipants';
 import BadgeParty from 'ui/components/BadgeParty';
 import RaffleEditModal from 'ui/components/RaffleEditModal';
+import RaffleParticipantEmailModal from 'ui/components/RaffleParticipantEmailModal';
 import RaffleStartModal from 'ui/components/RaffleStartModal';
 import ContactModal from 'ui/components/ContactModal';
 import CalendarModal from 'ui/components/CalendarModal';
@@ -36,7 +37,6 @@ import { useEvents } from 'lib/hooks/useEvents';
 import { useRaffle } from 'lib/hooks/useRaffle';
 import { useModal } from 'lib/hooks/useModal';
 import { useResults } from 'lib/hooks/useResults';
-import { useBlocks } from 'lib/hooks/useBlocks';
 import { useJoinRaffle } from 'lib/hooks/useJoinRaffle';
 import { useParticipants } from 'lib/hooks/useParticipants';
 import { useStateContext } from 'lib/hooks/useCustomState';
@@ -49,7 +49,7 @@ import { getToken } from 'lib/push-notifications';
 import { safeGetItem } from 'lib/helpers/localStorage';
 
 // Types
-import { CompleteRaffle, JoinRaffleValues, Participant, SubscriptionValues } from 'lib/types';
+import { CompleteRaffle, JoinRaffleValues, Participant, SubscriptionValues, BlockData } from 'lib/types';
 
 const ContactContainer = styled.div`
   margin: 24px auto 24px auto;
@@ -93,11 +93,12 @@ const RaffleDetail: FC = () => {
   const [raffleInitialStatus, setInitialRaffleStatus] = useState<string>('');
   const [completeRaffle, setRaffle] = useState<CompleteRaffle | null>(null);
   const [canJoinRaffle, setCanJoinRaffle] = useState<boolean>(true);
+  const [participantEmail, setParticipantEmail] = useState<string>('');
 
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [joinDisabledReason, setJoinDisabledReason] = useState<string>('');
 
-  const [pollingEnabled, SetPollingEnabled] = useState<boolean>(false);
+  const [blocksData, setBlocksData] = useState<BlockData[]>([]);
   const [lastResultsLength, setLastResultsLength] = useState(-1);
   const [shouldTriggerConfetti, setShouldTriggerConfetti] = useState<boolean>(false);
   const {
@@ -126,9 +127,6 @@ const RaffleDetail: FC = () => {
     id: raffle?.results_table,
   });
   const { data: participantsData, isLoading: isLoadingParticipants, refetch: refetchParticipants } = useParticipants({
-    raffle: id,
-  });
-  const { data: blocksData, isLoading: isLoadingBlocks, refetch: refetchBlocks } = useBlocks({
     raffle: id,
   });
 
@@ -188,6 +186,19 @@ const RaffleDetail: FC = () => {
     title: 'Add to calendar',
     id: parseInt(id, 10),
   });
+  const { showModal: handleParticipantEmail, hideModal: hideParticipantEmailModal } = useModal({
+    component: RaffleParticipantEmailModal,
+    closable: true,
+    className: '',
+    footerButton: false,
+    okButtonText: 'Close',
+    width: 400,
+    okButtonWidth: 70,
+    id: parseInt(id, 10),
+    onSuccess: (email: any) => {
+      setParticipantEmail(email as string);
+    },
+  });
   const [joinRaffle, { isLoading: isJoiningRaffle }] = useJoinRaffle();
 
   // Notifications
@@ -206,6 +217,13 @@ const RaffleDetail: FC = () => {
   useEffect(() => {
     if (completeRaffle) calculateRaffleStatus(completeRaffle);
   }, [completeRaffle]); //eslint-disable-line
+
+  useEffect(() => {
+    if (participantEmail) {
+      hideParticipantEmailModal();
+      join();
+    }
+  }, [participantEmail]); //eslint-disable-line
 
   useEffect(() => {
     if (isConnected && isAccountParticipating()) {
@@ -229,17 +247,6 @@ const RaffleDetail: FC = () => {
       playNewWinner();
     }
   }, [setLastResultsLength, results]); //eslint-disable-line
-
-  useEffect(() => {
-    if (raffleStatus === STATUS.ONGOING) {
-      const interval = setInterval(() => {
-        refetchBlocks();
-        if (completeRaffle?.results_table) refetchResults();
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-    return;
-  }, [pollingEnabled]); //eslint-disable-line
 
   useEffect(() => {
     localStorage.setItem('sound', soundEnabled.toString());
@@ -285,6 +292,11 @@ const RaffleDetail: FC = () => {
     }
 
     if (raffle && account && !isAccountParticipating() && canAccountParticipate()) {
+      if (raffle.email_required && !participantEmail) {
+        handleParticipantEmail();
+        return;
+      }
+
       setIsSigning(true);
       setActionButtonText('Please follow instructions on your wallet');
       let typedSignedMessage = await signMessage(raffle);
@@ -298,6 +310,7 @@ const RaffleDetail: FC = () => {
           message: typedSignedMessage[1],
           address: account,
           raffle_id: raffle.id,
+          email: participantEmail,
         };
         try {
           await joinRaffle(participant);
@@ -315,9 +328,10 @@ const RaffleDetail: FC = () => {
     }, 3000);
   };
 
-  const onNewBlock = () => {
+  const onNewBlock = (blocks: BlockData[]) => {
     playBlockPassed();
-    if (!pollingEnabled) SetPollingEnabled(true);
+    setBlocksData(blocks);
+    if (completeRaffle?.results_table) refetchResults();
   };
 
   const toggleNotification = async () => {
@@ -477,7 +491,7 @@ const RaffleDetail: FC = () => {
           prizes={completeRaffle.prizes}
         />
 
-        <RaffleBlocks isLoading={isLoadingBlocks} blocks={blocksData} />
+        <RaffleBlocks blocks={blocksData} />
 
         <BadgeParty />
       </Container>

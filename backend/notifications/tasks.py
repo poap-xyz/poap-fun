@@ -8,7 +8,6 @@ from notifications.services import notification_service
 logger = logging.getLogger("app")
 
 
-
 @app.task()
 def send_one_hour_raffle_notifications(raffle_id):
     raffle = Raffle.objects.filter(id=raffle_id).first()

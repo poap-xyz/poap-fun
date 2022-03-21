@@ -53,7 +53,7 @@ class RaffleResultsService:
         return remaining_participants
 
     @classmethod
-    def _split_by_gas_limit(cls, gas_limit, participants):
+    def _split_by_gas_used(cls, gas_used, participants):
 
         if not participants:
             return None
@@ -67,17 +67,17 @@ class RaffleResultsService:
         while not valid_split:
             prev_iteration_digit = None
             comparing_digits_identical = True
-            gas_limit_last_digit = gas_limit % 10
+            gas_used_last_digit = gas_used % 10
             for participant in participants:
                 poap_id = participant.poap_id
                 poap_id_cmp_digit = math.floor(poap_id/order) % 10
 
-                if poap_id_cmp_digit == gas_limit_last_digit:
+                if poap_id_cmp_digit == gas_used_last_digit:
                     eliminated_participants.append(participant)
                 else:
                     remaining_participants.append(participant)
 
-                if prev_iteration_digit and prev_iteration_digit != poap_id_cmp_digit:
+                if prev_iteration_digit is not None and prev_iteration_digit != poap_id_cmp_digit:
                     comparing_digits_identical = False
                 prev_iteration_digit = poap_id_cmp_digit
 
@@ -133,7 +133,7 @@ class RaffleResultsService:
             send_has_ended_raffle_notifications.delay(results_table.raffle.id)
             return True
 
-        eliminated_participants = cls._split_by_gas_limit(block_data.gas_limit, participants)
+        eliminated_participants = cls._split_by_gas_used(block_data.gas_used, participants)
 
         # calculate the starting order
         order = len(participants) - len(eliminated_participants)
@@ -160,6 +160,8 @@ class RaffleResultsService:
             results_table.raffle.end_datetime = datetime.utcnow()
             results_table.raffle.save()
             send_has_ended_raffle_notifications.delay(results_table.raffle.id)
+            from core.emails import send_raffle_results_email
+            send_raffle_results_email(results_table.raffle)
         return finalized
 
     @classmethod
@@ -179,13 +181,24 @@ class RaffleResultsService:
         except BlockNotFound:
             return None
 
+        next_block_number = raw_block_data.get("number")
+        next_block_timestamps = raw_block_data.get("timestamp")
+        next_gas_used = raw_block_data.get("gasUsed")
+        q = BlockData.objects.filter(
+            raffle=raffle,
+            block_number=next_block_number,
+            timestamp=next_block_timestamps,
+            gas_used=next_gas_used
+        )
+        if q.exists():
+            return None
+
         order = prev_block.order + 1 if prev_block else 0
-        gas_limit = raw_block_data.get("gasLimit")
         block_data = BlockData(
             raffle=raffle,
-            gas_limit=gas_limit,
-            block_number=raw_block_data.get("number"),
-            timestamp=raw_block_data.get("timestamp"),
+            gas_used=next_gas_used,
+            block_number=next_block_number,
+            timestamp=next_block_timestamps,
             order=order
         )
 
@@ -222,4 +235,3 @@ class RaffleResultsService:
         )
 
         return finished
-

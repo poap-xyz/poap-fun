@@ -15,7 +15,7 @@ export const useCreateRaffle = () => {
   const { saveRaffle } = useStateContext();
 
   const createRaffle = (raffle: CreateRaffleValues): Promise<Raffle> =>
-    api().url(endpoints.fun.raffles.all).post(raffle).json();
+    api().url(endpoints.fun.raffles.all(false)).post(raffle).json();
 
   // react query
   return useMutation(createRaffle, {

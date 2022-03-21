@@ -36,7 +36,7 @@ const Content = styled.div`
   padding: 30px 0;
 
   @media (min-width: ${BREAKPOINTS.sm}) {
-    padding: 30px 100px;
+    padding: 30px 50px;
   }
 
   .participant-box {
@@ -48,6 +48,7 @@ const Content = styled.div`
       display: flex;
       align-items: center;
       flex-direction: column;
+      margin-bottom: 10px;
 
       img {
         width: 60px;
@@ -73,8 +74,16 @@ const Content = styled.div`
       max-width: 500px;
       cursor: pointer;
 
+      @media (max-width: ${BREAKPOINTS.sm}) {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+
       @media (max-width: ${BREAKPOINTS.xs}) {
         grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      @media (max-width: ${BREAKPOINTS.xxs}) {
+        grid-template-columns: 1fr 1fr;
       }
 
       div {
@@ -86,6 +95,7 @@ const Content = styled.div`
 
         span {
           font-size: 12px;
+          line-height: 16px;
           svg {
             padding-top: 3px;
           }
@@ -108,8 +118,23 @@ const PopoverContent = styled.div`
   text-align: center;
 `;
 
+const OtherParticipants = styled.div`
+  width: 100%;
+  text-align: center;
+  font-family: var(--alt-font);
+  color: var(--primary-color);
+  font-size: 16px;
+  padding: 10px 0;
+`;
+
+const maxParticipantsAmount = 200;
+
+// Utils
+const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+const shortEns = (ens: string) => `${ens.length > 15 ? ens.substr(0, 14) + '...' : ens}`;
+
 const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
-  const generateLinks = (token: number) => {
+  const generateLinks = (token: number, address: string) => {
     return (
       <PopoverContent>
         <div>
@@ -122,27 +147,46 @@ const ParticipantNumbers: FC<ParticipantNumbersProps> = ({ participants }) => {
             View on POAP <FiExternalLink />
           </a>
         </div>
+        <div>
+          <a href={endpoints.poap.webScan(address)} target="_blank" rel="noopener noreferrer">
+            View POAP collection <FiExternalLink />
+          </a>
+        </div>
       </PopoverContent>
     );
   };
 
+  let _participants =
+    participants.length > maxParticipantsAmount ? participants.slice(0, maxParticipantsAmount) : participants;
+
   return (
-    <div className={'ticket-holder'}>
-      {participants.map((each) => {
-        return (
-          <Tooltip title={each.event.name} key={each.id}>
-            <Popover placement={'bottom'} title={''} content={generateLinks(each.poap_id)} trigger={['click']}>
-              <div className="number-container">
-                <img src={each.event.image_url} alt={each.event.name} />
-                <span>
-                  #{each.poap_id.toString().padStart(5, '0')} <FiExternalLink />{' '}
-                </span>
-              </div>
-            </Popover>
-          </Tooltip>
-        );
-      })}
-    </div>
+    <>
+      <div className={'ticket-holder'}>
+        {_participants.map((each) => {
+          return (
+            <Tooltip title={each.event.name} key={each.id}>
+              <Popover
+                placement={'bottom'}
+                title={''}
+                content={generateLinks(each.poap_id, each.address)}
+                trigger={['click']}
+              >
+                <div className="number-container">
+                  <img src={each.event.image_url} alt={each.event.name} />
+                  <span>{each.ens_name ? shortEns(each.ens_name) : shortAddress(each.address)}</span>
+                  <span>
+                    #{each.poap_id.toString().padStart(5, '0')} <FiExternalLink />{' '}
+                  </span>
+                </div>
+              </Popover>
+            </Tooltip>
+          );
+        })}
+      </div>
+      {participants.length > maxParticipantsAmount && (
+        <OtherParticipants>And {participants.length - maxParticipantsAmount} more!</OtherParticipants>
+      )}
+    </>
   );
 };
 
@@ -187,7 +231,7 @@ const RaffleParticipants: FC<RaffleParticipantsProps> = ({ participants, isLoadi
   return (
     <Spin spinning={isLoading} tip="Loading participants">
       <Content>
-        <Title>Participating POAPs</Title>
+        <Title>Participating POAPs - {accountTickets.length + otherTickets.length}</Title>
         <div className={'participant-box'}>
           {accountTickets.length > 0 && (
             <div>

@@ -92,6 +92,7 @@ const PoapDisplay = styled.div<ScrollerProps>`
       padding: 10px;
       img {
         width: 100%;
+        border-radius: 100%;
       }
     }
     .empty {

@@ -36,7 +36,7 @@ const patchRaffle = ({
 }: UpdateRaffleValues): Promise<Raffle> => {
   return api()
     .auth(token)
-    .url(endpoints.fun.raffles.detail(id))
+    .url(endpoints.fun.raffles.detail(id, false))
     .json({
       ...cleanDeep({
         name,

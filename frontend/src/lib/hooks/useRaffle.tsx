@@ -11,7 +11,7 @@ type FetchRaffleValues = {
 
 export const useRaffle = ({ id }: FetchRaffleValues) => {
   const fetchRaffle = (key: string, id: number): Promise<Raffle> =>
-    api().url(endpoints.fun.raffles.detail(id)).get().json();
+    api().url(endpoints.fun.raffles.detail(id, true)).get().json();
 
   // react query
   return useQuery(['raffle', id], fetchRaffle);

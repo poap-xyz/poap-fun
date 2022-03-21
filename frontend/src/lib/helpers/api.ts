@@ -1,5 +1,5 @@
-import { PoapEvent, PoapEventDictionary, Raffle, CompleteRaffle } from 'lib/types';
 import moment, { Moment } from 'moment-timezone';
+import { PoapEvent, PoapEventDictionary, Raffle, CompleteRaffle } from 'lib/types';
 
 export const transformEventDictionary = (events: PoapEvent[]): PoapEventDictionary => {
   let eventDict: PoapEventDictionary = {};
@@ -11,12 +11,44 @@ export const transformEventDictionary = (events: PoapEvent[]): PoapEventDictiona
 
 export const mergeRaffleEvent = (raffles: Raffle[], events: PoapEvent[]): CompleteRaffle[] => {
   let eventDict = transformEventDictionary(events);
+  let eventListComplete = events.length > 0;
 
   let completeRaffles: CompleteRaffle[] = [];
   raffles.forEach((raffle) => {
     let completeRaffle = {
       ...raffle,
-      events: raffle.events.map((each) => eventDict[parseInt(each.event_id, 10)]),
+      events: raffle.events.map((each) => {
+        if (eventListComplete) {
+          return eventDict[parseInt(each.event_id, 10)];
+        }
+        let _event: PoapEvent = {
+          id: parseInt(each.event_id, 10),
+          fancy_id: '',
+          name: each.name,
+          event_url: '',
+          image_url: '',
+          country: '',
+          city: '',
+          description: '',
+          year: 0,
+          start_date: '',
+          end_date: '',
+        };
+        return _event;
+      }),
+    };
+    completeRaffles.push(completeRaffle);
+  });
+  return completeRaffles;
+};
+
+export const regenerateRaffleEvents = (raffles: CompleteRaffle[], events: PoapEvent[]): CompleteRaffle[] => {
+  let eventDict = transformEventDictionary(events);
+  let completeRaffles: CompleteRaffle[] = [];
+  raffles.forEach((raffle) => {
+    let completeRaffle = {
+      ...raffle,
+      events: raffle.events.map((each) => eventDict[each.id]),
     };
     completeRaffles.push(completeRaffle);
   });
