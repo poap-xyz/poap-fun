@@ -22,8 +22,6 @@ services:
       VIRTUAL_HOST: 'backend'
     command: /usr/local/bin/gunicorn backend.wsgi:application -w 4 -b 0.0.0.0:8000 --reload --log-level debug
     stdin_open: true
-    depends_on:
-      - postgres
     tty: true
     networks:
       - api-tier
@@ -48,25 +46,12 @@ services:
     networks:
       - api-tier
 
-  postgres:
-    restart: always
-    image: postgres:10.7
-    container_name: poap-fun-postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data/
-    networks:
-      - back-tier
-
   redis:
     restart: always
     image: redis:latest
     container_name: poap-fun-redis
     ports:
       - "6382:6379"
-    depends_on:
-      - postgres
     volumes:
       - redisdata:/data
     networks:
@@ -110,7 +95,6 @@ services:
 
 volumes:
   mediadata:
-  pgdata:
   redisdata:
 
 networks:
