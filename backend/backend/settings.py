@@ -257,3 +257,5 @@ CACHEOPS = {
     'core.participant': {'ops': 'all', 'timeout': 5*60},
     'core.raffle': {'ops': 'all', 'timeout': 10*60},
 }
+
+POAP_API_URL = os.getenv("POAP_API_URL", "https://api.poap.tech")

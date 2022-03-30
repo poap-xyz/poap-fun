@@ -4,6 +4,7 @@ import logging
 import datetime
 import requests
 
+from django.conf import settings
 from django.utils.deconstruct import deconstructible
 
 from ens.main import ENS
@@ -49,7 +50,7 @@ def get_poaps_for_address(address):
     if not address:
         return None
 
-    request_url = f"https://api.poap.xyz/actions/scan/{address}"
+    request_url = f"{settings.POAP_API_URL}/actions/scan/{address}"
     response = requests.get(request_url)
 
     if not response.ok:
