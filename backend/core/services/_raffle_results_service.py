@@ -4,10 +4,11 @@ from typing import List, Optional
 
 from django.db import transaction
 from web3.auto import w3
-from web3.exceptions import BlockNotFound
 
 from core.models import Raffle, Participant, ResultsTable, BlockData, ResultsTableEntry
 from notifications.tasks import send_has_ended_raffle_notifications
+
+logger = logging.getLogger("RaffleResultService")
 
 
 class RaffleResultsService:
@@ -179,6 +180,7 @@ class RaffleResultsService:
             else:
                 raw_block_data = w3.eth.getBlock('latest')
         except Exception:
+            logger.warning(f"Error: {str(e)} raffle with id {raffle_id}")
             return None
 
         next_block_number = raw_block_data.get("number")
