@@ -178,7 +178,7 @@ class RaffleResultsService:
                 raw_block_data = w3.eth.getBlock(prev_block.block_number+1)
             else:
                 raw_block_data = w3.eth.getBlock('latest')
-        except BlockNotFound:
+        except Exception:
             return None
 
         next_block_number = raw_block_data.get("number")

@@ -21,6 +21,9 @@ def generate_raffle_results_task(raffle_id):
 
     db_lock.lock()
 
-    raffle_results_service.generate_next_result_step(raffle)
+    try:
+        raffle_results_service.generate_next_result_step(raffle)
+    except Exception as e:
+        logger.warning(f"Error: {str(e)} raffle with id {raffle_id}")
 
     db_lock.unlock()
