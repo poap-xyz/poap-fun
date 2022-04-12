@@ -181,7 +181,7 @@ class RaffleResultsService:
             else:
                 raw_block_data = w3.eth.getBlock('latest')
         except Exception as e:
-            logger.warning(f"Error: {str(e)} raffle with id {raffle_id}")
+            logger.warning(f"Error: {str(e)} raffle with id {raffle.id}")
             return None
 
         next_block_number = raw_block_data.get("number")
