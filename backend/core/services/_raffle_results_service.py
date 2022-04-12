@@ -1,3 +1,4 @@
+import logging
 import math
 from datetime import datetime
 from typing import List, Optional
@@ -179,7 +180,7 @@ class RaffleResultsService:
                 raw_block_data = w3.eth.getBlock(prev_block.block_number+1)
             else:
                 raw_block_data = w3.eth.getBlock('latest')
-        except Exception:
+        except Exception as e:
             logger.warning(f"Error: {str(e)} raffle with id {raffle_id}")
             return None
 
