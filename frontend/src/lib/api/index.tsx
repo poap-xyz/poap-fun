@@ -3,7 +3,13 @@ import queryString from 'query-string';
 import wretch, { WretcherError } from 'wretch';
 
 // env
-const { REACT_APP_API_FUN, REACT_APP_API_FUN_READ_ONLY, REACT_APP_API_POAP, REACT_APP_POAP_APP } = process.env;
+const {
+  REACT_APP_API_FUN,
+  REACT_APP_API_FUN_READ_ONLY,
+  REACT_APP_API_POAP,
+  REACT_APP_POAP_APP,
+  REACT_APP_S3_BUCKET_EVENTS,
+} = process.env;
 
 export type Params = {
   [key: string]: string | number | boolean | undefined;
@@ -12,7 +18,7 @@ export type Params = {
 // Endpoints
 export const endpoints = {
   poap: {
-    events: `${REACT_APP_API_POAP}/events`,
+    events: `${REACT_APP_S3_BUCKET_EVENTS}`,
     scan: (address: string) => `${REACT_APP_API_POAP}/actions/scan/${address}`,
     webScan: (address: string) => `${REACT_APP_POAP_APP}/scan/${address}`,
     token: (token: number) => `${REACT_APP_POAP_APP}/token/${token}`,
