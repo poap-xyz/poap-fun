@@ -17,7 +17,6 @@ class TestRaffleResultsService:
     @pytest.mark.django_db
     def test_remaining_participants_ordering(self):
         raffle = baker.make('core.Raffle', one_address_one_vote=False)
-        baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
             'core.Participant', raffle=raffle, address="0x1", poap_id=11239
         )
@@ -43,7 +42,6 @@ class TestRaffleResultsService:
     @pytest.mark.django_db
     def test_remaining_participants_ordering_one_address_one_vote(self):
         raffle = baker.make('core.Raffle', one_address_one_vote=True)
-        baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
             'core.Participant', raffle=raffle, address="0x1", poap_id=11239
         )
@@ -69,7 +67,6 @@ class TestRaffleResultsService:
     @pytest.mark.django_db
     def test_save_new_results_table_entries(self):
         raffle = baker.make('core.Raffle')
-        baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
             'core.Participant', raffle=raffle, address="0x1", poap_id=109
         )
@@ -106,7 +103,6 @@ class TestRaffleResultsService:
     @pytest.mark.django_db
     def test_save_new_results_table_entries_empty_slash(self):
         raffle = baker.make('core.Raffle')
-        baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
             'core.Participant', raffle=raffle, address="0x1", poap_id=124
         )
@@ -126,7 +122,6 @@ class TestRaffleResultsService:
     @pytest.mark.django_db
     def test_raffle_finalization(self):
         raffle = baker.make('core.Raffle', one_address_one_vote=False)
-        baker.make('core.ResultsTable', raffle=raffle)
         participant_1 = baker.make(
             'core.Participant', raffle=raffle, address="0x1", poap_id=124
         )
