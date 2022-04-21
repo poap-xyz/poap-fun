@@ -1,9 +1,10 @@
 import json
 import tempfile
-from datetime import datetime, timedelta
+from datetime import timedelta, datetime
 
 from PIL import Image
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework import status
 
 from core.tests.test_fixtures import *
@@ -88,9 +89,18 @@ class TestRaffleAPIView:
     @pytest.mark.urls("core.urls")
     @pytest.mark.django_db
     def test_filter_by_date(self, api_client):
-        raffle_1 = baker.make("core.Raffle", draw_datetime=datetime.strptime("2020-07-14", "%Y-%m-%d"))
-        raffle_2 = baker.make("core.Raffle", draw_datetime=datetime.strptime("2020-08-14", "%Y-%m-%d"))
-        raffle_3 = baker.make("core.Raffle", draw_datetime=datetime.strptime("2020-09-14", "%Y-%m-%d"))
+        baker.make(
+            "core.Raffle",
+            draw_datetime=timezone.make_aware(datetime.strptime("2020-07-14", "%Y-%m-%d"))
+        )
+        baker.make(
+            "core.Raffle",
+            draw_datetime=timezone.make_aware(datetime.strptime("2020-08-14", "%Y-%m-%d"))
+        )
+        baker.make(
+            "core.Raffle",
+            draw_datetime=timezone.make_aware(datetime.strptime("2020-09-14", "%Y-%m-%d"))
+        )
         raffle_list_url = f"{reverse('raffles-list')}?draw_datetime__gte=2020-08-14T00:00:00"
         response = api_client.get(raffle_list_url)
         content = json.loads(response.content)
@@ -101,11 +111,15 @@ class TestRaffleAPIView:
     @pytest.mark.urls("core.urls")
     @pytest.mark.django_db
     def test_filter_by_name(self, api_client):
-        raffle_1 = baker.make(
-            "core.Raffle", name="raffle 1", draw_datetime=datetime.strptime("2020-08-14", "%Y-%m-%d")
+        baker.make(
+            "core.Raffle",
+            name="raffle 1",
+            draw_datetime=timezone.make_aware(datetime.strptime("2020-08-14", "%Y-%m-%d"))
         )
-        raffle_2 = baker.make(
-            "core.Raffle", name="raffle 2", draw_datetime=datetime.strptime("2020-09-14", "%Y-%m-%d")
+        baker.make(
+            "core.Raffle",
+            name="raffle 2",
+            draw_datetime=timezone.make_aware(datetime.strptime("2020-09-14", "%Y-%m-%d"))
         )
         raffle_list_url = f"{reverse('raffles-list')}?name__icontains=1"
         response = api_client.get(raffle_list_url)
@@ -117,14 +131,14 @@ class TestRaffleAPIView:
     @pytest.mark.urls("core.urls")
     @pytest.mark.django_db
     def test_filter_by_event_participation(self, api_client):
-        raffle_1_draw_datetime = datetime.utcnow() + timedelta(hours=9)
+        raffle_1_draw_datetime = timezone.now() + timedelta(hours=9)
         raffle_1 = baker.make("core.Raffle", name="raffle 1", draw_datetime=raffle_1_draw_datetime)
         event_1 = baker.make("core.Event", event_id=1)
         raffle_event_1 = baker.make("core.RaffleEvent", raffle=raffle_1, event=event_1)
         event_2 = baker.make("core.Event", event_id=2)
         raffle_event_2 = baker.make("core.RaffleEvent", raffle=raffle_1, event=event_2)
 
-        raffle_2_draw_datetime = datetime.utcnow() + timedelta(hours=9)
+        raffle_2_draw_datetime = timezone.now()+ timedelta(hours=9)
         raffle_2 = baker.make("core.Raffle", name="raffle 2", draw_datetime=raffle_2_draw_datetime)
         event_4 = baker.make("core.Event", event_id=4)
         raffle_event_3 = baker.make("core.RaffleEvent", raffle=raffle_2, event=event_4)
@@ -150,97 +164,6 @@ class TestRaffleAPIView:
         assert response.status_code == status.HTTP_200_OK
         assert len(content["results"]) == 1
         assert content["results"][0]["name"] == "raffle 1"
-
-
-class TestPrizeAPIView:
-
-    @pytest.mark.urls("core.urls")
-    @pytest.mark.django_db
-    def test_prize_update(self, api_client, raffle_data):
-        # Create a raffle since it's the only way to get the unhashed token
-        raffle_create_url = reverse("raffles-list")
-        response = api_client.post(
-            raffle_create_url,
-            content_type="application/json",
-            data=json.dumps(raffle_data)
-        )
-        response_content = json.loads(response.content)
-        token = response_content.get("token")
-        prizes = response_content.get("prizes")
-        prize = prizes[0]
-        prize_edit_url = reverse("prizes-detail", kwargs={"id": prize.get("id")})
-
-        modified_prize_data = {
-            "name": "other price name"
-        }
-
-        headers = {"HTTP_AUTHORIZATION": token}
-
-        response = api_client.patch(
-            prize_edit_url,
-            content_type="application/json",
-            data=json.dumps(modified_prize_data),
-            **headers
-        )
-        response_content = json.loads(response.content)
-        assert response.status_code == status.HTTP_200_OK
-        assert modified_prize_data.get("name") == response_content.get("name")
-
-    @pytest.mark.urls("core.urls")
-    @pytest.mark.django_db
-    def test_prize_update_unauthorized(self, api_client, raffle_data):
-        # Create a raffle since it's the only way to get the unhashed token
-        raffle_create_url = reverse("raffles-list")
-        response = api_client.post(
-            raffle_create_url,
-            content_type="application/json",
-            data=json.dumps(raffle_data)
-        )
-        response_content = json.loads(response.content)
-        token = response_content.get("token")
-        prizes = response_content.get("prizes")
-        prize = prizes[0]
-        prize_edit_url = reverse("prizes-detail", kwargs={"id": prize.get("id")})
-
-        modified_prize_data = {
-            "name": "other price name"
-        }
-
-        response = api_client.patch(
-            prize_edit_url,
-            content_type="application/json",
-            data=json.dumps(modified_prize_data),
-        )
-        response_content = json.loads(response.content)
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-class TestParticipantAPIView:
-
-    def test_get_all_participants_for_raffle(self, api_client):
-        raffle_1 = baker.make("core.Raffle", name="raffle 1")
-        raffle_2 = baker.make("core.Raffle", name="raffle 2")
-        baker.make("core.Participant", raffle=raffle_1)
-        baker.make("core.Participant", raffle=raffle_1)
-        baker.make("core.Participant", raffle=raffle_2)
-        participants_for_raffle_url = f"{reverse('participants-list')}?raffle=1"
-
-        response = api_client.get(participants_for_raffle_url)
-
-        assert response.status_code == status.HTTP_200_OK
-        content = json.loads(response.content)
-
-
-        pass
-
-    def test_sign_up_valid_user(self):
-        pass
-
-    def test_sign_up_invalid_address(self):
-        pass
-
-    def test_sign_up_invalid_poaps(self):
-        pass
 
 
 class TestTextEditorImageAPIView:

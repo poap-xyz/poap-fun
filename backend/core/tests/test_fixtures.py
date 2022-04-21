@@ -54,7 +54,6 @@ def raffle_with_participants():
     RaffleWithParticipants = collections.namedtuple('RaffleWithParticipants', 'raffle remaining_participants')
     raffle = baker.make('core.Raffle')
     participants = baker.make('core.Participant', raffle=raffle, _quantity=6)
-    results_table = baker.make('core.ResultsTable', raffle=raffle)
 
     fixed_participants = participants[:3]
     remaining_participants = participants[3:]
@@ -63,7 +62,7 @@ def raffle_with_participants():
         table_entry = baker.make(
             'core.ResultsTableEntry',
             participant=participant,
-            results_table=results_table,
+            results_table=raffle.results_table,
             order=order
         )
         order -= 1

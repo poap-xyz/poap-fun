@@ -69,6 +69,7 @@ pylint:
 py-tests:
 	@echo "Running python tests"
 	docker exec $(WEB) /bin/sh -c "coverage run --source='.' manage.py test"
+	docker exec $(WEB) /bin/sh -c "pytest"
 
 test-all:
 	@echo "Running all tests"
