@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 
 from django.test import TestCase
 
@@ -11,8 +11,8 @@ class RaffleTestCase(TestCase):
         self.name = 'raffle name'
         self.description = 'raffle description'
         self.contact = 'test@email.com'
-        self.draw_datetime = datetime.now()
-        self.end_datetime = datetime.now()
+        self.draw_datetime = timezone.now()
+        self.end_datetime = timezone.now()
         self.one_address_one_vote = True
         self.raffle = Raffle.objects.create(
             name=self.name,
