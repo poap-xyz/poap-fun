@@ -10,7 +10,7 @@
     "@types/lodash.isempty": "^4.4.6",
     "@walletconnect/web3-provider": "^1.4.1",
     "antd": "^4.5.2",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "clean-deep": "^3.3.0",
     "constate": "^2.0.0",
     "copy-to-clipboard": "^3.3.1",
