@@ -6,6 +6,9 @@
   <a href="https://t.me/poapxyz">
     <img src="https://img.shields.io/badge/Telegram-POAP-blue?style=for-the-badge&logo=telegram&message=Telegram&color=blue" alt="Chat on Telegram">
   </a>
+  <a href="https://www.gitpoap.io/gh/poap-xyz/poap-fun">
+    <img src="https://public-api.gitpoap.io/v1/repo/poap-xyz/poap-fun/badge" alt="GitPOAP Badge">
+  </a>
 </div>
 
 ## Intro
