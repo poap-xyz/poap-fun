@@ -9,7 +9,7 @@
 </div>
 
 ## Intro
-Poap Fun is a raffle web app supported by the Proof of Attendance Protocol (POAP)
+Poap Fun is a raffle Web App supported by the Proof of Attendance Protocol (POAP)
 
 ## Features
 Add project features
