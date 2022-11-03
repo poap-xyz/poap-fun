@@ -89,6 +89,5 @@ export const api = () => {
     .catcher(401, handleWrongToken())
     .catcher(404, handleGenericError())
     .catcher(405, handleHttpError(405))
-    .catcher(400, handleHttpError(400))
-    .headers({ 'X-API-Key': REACT_APP_API_POAP_API_KEY! });
+    .catcher(400, handleHttpError(400));
 };
