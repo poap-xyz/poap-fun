@@ -9,7 +9,6 @@ const {
   REACT_APP_API_POAP,
   REACT_APP_POAP_APP,
   REACT_APP_S3_BUCKET_EVENTS,
-  REACT_APP_API_POAP_API_KEY,
 } = process.env;
 
 export type Params = {
@@ -89,6 +88,5 @@ export const api = () => {
     .catcher(401, handleWrongToken())
     .catcher(404, handleGenericError())
     .catcher(405, handleHttpError(405))
-    .catcher(400, handleHttpError(400))
-    .headers({ 'X-API-Key': REACT_APP_API_POAP_API_KEY! });
+    .catcher(400, handleHttpError(400));
 };
