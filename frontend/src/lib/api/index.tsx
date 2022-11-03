@@ -9,7 +9,6 @@ const {
   REACT_APP_API_POAP,
   REACT_APP_POAP_APP,
   REACT_APP_S3_BUCKET_EVENTS,
-  REACT_APP_API_POAP_API_KEY,
 } = process.env;
 
 export type Params = {
