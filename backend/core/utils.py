@@ -51,7 +51,8 @@ def get_poaps_for_address(address):
         return None
 
     request_url = f"{settings.POAP_API_URL}/actions/scan/{address}"
-    response = requests.get(request_url)
+    api_key = settings.POAP_API_API_KEY
+    response = requests.get(request_url, headers={"x-api-key": api_key})
 
     if not response.ok:
         logger.warning(f"failed to find poaps for address {address}, request to poap api was not successful")
