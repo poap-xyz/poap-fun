@@ -259,3 +259,4 @@ CACHEOPS = {
 }
 
 POAP_API_URL = os.getenv("POAP_API_URL", "https://api.poap.tech")
+POAP_API_API_KEY = os.getenv("POAP_API_API_KEY", "api-key")
