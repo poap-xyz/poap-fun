@@ -124,8 +124,8 @@ const FrecuentlyAskedQuestions: FC = () => (
             <div className={'faq-text'}>
               <h2 className={'faq-title'}>Do I have to remain attentive to the raffle draw?</h2>
               <p>
-                No! Once you signed up by signing a message, you are participating. You can visit the website during the
-                raffle to see the elimination on real time, but it’s not a requirement.
+                No! Once you sign up by signing a message, you are participating. You can visit the website during the
+                raffle to see the elimination in real time, but it’s not a requirement.
               </p>
             </div>
           </Col>
