@@ -72,13 +72,13 @@ const Nav = styled.nav`
     @media (max-width: ${BREAKPOINTS.sm}) {
       display: none;
     }
-  }
 
-  .disabled.ant-btn {
-    color: var(--secondary-color) !important;
-    background-color: var(--btn-disabled) !important;
-    border-color: var(--btn-disabled) !important;
-    cursor: not-allowed;
+    &.disabled.ant-btn {
+      color: var(--secondary-color) !important;
+      background-color: var(--btn-disabled) !important;
+      border-color: var(--btn-disabled) !important;
+      cursor: not-allowed;
+    }
   }
 
   .faqs {
