@@ -66,6 +66,7 @@
     "prettier": "^2.0.5",
     "react-app-rewired": "^2.1.6",
     "react-scripts": "3.4.1",
+    "sass": "^1.63.6",
     "ts-node": "^8.10.2",
     "typescript": "~3.8.3"
   },

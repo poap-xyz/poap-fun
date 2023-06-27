@@ -1,0 +1,52 @@
+.bannerWrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 72px;
+  padding: 10px 10%;
+  background-color: #fcf3ff;
+  border-bottom: 1px solid #eac9f8;
+  font-family: var(--main-font);
+
+  @media (min-width: 768px) {
+    height: 48px;
+    padding: 0 10%;
+  }
+}
+
+.centerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
+.handIcon {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+    margin-bottom: -10px;
+  }
+}
+
+.desktopIcon {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+}
+
+.mobileIcon {
+  @media (min-width: 768px) {
+    display: none;
+  }
+}

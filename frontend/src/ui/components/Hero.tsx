@@ -1,12 +1,10 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { NavLink } from 'react-router-dom';
 
 // Components
 import { Button } from 'ui/styled/antd/Button';
 
 // Constants
-import { ROUTES } from 'lib/routes';
 import { BREAKPOINTS } from 'lib/constants/theme';
 
 // Assets
@@ -42,11 +40,9 @@ const HeroWrap = styled.div`
       color: var(--tertiary-color);
     }
 
-    a {
-      button {
-        margin-top: 30px;
-        width: 160px;
-      }
+    button {
+      margin-top: 30px;
+      width: 160px;
     }
   }
 
@@ -110,9 +106,9 @@ const Hero: FC = () => {
       <div className={'title'}>
         <h1>What is POAP Fun all about?</h1>
         <h2>Create raffle for event participants!</h2>
-        <NavLink to={ROUTES.raffleCreation}>
-          <Button type="primary">Create Raffle</Button>
-        </NavLink>
+        <Button type="primary" disabled>
+          Create Raffle
+        </Button>
       </div>
       <Background alt={background.className.toUpperCase()} src={background.image} className={background.className} />
     </HeroWrap>

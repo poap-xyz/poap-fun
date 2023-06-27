@@ -8,6 +8,7 @@ import { useStateContext } from 'lib/hooks/useCustomState';
 
 // Components
 import Logo from 'ui/components/Logo';
+import { Banner } from 'ui/components/Banner/Banner';
 import PoapUser from 'ui/components/PoapUser';
 import { Button } from 'ui/styled/antd/Button';
 import { Container } from 'ui/styled/Container';
@@ -45,12 +46,14 @@ const HeaderWrap = styled.div`
     justify-content: space-between;
   }
 `;
+
 const BrandNav = styled.div`
   height: 100%;
   img {
     position: absolute;
-    top: 20px;
+    bottom: -28px;
     height: 110px;
+
     @media (max-width: ${BREAKPOINTS.xs}) {
       height: 60px;
     }
@@ -136,37 +139,40 @@ const Header: FC = () => {
     </PoapDisplay>
   );
   return (
-    <HeaderWrap>
-      <Container className={'container'}>
-        <BrandNav>
-          <NavLink to={ROUTES.home}>
-            <Logo />
-          </NavLink>
-        </BrandNav>
-        <Nav>
-          {!isConnected && (
-            <Button type="default" onClick={connectWallet}>
-              Connect Wallet
+    <>
+      <Banner />
+      <HeaderWrap>
+        <Container className={'container'}>
+          <BrandNav>
+            <NavLink to={ROUTES.home}>
+              <Logo />
+            </NavLink>
+          </BrandNav>
+          <Nav>
+            {!isConnected && (
+              <Button type="default" onClick={connectWallet}>
+                Connect Wallet
+              </Button>
+            )}
+            {isConnected && !isFetchingPoaps && (
+              <>
+                <Popover placement={'bottom'} title={'My POAPs'} content={content} trigger={['hover', 'click']}>
+                  <div>
+                    <PoapUser />
+                  </div>
+                </Popover>
+              </>
+            )}
+            <Button type="primary" className="call-to-action" disabled>
+              Create Raffle
             </Button>
-          )}
-          {isConnected && !isFetchingPoaps && (
-            <>
-              <Popover placement={'bottom'} title={'My POAPs'} content={content} trigger={['hover', 'click']}>
-                <div>
-                  <PoapUser />
-                </div>
-              </Popover>
-            </>
-          )}
-          <NavLink to={ROUTES.raffleCreation} className={'call-to-action'}>
-            <Button type="primary">Create Raffle</Button>
-          </NavLink>
-          <NavLink to={ROUTES.faqs} className={'faqs'}>
-            FAQ
-          </NavLink>
-        </Nav>
-      </Container>
-    </HeaderWrap>
+            <NavLink to={ROUTES.faqs} className={'faqs'}>
+              FAQ
+            </NavLink>
+          </Nav>
+        </Container>
+      </HeaderWrap>
+    </>
   );
 };
 
