@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import styled from '@emotion/styled';
 
 // Components
+import { Tooltip } from 'antd';
 import { Button } from 'ui/styled/antd/Button';
 
 // Constants
@@ -29,11 +30,9 @@ const HeroWrap = styled.div`
   .title {
     text-align: center;
     padding: 100px 24px 300px;
+
     @media (max-width: ${BREAKPOINTS.sm}) {
       padding-bottom: 60px;
-    }
-
-    h1 {
     }
 
     h2 {
@@ -43,7 +42,17 @@ const HeroWrap = styled.div`
     button {
       margin-top: 30px;
       width: 160px;
+
+      &.disabled {
+        color: var(--secondary-color) !important;
+        background-color: var(--btn-disabled) !important;
+        border-color: var(--btn-disabled) !important;
+        cursor: not-allowed;
+      }
     }
+  }
+
+  .btnWrapper {
   }
 
   img {
@@ -106,9 +115,11 @@ const Hero: FC = () => {
       <div className={'title'}>
         <h1>What is POAP Fun all about?</h1>
         <h2>Create raffle for event participants!</h2>
-        <Button type="primary" disabled>
-          Create Raffle
-        </Button>
+        <Tooltip title="POAP Fun is under maintenance" trigger={['hover']} mouseEnterDelay={0} mouseLeaveDelay={0}>
+          <Button type="primary" className="disabled">
+            Create Raffles
+          </Button>
+        </Tooltip>
       </div>
       <Background alt={background.className.toUpperCase()} src={background.image} className={background.className} />
     </HeroWrap>

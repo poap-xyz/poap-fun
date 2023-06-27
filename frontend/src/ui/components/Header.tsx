@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { Popover } from 'antd';
+import { Popover, Tooltip } from 'antd';
 import { NavLink } from 'react-router-dom';
 
 // Hooks
@@ -67,11 +67,20 @@ const Nav = styled.nav`
     margin: 0 6px;
     width: 160px;
   }
+
   .call-to-action {
     @media (max-width: ${BREAKPOINTS.sm}) {
       display: none;
     }
   }
+
+  .disabled.ant-btn {
+    color: var(--secondary-color) !important;
+    background-color: var(--btn-disabled) !important;
+    border-color: var(--btn-disabled) !important;
+    cursor: not-allowed;
+  }
+
   .faqs {
     margin-left: 20px;
   }
@@ -163,9 +172,11 @@ const Header: FC = () => {
                 </Popover>
               </>
             )}
-            <Button type="primary" className="call-to-action" disabled>
-              Create Raffle
-            </Button>
+            <Tooltip title="POAP Fun is under maintenance" trigger={['hover']} mouseEnterDelay={0} mouseLeaveDelay={0}>
+              <Button type="primary" className="call-to-action disabled">
+                Create Raffle
+              </Button>
+            </Tooltip>
             <NavLink to={ROUTES.faqs} className={'faqs'}>
               FAQ
             </NavLink>
